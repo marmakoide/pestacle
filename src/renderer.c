@@ -4,7 +4,7 @@
 
 struct Renderer*
 renderer_allocate() {
-	return (struct Renderer*)malloc(sizeof(struct Renderer));	
+	return (struct Renderer*)malloc(sizeof(struct Renderer));
 }
 
 
@@ -16,6 +16,7 @@ renderer_setup(
 	int height
 ) {
 	assert(self != 0);
+	assert(self->delegate != 0);
 	assert(width > 0);
 	assert(height > 0);
 
@@ -23,23 +24,25 @@ renderer_setup(
 }
 
 
-extern void
+void
 renderer_destroy(
 	struct Renderer* self
 ) {
 	assert(self != 0);
+	assert(self->delegate != 0);
 
 	self->delegate->destroy(self);
 }
 
 
-extern void
+void
 renderer_render(
 	struct Renderer* self,
 	const struct Matrix* src,
 	SDL_Surface* dst
 ) {
 	assert(self != 0);
+	assert(self->delegate != 0);
 	assert(src != 0);
 	assert(dst != 0);
 

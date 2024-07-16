@@ -4,23 +4,12 @@
 #include <SDL.h>
 #include <vector.h>
 #include <matrix.h>
+#include "source.h"
 #include "renderer.h"
 
 
 struct Animation {
-	int screen_width;
-	int screen_height;
-	size_t cursor_x;
-	size_t cursor_y;
-
-	float dt;
-	float diffusion_coeff;
-	float decay_coeff;
-	struct Matrix U;
-	struct Matrix U_tmp;
-	struct Matrix U_laplacian;
-	struct Vector diff_kernel;
-
+	struct Source* source;
 	struct Renderer* renderer;
 }; // struct Animation
 
@@ -29,7 +18,9 @@ extern int
 animation_init(
 	struct Animation* self,
 	int screen_width,
-	int screen_height
+	int screen_height,
+	int display_width,
+	int display_height
 );
 
 
@@ -40,10 +31,9 @@ animation_destroy(
 
 
 extern void
-animation_handle_mouse_event(
+animation_handle_event(
 	struct Animation* self,
-	float x,
-	float y
+	SDL_Event* event
 );
 
 

@@ -1,6 +1,7 @@
 #include "image.h"
 #include "animation.h"
 
+#include "sources/heat_diffusion.h"
 #include "renderers/gradient.h"
 #include "renderers/linear_blend.h"
 
@@ -9,53 +10,27 @@ int
 animation_init(
 	struct Animation* self,
 	int screen_width,
-	int screen_height
+	int screen_height,
+	int display_width,
+	int display_height
 ) {
-	self->screen_width = screen_width;
-	self->screen_height = screen_height;
-	self->cursor_x = 0;
-	self->cursor_y = 0;
+	self->source = 0;
+	self->renderer = 0;
 
-	//  Animation params and variables
-	self->dt = 1e-2f;
-	self->diffusion_coeff = 1e-2f;
-	self->decay_coeff = 1e-2f;
+	// Setup the source
+	self->source =
+		heat_diffusion_source_new(
+			display_width,
+			display_height
+		);
 
-	Matrix_init(&(self->U), self->screen_height, self->screen_width);
-	Matrix_fill(&(self->U), 0.f);
-
-	Matrix_init(&(self->U_tmp), self->screen_height, self->screen_width);
-	Matrix_fill(&(self->U_tmp), 0.f);
-
-	Matrix_init(&(self->U_laplacian), self->screen_height, self->screen_width);
-	Matrix_fill(&(self->U_laplacian), 0.f);
-
-	/*
-	Vector_init(&(self->diff_kernel), 3);
-	Vector_set_coeff(&(self->diff_kernel), 0,  0.25f);
-	Vector_set_coeff(&(self->diff_kernel), 1,  0.50f);
-	Vector_set_coeff(&(self->diff_kernel), 2,  0.25f);
-	*/
-
-	/*
-	Vector_init(&(self->diff_kernel), 5);
-	Vector_set_coeff(&(self->diff_kernel), 0,  1.f / 16.f);
-	Vector_set_coeff(&(self->diff_kernel), 1,  4.f / 16.f);
-	Vector_set_coeff(&(self->diff_kernel), 2,  6.f / 16.f);
-	Vector_set_coeff(&(self->diff_kernel), 3,  4.f / 16.f);
-	Vector_set_coeff(&(self->diff_kernel), 4,  1.f / 16.f);
-	*/
-
-	Vector_init(&(self->diff_kernel), 7);
-	Vector_set_coeff(&(self->diff_kernel), 0,  1.f);
-	Vector_set_coeff(&(self->diff_kernel), 1,  6.f);
-	Vector_set_coeff(&(self->diff_kernel), 2,  15.f);
-	Vector_set_coeff(&(self->diff_kernel), 3,  20.f);
-	Vector_set_coeff(&(self->diff_kernel), 4,  15.f);
-	Vector_set_coeff(&(self->diff_kernel), 5,  6.f);
-	Vector_set_coeff(&(self->diff_kernel), 6,  1.f);
-	Vector_scale(&(self->diff_kernel), 1. / Vector_sum(&(self->diff_kernel)));
-
+	if (!source_setup(
+		self->source,
+		screen_width,
+		screen_height
+	))
+		return 0;
+	
 	// Setup the renderer
 	//self->renderer = gradient_renderer_new();
 	
@@ -81,27 +56,25 @@ void
 animation_destroy(
 	struct Animation* self
 ) {
-	Matrix_destroy(&(self->U));
-	Matrix_destroy(&(self->U_tmp));
-	Matrix_destroy(&(self->U_laplacian));
-	Vector_destroy(&(self->diff_kernel));
-
+	source_destroy(self->source);
 	renderer_destroy(self->renderer);
 
 	#ifdef DEBUG
+	self->source = 0;
 	self->renderer = 0;
 	#endif
 }
 
 
 void
-animation_handle_mouse_event(
+animation_handle_event(
 	struct Animation* self,
-	float x,
-	float y
+	SDL_Event* event
 ) {
-	self->cursor_x = x;
-	self->cursor_y = y;
+	source_handle_event(
+		self->source,
+		event
+	);
 }
 
 
@@ -112,7 +85,7 @@ animation_render(
 ) {
 	renderer_render(
 		self->renderer,
-		&(self->U),
+		source_get(self->source),
 		dst
 	);
 }
@@ -122,29 +95,7 @@ void
 animation_update(
 	struct Animation* self
 ) {
-	// Set U to 1 at the cursor location
-	Matrix_set_coeff(
-		&(self->U),
-		self->cursor_y,
-		self->cursor_x,
-		32.f);
-
-	// Diffusion operator on U
-	Matrix_rowwise_correlation(
-		&(self->U),
-		&(self->diff_kernel),
-		&(self->U_tmp)
-	);
-
-	Matrix_colwise_correlation(
-		&(self->U_tmp),
-		&(self->diff_kernel),
-		&(self->U)
-	);
-	
-	// Apply decay
-	Matrix_scale(
-		&(self->U),
-		1.f - self->decay_coeff
+	source_update(
+		self->source
 	);
 }

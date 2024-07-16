@@ -77,7 +77,9 @@ main(int argc, char* argv[]) {
 	if (!animation_init(
 		&animation,
 		SCREEN_WIDTH,
-		SCREEN_HEIGHT)
+		SCREEN_HEIGHT,
+		DISPLAY_WIDTH,
+		DISPLAY_HEIGHT)
 	)
 		goto termination;
 
@@ -177,11 +179,6 @@ main(int argc, char* argv[]) {
 	}
 
 	// Event processing loop
-	int x = 0;
-	int y = 0;
-	float x_coords = 0.f;
-	float y_coords = 0.f;
-
 	for(bool quit = false; !quit; ) {
 		SDL_Event event;
 		if (SDL_WaitEvent(&event)) {
@@ -190,19 +187,10 @@ main(int argc, char* argv[]) {
 					quit = true;
 					break;
 
-				case SDL_MOUSEMOTION:
-				case SDL_MOUSEBUTTONUP:
-				case SDL_MOUSEBUTTONDOWN:
-					SDL_GetMouseState(&x, &y);
-					x_coords = (((float)SCREEN_WIDTH) / ((float)DISPLAY_WIDTH)) * x;
-					y_coords = (((float)SCREEN_HEIGHT) / ((float)DISPLAY_HEIGHT)) * y;
-
-					SDL_LockMutex(animation_state_mutex);
-					animation_handle_mouse_event(&animation, x_coords, y_coords);
-					SDL_UnlockMutex(animation_state_mutex);
-					break;
-
 				default:
+					SDL_LockMutex(animation_state_mutex);
+					animation_handle_event(&animation, &event);
+					SDL_UnlockMutex(animation_state_mutex);
 					break;
 			}
 		}

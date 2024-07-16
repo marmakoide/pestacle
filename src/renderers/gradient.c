@@ -15,7 +15,7 @@ void
 gradient_renderer_destroy(
 	struct Renderer* self
 ) {
-	
+
 }
 
 
