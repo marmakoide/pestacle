@@ -1,6 +1,9 @@
 #include "image.h"
 #include "animation.h"
 
+#include "renderers/gradient.h"
+#include "renderers/linear_blend.h"
+
 
 int
 animation_init(
@@ -53,18 +56,21 @@ animation_init(
 	Vector_set_coeff(&(self->diff_kernel), 6,  1.f);
 	Vector_scale(&(self->diff_kernel), 1. / Vector_sum(&(self->diff_kernel)));
 
-	// Load background picture
-	self->picture_a = load_png("assets/paysage-vignoble_200x100.png");
-	if (!self->picture_a) {
-		self->picture_a = 0;
+	// Setup the renderer
+	//self->renderer = gradient_renderer_new();
+	
+	self->renderer =
+		linear_blend_renderer_new(
+			"assets/paysage-vignoble_200x100.png",
+			"assets/soif_200x100.png"
+		);
+		
+	if (!renderer_setup(
+		self->renderer,
+		screen_width,
+		screen_height
+	))
 		return 0;
-	}
-
-	self->picture_b = load_png("assets/soif_200x100.png");
-	if (!self->picture_b) {
-		self->picture_b = 0;
-		return 0;
-	}
 
 	// Job done
 	return 1;
@@ -80,13 +86,11 @@ animation_destroy(
 	Matrix_destroy(&(self->U_laplacian));
 	Vector_destroy(&(self->diff_kernel));
 
-	if (self->picture_a)
-		SDL_FreeSurface(self->picture_a);
-	self->picture_a = 0;
+	renderer_destroy(self->renderer);
 
-	if (self->picture_b)
-		SDL_FreeSurface(self->picture_b);
-	self->picture_b = 0;
+	#ifdef DEBUG
+	self->renderer = 0;
+	#endif
 }
 
 
@@ -104,39 +108,13 @@ animation_handle_mouse_event(
 void
 animation_render(
 	const struct Animation* self,
-	SDL_Surface* surface
+	SDL_Surface* dst
 ) {
-	const real_t* coeff = self->U.data;
-	uint8_t* pixel_row = (uint8_t*)surface->pixels;
-	for(int i = self->screen_height; i != 0; --i, pixel_row += surface->pitch) {
-		uint8_t* pixel = pixel_row;
-		for(int j = self->screen_width; j != 0; --j, pixel += 3, ++coeff) {
-			uint8_t level = (uint8_t)fmaxf(fminf(255.f * (*coeff), 255.f), 0.f);
-
-			for(int k = 0; k < 3; ++k)
-				pixel[k] = 0xff - level;
-		}
-	}
-
-	/*
-	const real_t* coeff = self->U.data;
-	uint8_t* dst_pixel_row = (uint8_t*)surface->pixels;
-	const uint8_t* src_a_pixel_row = (const uint8_t*)self->picture_a->pixels;
-	const uint8_t* src_b_pixel_row = (const uint8_t*)self->picture_b->pixels;
-	
-	for(int i = self->screen_height; i != 0; --i, dst_pixel_row += surface->pitch, src_a_pixel_row += self->picture_a->pitch, src_b_pixel_row += self->picture_b->pitch) {
-		uint8_t* dst_pixel = dst_pixel_row;
-		const uint8_t* src_a_pixel = src_a_pixel_row;
-		const uint8_t* src_b_pixel = src_b_pixel_row;
-
-		for(int j = self->screen_width; j != 0; --j, dst_pixel += 3, src_a_pixel += 4, src_b_pixel += 4, ++coeff) {
-			float level = fmaxf(fminf(*coeff, 1.f), 0.f);
-			
-			for(int k = 0; k < 3; ++k)
-				dst_pixel[k] = (uint8_t)(src_b_pixel[k] * level + src_a_pixel[k] * (1.f - level));
-		}
-	}
-	*/
+	renderer_render(
+		self->renderer,
+		&(self->U),
+		dst
+	);
 }
 
 

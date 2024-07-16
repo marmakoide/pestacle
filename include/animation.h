@@ -4,6 +4,7 @@
 #include <SDL.h>
 #include <vector.h>
 #include <matrix.h>
+#include "renderer.h"
 
 
 struct Animation {
@@ -20,8 +21,7 @@ struct Animation {
 	struct Matrix U_laplacian;
 	struct Vector diff_kernel;
 
-	SDL_Surface* picture_a;
-	SDL_Surface* picture_b;
+	struct Renderer* renderer;
 }; // struct Animation
 
 

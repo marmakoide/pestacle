@@ -90,8 +90,7 @@ array_ops_sum(
 	size_t len
 ) {
 	real_t sum = (*src);
-	++src;
-	for(--len; len != 0; --len, ++src)
+	for(--len, ++src; len != 0; --len, ++src)
 		sum += (*src);
 	return sum;
 }
@@ -104,9 +103,7 @@ array_ops_dot(
 	size_t len
 ) {
 	real_t sum = (*src) * (*other);
-	++src;
-	++other;
-	for(--len; len != 0; --len, ++src, ++other)
+	for(--len, ++src, ++other; len != 0; --len, ++src, ++other)
 		sum += (*src) * (*other);
 	return sum;
 }
