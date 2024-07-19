@@ -4,8 +4,6 @@
 struct HeatDiffusionData {
 	int width;
 	int height;
-	int display_width;
-	int display_height;
 
 	real_t dt;
 	real_t diffusion_coeff;
@@ -117,29 +115,17 @@ heat_diffusion_source_update(
 void
 heat_diffusion_source_handle_event(
 	struct Source* self,
-	const SDL_Event* event
+	const union Event* event
 ) {
 	struct HeatDiffusionData* data =
 		(struct HeatDiffusionData*)self->data;
 
-	int x = 0;
-	int y = 0;
-	float x_coords = 0.f;
-	float y_coords = 0.f;
-
 	switch(event->type) {
-		case SDL_MOUSEMOTION:
-		case SDL_MOUSEBUTTONUP:
-		case SDL_MOUSEBUTTONDOWN:
-			SDL_GetMouseState(&x, &y);
-			
-			x_coords = (((float)data->width) / ((float)data->display_width)) * x;
-			y_coords = (((float)data->height) / ((float)data->display_height)) * y;
-
+		case EventType_MouseMotion:
 			Matrix_set_coeff(
 				&(data->U),
-				(size_t)floorf(y_coords),
-				(size_t)floorf(x_coords),
+				(size_t)floorf(event->mouse_motion.y),
+				(size_t)floorf(event->mouse_motion.x),
 				32.f);
 			break;
 
@@ -173,10 +159,7 @@ heat_diffusion_source_delegate = {
 
 
 struct Source*
-heat_diffusion_source_new(
-	int display_width,
-	int display_height
-) {
+heat_diffusion_source_new() {
 	// Allocation
 	struct Source* ret = source_allocate();
 	if (!ret)
@@ -184,9 +167,6 @@ heat_diffusion_source_new(
 
 	struct HeatDiffusionData* data =
 		(struct HeatDiffusionData*)malloc(sizeof(struct HeatDiffusionData));
-
-	data->display_width = display_width;
-	data->display_height = display_height;
 
 	// Delegate setup
 	ret->data = data;

@@ -18,9 +18,7 @@ extern int
 animation_init(
 	struct Animation* self,
 	int screen_width,
-	int screen_height,
-	int display_width,
-	int display_height
+	int screen_height
 );
 
 
@@ -33,7 +31,7 @@ animation_destroy(
 extern void
 animation_handle_event(
 	struct Animation* self,
-	SDL_Event* event
+	const union Event* event
 );
 
 

@@ -2,6 +2,7 @@
 #define PESTACLE_SOURCE_H
 
 #include <SDL.h>
+#include "event.h"
 #include "matrix.h"
 
 
@@ -26,7 +27,7 @@ struct SourceDelegate {
 
 	void (*handle_event)(
 		struct Source*,
-		const SDL_Event* event	
+		const union Event* event	
 	);
 
 	const struct Matrix* (*get)(
@@ -68,7 +69,7 @@ source_update(
 extern void
 source_handle_event(
 	struct Source* self,
-	const SDL_Event* event
+	const union Event* event
 );
 
 

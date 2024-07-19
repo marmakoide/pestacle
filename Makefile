@@ -10,6 +10,7 @@ $(TARGET): \
 $(BUILD_DIR)/array_ops.o \
 $(BUILD_DIR)/vector.o \
 $(BUILD_DIR)/matrix.o \
+$(BUILD_DIR)/event.o \
 $(BUILD_DIR)/spng.o \
 $(BUILD_DIR)/image.o \
 $(BUILD_DIR)/source.o \

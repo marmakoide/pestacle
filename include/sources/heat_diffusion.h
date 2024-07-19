@@ -5,10 +5,7 @@
 
 
 extern struct Source*
-heat_diffusion_source_new(
-	int display_width,
-	int display_height
-);
+heat_diffusion_source_new();
 
 
 

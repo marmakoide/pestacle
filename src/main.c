@@ -1,18 +1,16 @@
 #include <stdlib.h>
 
-
 #include <stdbool.h>
 #include <SDL.h>
+#include "event.h"
 #include "animation.h"
 
 
-// Dimensions of the display, in term of real displayed pixels
 const unsigned int DISPLAY_WIDTH  = 1000;
-const unsigned int DISPLAY_HEIGHT = 500;
+const unsigned int DISPLAY_HEIGHT = 1000;
 
-// Dimensions of the simulated screeen
-const unsigned int SCREEN_WIDTH  = 200;
-const unsigned int SCREEN_HEIGHT = 100;
+const unsigned int EMULATED_DISPLAY_WIDTH  = 200;
+const unsigned int EMULATED_DISPLAY_HEIGHT = 100;
 
 
 // --- Main entry point -------------------------------------------------------
@@ -42,6 +40,8 @@ animation_state_update_callback(Uint32 interval, void* param) {
 
 static Uint32
 framebuffer_update_callback(Uint32 interval, void* param) {
+	struct Display* display = (struct Display*)param;
+
 	// Render
 	SDL_LockMutex(animation_state_mutex);
 	animation_render(&animation, framebuffer_rgb24);
@@ -49,7 +49,9 @@ framebuffer_update_callback(Uint32 interval, void* param) {
 	
 	// Update the framebuffer
 	SDL_BlitSurface(framebuffer_rgb24, 0, framebuffer_native, 0);
-	SDL_BlitScaled(framebuffer_native, 0, window_surface, 0);
+
+	// Update the display
+	SDL_BlitScaled(framebuffer_native, 0, window_surface, &(display->visible_area));
 	SDL_UpdateWindowSurface(window);
 
 	// Job done
@@ -74,12 +76,20 @@ main(int argc, char* argv[]) {
 	}
 
 	// Initialize animation
+	struct Display display;
+
+	display_init(
+		&display,
+		DISPLAY_WIDTH,
+		DISPLAY_HEIGHT,
+		EMULATED_DISPLAY_WIDTH,
+		EMULATED_DISPLAY_HEIGHT
+	);
+
 	if (!animation_init(
 		&animation,
-		SCREEN_WIDTH,
-		SCREEN_HEIGHT,
-		DISPLAY_WIDTH,
-		DISPLAY_HEIGHT)
+		EMULATED_DISPLAY_WIDTH,
+		EMULATED_DISPLAY_HEIGHT)
 	)
 		goto termination;
 
@@ -108,7 +118,7 @@ main(int argc, char* argv[]) {
 	}
 
 	// Disable mouse cursor
-	SDL_ShowCursor(SDL_DISABLE);
+	//SDL_ShowCursor(SDL_DISABLE);
 
 	// Create a renderer
 	window_surface = SDL_GetWindowSurface(window);
@@ -123,8 +133,8 @@ main(int argc, char* argv[]) {
 	framebuffer_rgb24 =
 		SDL_CreateRGBSurfaceWithFormat(
 			0,
-			SCREEN_WIDTH,
-			SCREEN_HEIGHT,
+			EMULATED_DISPLAY_WIDTH,
+			EMULATED_DISPLAY_HEIGHT,
 			24,
 			SDL_PIXELFORMAT_RGB24
 		);
@@ -139,8 +149,8 @@ main(int argc, char* argv[]) {
 	framebuffer_native =
 		SDL_CreateRGBSurfaceWithFormat(
 			0,
-			SCREEN_WIDTH,
-			SCREEN_HEIGHT,
+			EMULATED_DISPLAY_WIDTH,
+			EMULATED_DISPLAY_HEIGHT,
 			window_surface->format->BitsPerPixel,
 			window_surface->format->format
 		);
@@ -156,7 +166,7 @@ main(int argc, char* argv[]) {
 		SDL_AddTimer(
 			15,
 			framebuffer_update_callback,
-			0
+			&display
 		);
 	
 	if (!framebuffer_update_timer) {
@@ -180,17 +190,33 @@ main(int argc, char* argv[]) {
 
 	// Event processing loop
 	for(bool quit = false; !quit; ) {
-		SDL_Event event;
-		if (SDL_WaitEvent(&event)) {
-			switch(event.type) {
+		SDL_Event src_event;
+		union Event dst_event;
+
+		if (SDL_WaitEvent(&src_event)) {
+			switch(src_event.type) {
 				case SDL_QUIT:
 					quit = true;
 					break;
 
+				case SDL_MOUSEBUTTONUP:
+				case SDL_MOUSEBUTTONDOWN:
+					if (cast_mouse_button_event(&display, &src_event, &dst_event)) {
+						SDL_LockMutex(animation_state_mutex);
+						animation_handle_event(&animation, &dst_event);
+						SDL_UnlockMutex(animation_state_mutex);
+					}
+					break;
+
+				case SDL_MOUSEMOTION:
+					if (cast_mouse_motion_event(&display, &src_event, &dst_event)) {
+						SDL_LockMutex(animation_state_mutex);
+						animation_handle_event(&animation, &dst_event);
+						SDL_UnlockMutex(animation_state_mutex);
+					}
+					break;
+
 				default:
-					SDL_LockMutex(animation_state_mutex);
-					animation_handle_event(&animation, &event);
-					SDL_UnlockMutex(animation_state_mutex);
 					break;
 			}
 		}

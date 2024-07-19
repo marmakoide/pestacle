@@ -10,19 +10,14 @@ int
 animation_init(
 	struct Animation* self,
 	int screen_width,
-	int screen_height,
-	int display_width,
-	int display_height
+	int screen_height
 ) {
 	self->source = 0;
 	self->renderer = 0;
 
 	// Setup the source
 	self->source =
-		heat_diffusion_source_new(
-			display_width,
-			display_height
-		);
+		heat_diffusion_source_new();
 
 	if (!source_setup(
 		self->source,
@@ -69,7 +64,7 @@ animation_destroy(
 void
 animation_handle_event(
 	struct Animation* self,
-	SDL_Event* event
+	const union Event* event
 ) {
 	source_handle_event(
 		self->source,
