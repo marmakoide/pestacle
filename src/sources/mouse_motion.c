@@ -50,7 +50,7 @@ mouse_motion_source_update(
 void
 mouse_motion_source_handle_event(
 	struct Source* self,
-	const union Event* event
+	const Event* event
 ) {
 	struct MouseMotionData* data =
 		(struct MouseMotionData*)self->data;

@@ -56,18 +56,18 @@ struct MouseMotionEvent {
 }; // struct MouseMotionEvent
 
 
-union Event {
+typedef union {
 	enum EventType type;
 	struct MouseButtonEvent mouse_button;
 	struct MouseMotionEvent mouse_motion;
-}; // union Event
+} Event; // union Event
 
 
 extern int
 cast_mouse_button_event(
 	const struct Display* display,
 	const SDL_Event* src,
-	union Event* dst
+	Event* dst
 );
 
 
@@ -75,7 +75,7 @@ extern int
 cast_mouse_motion_event(
 	const struct Display* display,
 	const SDL_Event* src,
-	union Event* dst
+	Event* dst
 );
 
 

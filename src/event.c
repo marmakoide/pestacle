@@ -53,7 +53,7 @@ int
 cast_mouse_button_event(
 	const struct Display* display,
 	const SDL_Event* src,
-	union Event* dst
+	Event* dst
 ) {	
 	assert(display != 0);
 	assert(src != 0);
@@ -91,7 +91,7 @@ int
 cast_mouse_motion_event(
 	const struct Display* display,
 	const SDL_Event* src,
-	union Event* dst
+	Event* dst
 ) {
 	assert(display != 0);
 	assert(src != 0);

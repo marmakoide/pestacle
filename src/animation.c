@@ -64,7 +64,7 @@ animation_destroy(
 void
 animation_handle_event(
 	struct Animation* self,
-	const union Event* event
+	const Event* event
 ) {
 	source_handle_event(
 		self->source,

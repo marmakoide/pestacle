@@ -191,7 +191,7 @@ main(int argc, char* argv[]) {
 	// Event processing loop
 	for(bool quit = false; !quit; ) {
 		SDL_Event src_event;
-		union Event dst_event;
+		Event dst_event;
 
 		if (SDL_WaitEvent(&src_event)) {
 			switch(src_event.type) {

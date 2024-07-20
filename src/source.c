@@ -48,7 +48,7 @@ source_update(
 void
 source_handle_event(
 	struct Source* self,
-	const union Event* event
+	const Event* event
 ) {
 	assert(self != 0);
 	assert(self->delegate != 0);

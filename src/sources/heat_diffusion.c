@@ -109,7 +109,7 @@ heat_diffusion_source_update(
 void
 heat_diffusion_source_handle_event(
 	struct Source* self,
-	const union Event* event
+	const Event* event
 ) {
 	struct HeatDiffusionData* data =
 		(struct HeatDiffusionData*)self->data;

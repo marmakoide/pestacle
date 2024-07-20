@@ -27,7 +27,7 @@ struct SourceDelegate {
 
 	void (*handle_event)(
 		struct Source*,
-		const union Event* event	
+		const Event* event	
 	);
 
 	const struct Matrix* (*get)(
@@ -69,7 +69,7 @@ source_update(
 extern void
 source_handle_event(
 	struct Source* self,
-	const union Event* event
+	const Event* event
 );
 
 

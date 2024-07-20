@@ -31,7 +31,7 @@ animation_destroy(
 extern void
 animation_handle_event(
 	struct Animation* self,
-	const union Event* event
+	const Event* event
 );
 
 
