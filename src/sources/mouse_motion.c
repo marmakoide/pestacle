@@ -81,7 +81,7 @@ mouse_motion_source_get(
 }
 
 
-static const struct SourceDelegate
+static const SourceDelegate
 mouse_motion_source_delegate = {
 	"mouse-motion",
 	mouse_motion_source_setup,

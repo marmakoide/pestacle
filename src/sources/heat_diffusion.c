@@ -140,7 +140,7 @@ heat_diffusion_source_get(
 }
 
 
-static const struct SourceDelegate
+static const SourceDelegate
 heat_diffusion_source_delegate = {
 	"heat-diffusion",
 	heat_diffusion_source_setup,

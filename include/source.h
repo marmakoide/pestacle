@@ -8,7 +8,7 @@
 
 struct Source;
 
-struct SourceDelegate {
+typedef struct {
 	const char* name;
 
 	int (*setup)(
@@ -33,12 +33,12 @@ struct SourceDelegate {
 	const struct Matrix* (*get)(
 		const struct Source*
 	);
-}; // struct Source
+} SourceDelegate;
 
 
 struct Source {
 	void* data;
-	const struct SourceDelegate* delegate;
+	const SourceDelegate* delegate;
 }; // struct Source
 
 
