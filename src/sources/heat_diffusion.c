@@ -1,7 +1,7 @@
 #include "sources/heat_diffusion.h"
 
 
-struct HeatDiffusionData {
+typedef struct {
 	real_t dt;
 	real_t diffusion_coeff;
 	real_t decay_coeff;
@@ -9,18 +9,17 @@ struct HeatDiffusionData {
 	struct Matrix U;
 	struct Matrix U_tmp;
 	struct Vector diff_kernel;
-};
+} HeatDiffusionData;
 
 
 
 int
 heat_diffusion_source_setup(
-	struct Source* self,
+	Source* self,
 	int width,
 	int height
 ) {
-	struct HeatDiffusionData* data =
-		(struct HeatDiffusionData*)self->data;
+	HeatDiffusionData* data = (HeatDiffusionData*)self->data;
 
 	//  Animation params and variables
 	data->dt = 1e-2f;
@@ -67,10 +66,9 @@ heat_diffusion_source_setup(
 
 void
 heat_diffusion_source_destroy(
-	struct Source* self
+	Source* self
 ) {
-	struct HeatDiffusionData* data =
-		(struct HeatDiffusionData*)self->data;
+	HeatDiffusionData* data = (HeatDiffusionData*)self->data;
 
 	Matrix_destroy(&(data->U));
 	Matrix_destroy(&(data->U_tmp));
@@ -80,10 +78,9 @@ heat_diffusion_source_destroy(
 
 void
 heat_diffusion_source_update(
-	struct Source* self	
+	Source* self	
 ) {
-	struct HeatDiffusionData* data =
-		(struct HeatDiffusionData*)self->data;
+	HeatDiffusionData* data = (HeatDiffusionData*)self->data;
 
 	// Diffusion operator on U
 	Matrix_rowwise_correlation(
@@ -108,11 +105,10 @@ heat_diffusion_source_update(
 
 void
 heat_diffusion_source_handle_event(
-	struct Source* self,
+	Source* self,
 	const Event* event
 ) {
-	struct HeatDiffusionData* data =
-		(struct HeatDiffusionData*)self->data;
+	HeatDiffusionData* data = (HeatDiffusionData*)self->data;
 
 	switch(event->type) {
 		case EventType_MouseMotion:
@@ -131,10 +127,9 @@ heat_diffusion_source_handle_event(
 
 const struct Matrix*
 heat_diffusion_source_get(
-	const struct Source* self	
+	const Source* self	
 ) {
-	const struct HeatDiffusionData* data =
-		(const struct HeatDiffusionData*)self->data;
+	const HeatDiffusionData* data = (const HeatDiffusionData*)self->data;
 	
 	return &(data->U);
 }
@@ -152,15 +147,15 @@ heat_diffusion_source_delegate = {
 
 
 
-struct Source*
+Source*
 heat_diffusion_source_new() {
 	// Allocation
-	struct Source* ret = source_allocate();
+	Source* ret = source_allocate();
 	if (!ret)
 		return ret;
 
-	struct HeatDiffusionData* data =
-		(struct HeatDiffusionData*)malloc(sizeof(struct HeatDiffusionData));
+	HeatDiffusionData* data =
+		(HeatDiffusionData*)malloc(sizeof(HeatDiffusionData));
 
 	// Delegate setup
 	ret->data = data;

@@ -6,49 +6,50 @@
 #include "matrix.h"
 
 
-struct Source;
+struct s_Source;
+typedef struct s_Source Source;
 
 typedef struct {
 	const char* name;
 
 	int (*setup)(
-		struct Source*,
+		Source*,
 		int width,
 		int height
 	);
 
 	void (*destroy)(
-		struct Source*
+		Source*
 	);
 
 	void (*update)(
-		struct Source*
+		Source*
 	);
 
 	void (*handle_event)(
-		struct Source*,
+		Source*,
 		const Event* event	
 	);
 
 	const struct Matrix* (*get)(
-		const struct Source*
+		const Source*
 	);
 } SourceDelegate;
 
 
-struct Source {
+struct s_Source {
 	void* data;
 	const SourceDelegate* delegate;
-}; // struct Source
+}; // struct s_Source
 
 
-extern struct Source*
+extern Source*
 source_allocate();
 
 
 extern int
 source_setup(
-	struct Source* self,
+	Source* self,
 	int width,
 	int height
 );
@@ -56,26 +57,26 @@ source_setup(
 
 extern void
 source_destroy(
-	struct Source* self
+	Source* self
 );
 
 
 extern void
 source_update(
-	struct Source* self
+	Source* self
 );
 
 
 extern void
 source_handle_event(
-	struct Source* self,
+	Source* self,
 	const Event* event
 );
 
 
 extern const struct Matrix*
 source_get(
-	struct Source* self
+	Source* self
 );
 
 

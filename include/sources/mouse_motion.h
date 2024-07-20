@@ -4,7 +4,7 @@
 #include "source.h"
 
 
-extern struct Source*
+extern Source*
 mouse_motion_source_new();
 
 

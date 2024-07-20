@@ -2,15 +2,15 @@
 #include "source.h"
 
 
-struct Source*
+Source*
 source_allocate() {
-	return (struct Source*)malloc(sizeof(struct Source));
+	return (Source*)malloc(sizeof(Source));
 }
 
 
 int
 source_setup(
-	struct Source* self,
+	Source* self,
 	int width,
 	int height
 ) {
@@ -25,7 +25,7 @@ source_setup(
 
 void
 source_destroy(
-	struct Source* self
+	Source* self
 ) {
 	assert(self != 0);
 	assert(self->delegate != 0);
@@ -36,7 +36,7 @@ source_destroy(
 
 void
 source_update(
-	struct Source* self
+	Source* self
 ) {
 	assert(self != 0);
 	assert(self->delegate != 0);
@@ -47,7 +47,7 @@ source_update(
 
 void
 source_handle_event(
-	struct Source* self,
+	Source* self,
 	const Event* event
 ) {
 	assert(self != 0);
@@ -60,7 +60,7 @@ source_handle_event(
 
 const struct Matrix*
 source_get(
-	struct Source* self
+	Source* self
 ) {
 	assert(self != 0);
 	assert(self->delegate != 0);

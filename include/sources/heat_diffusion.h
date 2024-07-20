@@ -4,7 +4,7 @@
 #include "source.h"
 
 
-extern struct Source*
+extern Source*
 heat_diffusion_source_new();
 
 

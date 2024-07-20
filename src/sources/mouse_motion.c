@@ -1,20 +1,19 @@
 #include "sources/mouse_motion.h"
 
 
-struct MouseMotionData {
+typedef struct {
 	struct Matrix U;
-};
+} MouseMotionData;
 
 
 
 int
 mouse_motion_source_setup(
-	struct Source* self,
+	Source* self,
 	int width,
 	int height
 ) {
-	struct MouseMotionData* data =
-		(struct MouseMotionData*)self->data;
+	MouseMotionData* data = (MouseMotionData*)self->data;
 
 	// Setup the accumulator matrix
 	Matrix_init(&(data->U), height, width);
@@ -27,10 +26,10 @@ mouse_motion_source_setup(
 
 void
 mouse_motion_source_destroy(
-	struct Source* self
+	Source* self
 ) {
-	struct MouseMotionData* data =
-		(struct MouseMotionData*)self->data;
+	MouseMotionData* data =
+		(MouseMotionData*)self->data;
 
 	Matrix_destroy(&(data->U));
 }
@@ -38,10 +37,9 @@ mouse_motion_source_destroy(
 
 void
 mouse_motion_source_update(
-	struct Source* self	
+	Source* self	
 ) {
-	struct MouseMotionData* data =
-		(struct MouseMotionData*)self->data;
+	MouseMotionData* data = (MouseMotionData*)self->data;
 
 	Matrix_fill(&(data->U), (real_t)0);
 }
@@ -49,11 +47,10 @@ mouse_motion_source_update(
 
 void
 mouse_motion_source_handle_event(
-	struct Source* self,
+	Source* self,
 	const Event* event
 ) {
-	struct MouseMotionData* data =
-		(struct MouseMotionData*)self->data;
+	MouseMotionData* data = (MouseMotionData*)self->data;
 
 	switch(event->type) {
 		case EventType_MouseMotion:
@@ -72,10 +69,9 @@ mouse_motion_source_handle_event(
 
 const struct Matrix*
 mouse_motion_source_get(
-	const struct Source* self	
+	const Source* self	
 ) {
-	const struct MouseMotionData* data =
-		(const struct MouseMotionData*)self->data;
+	const MouseMotionData* data = (const MouseMotionData*)self->data;
 	
 	return &(data->U);
 }
@@ -93,15 +89,14 @@ mouse_motion_source_delegate = {
 
 
 
-struct Source*
+Source*
 mouse_motion_source_new() {
 	// Allocation
-	struct Source* ret = source_allocate();
+	Source* ret = source_allocate();
 	if (!ret)
 		return ret;
 
-	struct MouseMotionData* data =
-		(struct MouseMotionData*)malloc(sizeof(struct MouseMotionData));
+	MouseMotionData* data = (MouseMotionData*)malloc(sizeof(MouseMotionData));
 
 	// Delegate setup
 	ret->data = data;

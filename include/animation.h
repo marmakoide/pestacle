@@ -9,7 +9,7 @@
 
 
 struct Animation {
-	struct Source* source;
+	Source* source;
 	struct Renderer* renderer;
 }; // struct Animation
 
