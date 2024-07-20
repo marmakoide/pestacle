@@ -18,6 +18,7 @@ $(BUILD_DIR)/renderer.o \
 $(BUILD_DIR)/renderers/gradient.o \
 $(BUILD_DIR)/renderers/linear_blend.o \
 $(BUILD_DIR)/sources/heat_diffusion.o \
+$(BUILD_DIR)/sources/mouse_motion.o \
 $(BUILD_DIR)/animation.o \
 $(BUILD_DIR)/main.o
 	$(CC) -o $@ $^ $(LIBS)
