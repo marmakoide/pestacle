@@ -224,8 +224,6 @@ main(int argc, char* argv[]) {
 
 	// Free ressources
 termination:
-	animation_destroy(&animation);
-
 	if (animation_state_mutex)
 		SDL_DestroyMutex(animation_state_mutex);
 
@@ -234,6 +232,8 @@ termination:
 
 	if (framebuffer_update_timer)
 		SDL_RemoveTimer(framebuffer_update_timer);
+
+	animation_destroy(&animation);
 	
 	if (framebuffer_rgb24)
 		SDL_FreeSurface(framebuffer_rgb24);
