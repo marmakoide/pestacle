@@ -3,7 +3,7 @@
 
 int
 gradient_renderer_setup(
-	struct Renderer* self,
+	Renderer* self,
 	int width,
 	int height
 ) {
@@ -13,15 +13,13 @@ gradient_renderer_setup(
 
 void
 gradient_renderer_destroy(
-	struct Renderer* self
-) {
-
-}
+	Renderer* self
+) { }
 
 
 void
 gradient_renderer_render(
-	struct Renderer* self,
+	Renderer* self,
 	const struct Matrix* src,
 	SDL_Surface* dst
 ) {
@@ -49,10 +47,10 @@ gradient_renderer_delegate = {
 
 
 
-struct Renderer*
+Renderer*
 gradient_renderer_new() {
 	// Allocation
-	struct Renderer* ret = renderer_allocate();
+	Renderer* ret = renderer_allocate();
 	if (!ret)
 		return ret;
 

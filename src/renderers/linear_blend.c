@@ -2,23 +2,22 @@
 #include "renderers/gradient.h"
 
 
-struct LinearBlendData {
+typedef struct {
 	const char* picture_path_a;
 	SDL_Surface* picture_a;
 
 	const char* picture_path_b;
 	SDL_Surface* picture_b;
-};
+} LinearBlendData;
 
 
 int
 linear_blend_renderer_setup(
-	struct Renderer* self,
+	Renderer* self,
 	int width,
 	int height
 ) {
-	struct LinearBlendData* data =
-		(struct LinearBlendData*)self->data;
+	LinearBlendData* data = (LinearBlendData*)self->data;
 
 	// Load background picture
 	data->picture_a = load_png(data->picture_path_a);
@@ -36,10 +35,9 @@ linear_blend_renderer_setup(
 
 void
 linear_blend_renderer_destroy(
-	struct Renderer* self
+	Renderer* self
 ) {
-	struct LinearBlendData* data =
-		(struct LinearBlendData*)self->data;
+	LinearBlendData* data = (LinearBlendData*)self->data;
 
 	if (data->picture_a)
 		SDL_FreeSurface(data->picture_a);
@@ -53,12 +51,11 @@ linear_blend_renderer_destroy(
 
 void
 linear_blend_renderer_render(
-	struct Renderer* self,
+	Renderer* self,
 	const struct Matrix* src,
 	SDL_Surface* dst
 ) {
-	struct LinearBlendData* data =
-		(struct LinearBlendData*)self->data;
+	LinearBlendData* data = (LinearBlendData*)self->data;
 
 	const real_t* coeff = src->data;
 	uint8_t* dst_pixel_row = (uint8_t*)dst->pixels;
@@ -90,18 +87,18 @@ linear_blend_renderer_delegate = {
 
 
 
-struct Renderer*
+Renderer*
 linear_blend_renderer_new(
 	const char* picture_path_a,
 	const char* picture_path_b
 ) {
 	// Allocation
-	struct Renderer* ret = renderer_allocate();
+	Renderer* ret = renderer_allocate();
 	if (!ret)
 		return ret;
 
-	struct LinearBlendData* data =
-		(struct LinearBlendData*)malloc(sizeof(struct LinearBlendData));
+	LinearBlendData* data =
+		(LinearBlendData*)malloc(sizeof(LinearBlendData));
 
 	data->picture_a = 0;
 	data->picture_path_a = picture_path_a;

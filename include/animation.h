@@ -2,15 +2,15 @@
 #define PESTACLE_ANIMATION_H
 
 #include <SDL.h>
-#include <vector.h>
-#include <matrix.h>
+#include "vector.h"
+#include "matrix.h"
 #include "source.h"
 #include "renderer.h"
 
 
 typedef struct {
 	Source* source;
-	struct Renderer* renderer;
+	Renderer* renderer;
 } Animation;
 
 

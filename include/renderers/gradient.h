@@ -4,7 +4,7 @@
 #include "renderer.h"
 
 
-extern struct Renderer*
+extern Renderer*
 gradient_renderer_new();
 
 

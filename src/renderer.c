@@ -2,16 +2,16 @@
 #include "renderer.h"
 
 
-struct Renderer*
+Renderer*
 renderer_allocate() {
-	return (struct Renderer*)malloc(sizeof(struct Renderer));
+	return (Renderer*)malloc(sizeof(Renderer));
 }
 
 
 
 int
 renderer_setup(
-	struct Renderer* self,
+	Renderer* self,
 	int width,
 	int height
 ) {
@@ -26,7 +26,7 @@ renderer_setup(
 
 void
 renderer_destroy(
-	struct Renderer* self
+	Renderer* self
 ) {
 	assert(self != 0);
 	assert(self->delegate != 0);
@@ -37,7 +37,7 @@ renderer_destroy(
 
 void
 renderer_render(
-	struct Renderer* self,
+	Renderer* self,
 	const struct Matrix* src,
 	SDL_Surface* dst
 ) {

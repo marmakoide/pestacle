@@ -10,42 +10,44 @@
  */
 
 
-struct Renderer;
+struct s_Renderer;
+typedef struct s_Renderer Renderer;
+
 
 typedef struct {
 	const char* name;
 
 	int (*setup)(
-		struct Renderer*,
+		Renderer*,
 		int width,
 		int height
 	);
 
 	void (*destroy)(
-		struct Renderer*
+		Renderer*
 	);
 
 	void (*render)(
-		struct Renderer*,
+		Renderer*,
 		const struct Matrix* src,
 		SDL_Surface* dst
 	);
 } RendererDelegate;
 
 
-struct Renderer {
+struct s_Renderer {
 	void* data;
 	const RendererDelegate* delegate;
-}; // struct Renderer
+}; // struct s_Renderer
 
 
-extern struct Renderer*
+extern Renderer*
 renderer_allocate();
 
 
 extern int
 renderer_setup(
-	struct Renderer* self,
+	Renderer* self,
 	int width,
 	int height
 );
@@ -53,13 +55,13 @@ renderer_setup(
 
 extern void
 renderer_destroy(
-	struct Renderer* self
+	Renderer* self
 );
 
 
 extern void
 renderer_render(
-	struct Renderer* self,
+	Renderer* self,
 	const struct Matrix* src,
 	SDL_Surface* dst
 );

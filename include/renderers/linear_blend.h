@@ -4,7 +4,7 @@
 #include "renderer.h"
 
 
-extern struct Renderer*
+extern Renderer*
 linear_blend_renderer_new(
 	const char* picture_path_a,
 	const char* picture_path_b
