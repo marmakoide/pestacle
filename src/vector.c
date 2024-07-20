@@ -5,7 +5,7 @@
 
 void
 Vector_init(
-	struct Vector* self,
+	Vector* self,
 	size_t len
 ) {
 	assert(self != 0);
@@ -17,7 +17,7 @@ Vector_init(
 
 void
 Vector_destroy(
-	struct Vector* self
+	Vector* self
 ) {
 	assert(self != 0);
 	assert(self->data != 0);
@@ -33,7 +33,7 @@ Vector_destroy(
 
 void
 Vector_print(
-	const struct Vector* self,
+	const Vector* self,
 	FILE* f,
 	const char* format
 ) {
@@ -50,7 +50,7 @@ Vector_print(
 
 void
 Vector_set_coeff(
-	struct Vector* self,
+	Vector* self,
 	size_t pos,
 	real_t value
 ) {
@@ -64,7 +64,7 @@ Vector_set_coeff(
 
 real_t
 Vector_get_coeff(
-	const struct Vector* self,
+	const Vector* self,
 	size_t pos
 ) {
 	assert(self != 0);
@@ -77,7 +77,7 @@ Vector_get_coeff(
 
 void
 Vector_fill(
-	struct Vector* self,
+	Vector* self,
 	real_t value
 ) {
 	assert(self != 0);
@@ -93,7 +93,7 @@ Vector_fill(
 
 void
 Vector_arange(
-	struct Vector* self,
+	Vector* self,
 	real_t start,
 	real_t step
 ) {
@@ -111,7 +111,7 @@ Vector_arange(
 
 void
 Vector_scale(
-	struct Vector* self,
+	Vector* self,
 	real_t value
 ) {
 	assert(self != 0);
@@ -127,7 +127,7 @@ Vector_scale(
 
 real_t
 Vector_sum(
-	const struct Vector* self
+	const Vector* self
 ) {
 	assert(self != 0);
 	assert(self->data != 0);
@@ -141,8 +141,8 @@ Vector_sum(
 
 real_t
 Vector_dot(
-	const struct Vector* self,
-	const struct Vector* other
+	const Vector* self,
+	const Vector* other
 ) {
 	assert(self != 0);
 	assert(self->data != 0);
@@ -160,8 +160,8 @@ Vector_dot(
 
 void
 Vector_add(
-	struct Vector* self,
-	const struct Vector* in
+	Vector* self,
+	const Vector* in
 ) {
 	assert(self != 0);
 	assert(self->data != 0);
@@ -179,8 +179,8 @@ Vector_add(
 
 void
 Vector_scaled_add(
-	struct Vector* self,
-	const struct Vector* in,
+	Vector* self,
+	const Vector* in,
 	real_t value
 ) {
 	assert(self != 0);
@@ -200,9 +200,9 @@ Vector_scaled_add(
 
 void
 Vector_correlation(
-	const struct Vector* self,
-	const struct Vector* kernel,
-	struct Vector* out
+	const Vector* self,
+	const Vector* kernel,
+	Vector* out
 ) {
 	assert(self != 0);
 	assert(self->data != 0);

@@ -84,7 +84,7 @@ Matrix_scaled_add(
 extern void
 Matrix_rowwise_correlation(
 	const struct Matrix* self,
-	const struct Vector* kernel,
+	const Vector* kernel,
 	struct Matrix* out
 );
 
@@ -92,7 +92,7 @@ Matrix_rowwise_correlation(
 void
 Matrix_colwise_correlation(
 	const struct Matrix* self,
-	const struct Vector* kernel,
+	const Vector* kernel,
 	struct Matrix* out
 );
 

@@ -174,7 +174,7 @@ Matrix_scaled_add(
 void
 Matrix_rowwise_correlation(
 	const struct Matrix* self,
-	const struct Vector* kernel,
+	const Vector* kernel,
 	struct Matrix* out
 ) {
 	assert(self != 0);
@@ -202,7 +202,7 @@ Matrix_rowwise_correlation(
 void
 Matrix_colwise_correlation(
 	const struct Matrix* self,
-	const struct Vector* kernel,
+	const Vector* kernel,
 	struct Matrix* out
 ) {
 	assert(self != 0);

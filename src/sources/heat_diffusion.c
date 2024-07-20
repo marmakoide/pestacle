@@ -8,7 +8,7 @@ typedef struct {
 
 	struct Matrix U;
 	struct Matrix U_tmp;
-	struct Vector diff_kernel;
+	Vector diff_kernel;
 } HeatDiffusionData;
 
 
