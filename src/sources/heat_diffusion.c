@@ -2,9 +2,6 @@
 
 
 struct HeatDiffusionData {
-	int width;
-	int height;
-
 	real_t dt;
 	real_t diffusion_coeff;
 	real_t decay_coeff;
@@ -25,19 +22,16 @@ heat_diffusion_source_setup(
 	struct HeatDiffusionData* data =
 		(struct HeatDiffusionData*)self->data;
 
-	data->width = width;
-	data->height = height;
-
 	//  Animation params and variables
 	data->dt = 1e-2f;
 	data->diffusion_coeff = 1e-2f;
 	data->decay_coeff = 1e-2f;
 
 	Matrix_init(&(data->U), height, width);
-	Matrix_fill(&(data->U), 0.f);
+	Matrix_fill(&(data->U), (real_t)0);
 
 	Matrix_init(&(data->U_tmp), height, width);
-	Matrix_fill(&(data->U_tmp), 0.f);
+	Matrix_fill(&(data->U_tmp), (real_t)0);
 
 	/*
 	Vector_init(&(self->diff_kernel), 3);
@@ -64,7 +58,7 @@ heat_diffusion_source_setup(
 	Vector_set_coeff(&(data->diff_kernel), 5,  6.f);
 	Vector_set_coeff(&(data->diff_kernel), 6,  1.f);
 
-	Vector_scale(&(data->diff_kernel), 1. / Vector_sum(&data->diff_kernel));
+	Vector_scale(&(data->diff_kernel), 1.f / Vector_sum(&data->diff_kernel));
 
 	// Job done
 	return 1;
@@ -107,7 +101,7 @@ heat_diffusion_source_update(
 	// Apply decay
 	Matrix_scale(
 		&(data->U),
-		1.f - data->decay_coeff
+		((real_t)1) - data->decay_coeff
 	);
 }
 
@@ -126,7 +120,7 @@ heat_diffusion_source_handle_event(
 				&(data->U),
 				(size_t)floorf(event->mouse_motion.y),
 				(size_t)floorf(event->mouse_motion.x),
-				32.f);
+				(real_t)32);
 			break;
 
 		default:
