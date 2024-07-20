@@ -40,7 +40,7 @@ animation_state_update_callback(Uint32 interval, void* param) {
 
 static Uint32
 framebuffer_update_callback(Uint32 interval, void* param) {
-	struct Display* display = (struct Display*)param;
+	Display* display = (Display*)param;
 
 	// Render
 	SDL_LockMutex(animation_state_mutex);
@@ -76,7 +76,7 @@ main(int argc, char* argv[]) {
 	}
 
 	// Initialize animation
-	struct Display display;
+	Display display;
 
 	display_init(
 		&display,

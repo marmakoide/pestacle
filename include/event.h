@@ -5,19 +5,19 @@
 #include "array_ops.h"
 
 
-struct Display {
+typedef struct {
 	uint32_t physical_width;
 	uint32_t physical_height;
 	uint32_t emulated_width;
 	uint32_t emulated_height;
 	uint32_t scaling_ratio_inv;
 	SDL_Rect visible_area;
-}; // struct Display
+} Display;
 
 
 extern void
 display_init(
-	struct Display* display,
+	Display* display,
 	uint32_t physical_width,
 	uint32_t physical_height,
 	uint32_t emulated_width,
@@ -60,12 +60,12 @@ typedef union {
 	enum EventType type;
 	struct MouseButtonEvent mouse_button;
 	struct MouseMotionEvent mouse_motion;
-} Event; // union Event
+} Event;
 
 
 extern int
 cast_mouse_button_event(
-	const struct Display* display,
+	const Display* display,
 	const SDL_Event* src,
 	Event* dst
 );
@@ -73,7 +73,7 @@ cast_mouse_button_event(
 
 extern int
 cast_mouse_motion_event(
-	const struct Display* display,
+	const Display* display,
 	const SDL_Event* src,
 	Event* dst
 );

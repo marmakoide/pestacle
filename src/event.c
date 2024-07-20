@@ -4,7 +4,7 @@
 
 void
 display_init(
-	struct Display* self,
+	Display* self,
 	uint32_t physical_width,
 	uint32_t physical_height,
 	uint32_t emulated_width,
@@ -51,7 +51,7 @@ point_in_rect(
 
 int
 cast_mouse_button_event(
-	const struct Display* display,
+	const Display* display,
 	const SDL_Event* src,
 	Event* dst
 ) {	
@@ -89,7 +89,7 @@ cast_mouse_button_event(
 
 int
 cast_mouse_motion_event(
-	const struct Display* display,
+	const Display* display,
 	const SDL_Event* src,
 	Event* dst
 ) {
