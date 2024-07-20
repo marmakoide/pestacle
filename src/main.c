@@ -23,7 +23,7 @@ static SDL_Surface* framebuffer_native = 0;
 
 static SDL_mutex* animation_state_mutex = 0;
 
-struct Animation animation;
+Animation animation;
 
 
 static Uint32

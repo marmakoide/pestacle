@@ -8,15 +8,15 @@
 #include "renderer.h"
 
 
-struct Animation {
+typedef struct {
 	Source* source;
 	struct Renderer* renderer;
-}; // struct Animation
+} Animation;
 
 
 extern int
 animation_init(
-	struct Animation* self,
+	Animation* self,
 	int screen_width,
 	int screen_height
 );
@@ -24,27 +24,27 @@ animation_init(
 
 extern void
 animation_destroy(
-	struct Animation* self
+	Animation* self
 );
 
 
 extern void
 animation_handle_event(
-	struct Animation* self,
+	Animation* self,
 	const Event* event
 );
 
 
 extern void
 animation_render(
-	const struct Animation* self,
+	const Animation* self,
 	SDL_Surface* surface
 );
 
 
 extern void
 animation_update(
-	struct Animation* self
+	Animation* self
 );
 
 
