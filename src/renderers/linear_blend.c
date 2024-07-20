@@ -80,7 +80,7 @@ linear_blend_renderer_render(
 }
 
 
-static const struct RendererDelegate
+static const RendererDelegate
 linear_blend_renderer_delegate = {
 	"linear-blend-renderer",
 	linear_blend_renderer_setup,

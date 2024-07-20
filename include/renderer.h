@@ -12,7 +12,7 @@
 
 struct Renderer;
 
-struct RendererDelegate {
+typedef struct {
 	const char* name;
 
 	int (*setup)(
@@ -30,12 +30,12 @@ struct RendererDelegate {
 		const struct Matrix* src,
 		SDL_Surface* dst
 	);
-}; // struct RendererDelegate
+} RendererDelegate;
 
 
 struct Renderer {
 	void* data;
-	const struct RendererDelegate* delegate;
+	const RendererDelegate* delegate;
 }; // struct Renderer
 
 

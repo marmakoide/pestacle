@@ -39,7 +39,7 @@ gradient_renderer_render(
 }
 
 
-static const struct RendererDelegate
+static const RendererDelegate
 gradient_renderer_delegate = {
 	"gradient-renderer",
 	gradient_renderer_setup,
