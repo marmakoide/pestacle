@@ -6,8 +6,8 @@ typedef struct {
 	real_t diffusion_coeff;
 	real_t decay_coeff;
 
-	struct Matrix U;
-	struct Matrix U_tmp;
+	Matrix U;
+	Matrix U_tmp;
 	Vector diff_kernel;
 } HeatDiffusionData;
 
@@ -125,7 +125,7 @@ heat_diffusion_source_handle_event(
 }
 
 
-const struct Matrix*
+const Matrix*
 heat_diffusion_source_get(
 	const Source* self	
 ) {

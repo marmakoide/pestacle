@@ -38,7 +38,7 @@ renderer_destroy(
 void
 renderer_render(
 	Renderer* self,
-	const struct Matrix* src,
+	const Matrix* src,
 	SDL_Surface* dst
 ) {
 	assert(self != 0);

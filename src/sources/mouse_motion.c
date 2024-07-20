@@ -2,7 +2,7 @@
 
 
 typedef struct {
-	struct Matrix U;
+	Matrix U;
 } MouseMotionData;
 
 
@@ -67,7 +67,7 @@ mouse_motion_source_handle_event(
 }
 
 
-const struct Matrix*
+const Matrix*
 mouse_motion_source_get(
 	const Source* self	
 ) {

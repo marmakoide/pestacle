@@ -58,7 +58,7 @@ source_handle_event(
 }
 
 
-const struct Matrix*
+const Matrix*
 source_get(
 	Source* self
 ) {

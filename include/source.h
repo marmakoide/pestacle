@@ -31,7 +31,7 @@ typedef struct {
 		const Event* event	
 	);
 
-	const struct Matrix* (*get)(
+	const Matrix* (*get)(
 		const Source*
 	);
 } SourceDelegate;
@@ -74,7 +74,7 @@ source_handle_event(
 );
 
 
-extern const struct Matrix*
+extern const Matrix*
 source_get(
 	Source* self
 );

@@ -20,7 +20,7 @@ gradient_renderer_destroy(
 void
 gradient_renderer_render(
 	Renderer* self,
-	const struct Matrix* src,
+	const Matrix* src,
 	SDL_Surface* dst
 ) {
 	const real_t* coeff = src->data;

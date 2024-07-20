@@ -29,7 +29,7 @@ typedef struct {
 
 	void (*render)(
 		Renderer*,
-		const struct Matrix* src,
+		const Matrix* src,
 		SDL_Surface* dst
 	);
 } RendererDelegate;
@@ -62,7 +62,7 @@ renderer_destroy(
 extern void
 renderer_render(
 	Renderer* self,
-	const struct Matrix* src,
+	const Matrix* src,
 	SDL_Surface* dst
 );
 

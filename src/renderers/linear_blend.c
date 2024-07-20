@@ -52,7 +52,7 @@ linear_blend_renderer_destroy(
 void
 linear_blend_renderer_render(
 	Renderer* self,
-	const struct Matrix* src,
+	const Matrix* src,
 	SDL_Surface* dst
 ) {
 	LinearBlendData* data = (LinearBlendData*)self->data;

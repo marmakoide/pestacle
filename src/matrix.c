@@ -5,7 +5,7 @@
 
 void
 Matrix_init(
-	struct Matrix* self,
+	Matrix* self,
 	size_t row_count,
 	size_t col_count
 ) {
@@ -20,7 +20,7 @@ Matrix_init(
 
 void
 Matrix_destroy(
-	struct Matrix* self
+	Matrix* self
 ) {
 	assert(self != 0);
 	assert(self->data != 0);
@@ -38,7 +38,7 @@ Matrix_destroy(
 
 void
 Matrix_print(
-	const struct Matrix* self,
+	const Matrix* self,
 	FILE* f,
 	const char* format
 ) {
@@ -68,7 +68,7 @@ Matrix_print(
 
 void
 Matrix_set_coeff(
-	struct Matrix* self,
+	Matrix* self,
 	size_t row,
 	size_t col,
 	real_t value
@@ -84,7 +84,7 @@ Matrix_set_coeff(
 
 real_t
 Matrix_get_coeff(
-	const struct Matrix* self,
+	const Matrix* self,
 	size_t row,
 	size_t col
 ) {
@@ -99,7 +99,7 @@ Matrix_get_coeff(
 
 void
 Matrix_fill(
-	struct Matrix* self,
+	Matrix* self,
 	real_t value
 ) {
 	assert(self != 0);
@@ -115,7 +115,7 @@ Matrix_fill(
 
 void
 Matrix_scale(
-	struct Matrix* self,
+	Matrix* self,
 	real_t value
 ) {
 	assert(self != 0);
@@ -131,8 +131,8 @@ Matrix_scale(
 
 void
 Matrix_add(
-	struct Matrix* self,
-	const struct Matrix* in
+	Matrix* self,
+	const Matrix* in
 ) {
 	assert(self != 0);
 	assert(self->data != 0);
@@ -151,8 +151,8 @@ Matrix_add(
 
 void
 Matrix_scaled_add(
-	struct Matrix* self,
-	const struct Matrix* in,
+	Matrix* self,
+	const Matrix* in,
 	real_t value
 ) {
 	assert(self != 0);
@@ -173,9 +173,9 @@ Matrix_scaled_add(
 
 void
 Matrix_rowwise_correlation(
-	const struct Matrix* self,
+	const Matrix* self,
 	const Vector* kernel,
-	struct Matrix* out
+	Matrix* out
 ) {
 	assert(self != 0);
 	assert(self->data != 0);
@@ -201,9 +201,9 @@ Matrix_rowwise_correlation(
 
 void
 Matrix_colwise_correlation(
-	const struct Matrix* self,
+	const Matrix* self,
 	const Vector* kernel,
-	struct Matrix* out
+	Matrix* out
 ) {
 	assert(self != 0);
 	assert(self->data != 0);
