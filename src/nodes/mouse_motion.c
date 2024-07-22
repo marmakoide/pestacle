@@ -95,10 +95,11 @@ static void
 mouse_motion_node_destroy(
 	Node* self
 ) {
-	MouseMotionData* data =
-		(MouseMotionData*)self->data;
+	MouseMotionData* data = (MouseMotionData*)self->data;
 
 	Matrix_destroy(&(data->U));
+
+	free(data);
 }
 
 

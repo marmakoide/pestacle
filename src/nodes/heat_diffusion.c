@@ -131,6 +131,8 @@ heat_diffusion_node_destroy(
 	Matrix_destroy(&(data->U));
 	Matrix_destroy(&(data->U_tmp));
 	Vector_destroy(&(data->diff_kernel));
+
+	free(data);
 }
 
 
