@@ -69,7 +69,7 @@ mouse_motion_node_delegate = {
 // --- Implementation ---------------------------------------------------------
 
 typedef struct {
-	Matrix U;
+	Matrix accumulator;
 } MouseMotionData;
 
 
@@ -88,8 +88,8 @@ mouse_motion_node_setup(
 		return 0;
 
 	// Setup the accumulator matrix
-	Matrix_init(&(data->U), height, width);
-	Matrix_fill(&(data->U), (real_t)0);
+	Matrix_init(&(data->accumulator), height, width);
+	Matrix_fill(&(data->accumulator), (real_t)0);
 
 	// Job done
 	self->data = data;
@@ -103,7 +103,7 @@ mouse_motion_node_destroy(
 ) {
 	MouseMotionData* data = (MouseMotionData*)self->data;
 
-	Matrix_destroy(&(data->U));
+	Matrix_destroy(&(data->accumulator));
 
 	free(data);
 }
@@ -115,7 +115,7 @@ mouse_motion_node_update(
 ) {
 	MouseMotionData* data = (MouseMotionData*)self->data;
 
-	Matrix_fill(&(data->U), (real_t)0);
+	Matrix_fill(&(data->accumulator), (real_t)0);
 }
 
 
@@ -129,7 +129,7 @@ mouse_motion_node_handle_event(
 	switch(event->type) {
 		case EventType_MouseMotion:
 			Matrix_set_coeff(
-				&(data->U),
+				&(data->accumulator),
 				(size_t)floorf(event->mouse_motion.y),
 				(size_t)floorf(event->mouse_motion.x),
 				self->parameters[VALUE_PARAMETER].value
@@ -148,5 +148,5 @@ mouse_motion_node_get(
 ) {
 	const MouseMotionData* data = (const MouseMotionData*)self->data;
 	
-	return &(data->U);
+	return &(data->accumulator);
 }
