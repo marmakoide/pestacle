@@ -1,13 +1,14 @@
 #include <math.h>
 #include <stdlib.h>
 #include "array_ops.h"
+#include "memory.h"
 
 
 real_t*
 array_ops_allocate(
 	size_t len
 ) {
-	return (real_t*)malloc(sizeof(real_t) * len);
+	return (real_t*)checked_malloc(sizeof(real_t) * len);
 }
 
 

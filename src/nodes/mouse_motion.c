@@ -1,4 +1,5 @@
 #include "nodes/mouse_motion.h"
+#include "memory.h"
 
 
 // --- Interface --------------------------------------------------------------
@@ -82,7 +83,7 @@ mouse_motion_node_setup(
 ) {
 	// Allocate
 	MouseMotionData* data =
-		(MouseMotionData*)malloc(sizeof(MouseMotionData));
+		(MouseMotionData*)checked_malloc(sizeof(MouseMotionData));
 
 	if (!data)
 		return 0;

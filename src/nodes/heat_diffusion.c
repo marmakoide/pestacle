@@ -1,4 +1,5 @@
 #include "nodes/heat_diffusion.h"
+#include "memory.h"
 
 
 // --- Interface --------------------------------------------------------------
@@ -84,7 +85,7 @@ heat_diffusion_node_setup(
 ) {
 	// Allocate
 	HeatDiffusionData* data =
-		(HeatDiffusionData*)malloc(sizeof(HeatDiffusionData));
+		(HeatDiffusionData*)checked_malloc(sizeof(HeatDiffusionData));
 
 	if (!data)
 		return 0;

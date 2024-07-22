@@ -1,5 +1,6 @@
 #include <assert.h>
 #include "node.h"
+#include "memory.h"
 
 
 static Node*
@@ -9,9 +10,7 @@ node_new(
 	assert(delegate != 0);
 
 	// Allocate
-	Node* ret = (Node*)malloc(sizeof(Node));
-	if (!ret)
-		return ret;
+	Node* ret = (Node*)checked_malloc(sizeof(Node));
 
 	// Setup
 	ret->data = 0;
@@ -22,7 +21,7 @@ node_new(
 		ret->inputs = 0;
 	else {
 		ret->inputs =
-			(Node**)malloc(delegate->input_count * sizeof(Node*));
+			(Node**)checked_malloc(delegate->input_count * sizeof(Node*));
 
 		Node** input_ptr = ret->inputs;
 		for(size_t i = delegate->input_count; i != 0; --i, ++input_ptr)
@@ -34,7 +33,7 @@ node_new(
 		ret->parameters = 0;
 	else {
 		ret->parameters =
-			(NodeParameter*)malloc(delegate->parameter_count * sizeof(NodeParameter));
+			(NodeParameter*)checked_malloc(delegate->parameter_count * sizeof(NodeParameter));
 
 		NodeParameter* param_ptr = ret->parameters;
 		const NodeParameterDefinition* param_def_ptr = delegate->parameter_defs;
