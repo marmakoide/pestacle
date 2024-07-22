@@ -5,9 +5,7 @@
 
 
 extern Node*
-mouse_motion_node_new(
-	real_t value
-);
+mouse_motion_node_new();
 
 
 

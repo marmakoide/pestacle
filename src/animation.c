@@ -18,16 +18,19 @@ animation_init(
 	self->renderer = 0;
 
 	// Setup the sources
-	self->node_a = mouse_motion_node_new((real_t)32);
+	self->node_a = mouse_motion_node_new();
 	if (!node_setup(self->node_a, screen_width, screen_height))
 		goto failure;
+
+	const String param_name = { "value", 6 };
+	node_get_parameter_by_name(self->node_a, &param_name)->value = (real_t)32;
 
 	self->node_b = heat_diffusion_node_new();
 	if (!node_setup(self->node_b, screen_width, screen_height))
 		goto failure;
 
 	const String slot_name = { "input", 6 };
-	if (!node_set_input_slot(self->node_b, &slot_name, self->node_a)) {
+	if (!node_set_input_slot_by_name(self->node_b, &slot_name, self->node_a)) {
 		SDL_LogError(
 			SDL_LOG_CATEGORY_SYSTEM,
 			"Could not find slot '%s' for '%s' source type\n",

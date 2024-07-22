@@ -19,6 +19,7 @@ node_init(
 	self->data = data;
 	self->delegate = delegate;
 
+	// Setup inputs array
 	if (delegate->input_count == 0)
 		self->inputs = 0;
 	else {
@@ -28,6 +29,19 @@ node_init(
 		Node** input_ptr = self->inputs;
 		for(size_t i = delegate->input_count; i != 0; --i, ++input_ptr)
 			*input_ptr = 0;
+	}
+
+	// Setup parameters array
+	if (delegate->parameter_count == 0)
+		self->parameters = 0;
+	else {
+		self->parameters =
+			(NodeParameter*)malloc(delegate->parameter_count * sizeof(NodeParameter));
+
+		NodeParameter* param_ptr = self->parameters;
+		const NodeParameterDefinition* param_def_ptr = delegate->parameter_defs;
+		for(size_t i = delegate->parameter_count; i != 0; --i, ++param_ptr, ++param_def_ptr)
+			param_ptr->value = param_def_ptr->default_value;
 	}
 }
 
@@ -60,6 +74,7 @@ node_destroy(
 	if (self->delegate->methods.destroy)
 		self->delegate->methods.destroy(self);
 
+	// Deallocate input array
 	if (self->delegate->input_count > 0) {
 		#ifdef DEBUG
 		Node** input_ptr = self->inputs;
@@ -70,6 +85,10 @@ node_destroy(
 		free(self->inputs);
 	}
 
+	// Deallocate parameter array
+	if (self->delegate->parameter_count > 0)
+		free(self->parameters);
+
 	#ifdef DEBUG
 	self->data = 0;
 	self->delegate = 0;
@@ -78,8 +97,29 @@ node_destroy(
 }
 
 
+NodeParameter*
+node_get_parameter_by_name(
+	Node* self,
+	const String* name
+) {
+	assert(self != 0);
+	assert(name != 0);
+	assert(name->data != 0);
+
+	const NodeParameterDefinition* param_def_ptr =
+		self->delegate->parameter_defs;
+
+	for(size_t i = 0; i < self->delegate->parameter_count; ++i, ++param_def_ptr)
+		if (string_equals(name, &(param_def_ptr->name)))
+			return self->parameters + i;
+
+	return 0;
+}
+
+
+
 int
-node_set_input_slot(
+node_set_input_slot_by_name(
 	Node* self,
 	const String* name,
 	Node* other

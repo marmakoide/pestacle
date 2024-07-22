@@ -1,14 +1,80 @@
 #include "nodes/mouse_motion.h"
 
 
+// --- Interface --------------------------------------------------------------
+
+static int
+mouse_motion_node_setup(
+	Node* self,
+	int width,
+	int height
+);
+
+
+static void
+mouse_motion_node_destroy(
+	Node* self
+);
+
+
+static void
+mouse_motion_node_update(
+	Node* self	
+);
+
+
+static void
+mouse_motion_node_handle_event(
+	Node* self,
+	const Event* event
+);
+
+
+static const Matrix*
+mouse_motion_node_get(
+	const Node* self	
+);
+
+
+#define VALUE_PARAMETER 0
+
+static const NodeParameterDefinition
+mouse_motion_parameters[] = {
+	{
+		{ "value", 6 },
+		(real_t)1
+	}
+};
+
+
+static const NodeDelegate
+mouse_motion_node_delegate = {
+	{ "mouse-motion", 13 },
+
+
+	0, 0,
+
+	1, mouse_motion_parameters,
+
+	{
+		mouse_motion_node_setup,
+		mouse_motion_node_destroy,
+		mouse_motion_node_update,
+		mouse_motion_node_handle_event,
+		mouse_motion_node_get
+	},
+};
+
+
+// --- Implementation ---------------------------------------------------------
+
 typedef struct {
 	Matrix U;
-	real_t value;
 } MouseMotionData;
 
 
 
-int
+static int
 mouse_motion_node_setup(
 	Node* self,
 	int width,
@@ -25,7 +91,7 @@ mouse_motion_node_setup(
 }
 
 
-void
+static void
 mouse_motion_node_destroy(
 	Node* self
 ) {
@@ -36,7 +102,7 @@ mouse_motion_node_destroy(
 }
 
 
-void
+static void
 mouse_motion_node_update(
 	Node* self	
 ) {
@@ -46,7 +112,7 @@ mouse_motion_node_update(
 }
 
 
-void
+static void
 mouse_motion_node_handle_event(
 	Node* self,
 	const Event* event
@@ -59,7 +125,7 @@ mouse_motion_node_handle_event(
 				&(data->U),
 				(size_t)floorf(event->mouse_motion.y),
 				(size_t)floorf(event->mouse_motion.x),
-				data->value
+				self->parameters[VALUE_PARAMETER].value
 			);
 			break;
 
@@ -69,9 +135,9 @@ mouse_motion_node_handle_event(
 }
 
 
-const Matrix*
+static const Matrix*
 mouse_motion_node_get(
-	const Node* self	
+	const Node* self
 ) {
 	const MouseMotionData* data = (const MouseMotionData*)self->data;
 	
@@ -79,28 +145,8 @@ mouse_motion_node_get(
 }
 
 
-static const NodeDelegate
-mouse_motion_node_delegate = {
-	{ "mouse-motion", 13 },
-
-
-	0, 0,
-
-	{
-		mouse_motion_node_setup,
-		mouse_motion_node_destroy,
-		mouse_motion_node_update,
-		mouse_motion_node_handle_event,
-		mouse_motion_node_get
-	},
-};
-
-
-
 Node*
-mouse_motion_node_new(
-	real_t value
-) {
+mouse_motion_node_new() {
 	// Allocation
 	Node* ret = node_allocate();
 	if (!ret)
@@ -108,7 +154,6 @@ mouse_motion_node_new(
 
 	MouseMotionData* data =
 		(MouseMotionData*)malloc(sizeof(MouseMotionData));
-	data->value = value;
 
 	// Initialization
 	node_init(ret, &mouse_motion_node_delegate, data);

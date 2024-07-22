@@ -17,6 +17,12 @@ typedef struct {
 
 
 typedef struct {
+	String name;
+	real_t default_value;
+} NodeParameterDefinition;
+
+
+typedef struct {
 	int (*setup)(              // setup method (optional, can be 0)
 		Node*,
 		int width,
@@ -44,16 +50,27 @@ typedef struct {
 
 typedef struct {
 	String name;
+
 	size_t input_count;
 	const NodeInputSlotDefinition* input_defs;
+
+	size_t parameter_count;
+	const NodeParameterDefinition* parameter_defs;
+
 	NodeDelegateMethods methods;
 } NodeDelegate;
+
+
+typedef struct {
+	real_t value;	
+} NodeParameter;
 
 
 struct s_Node {
 	void* data;
 	const NodeDelegate* delegate;
 	Node** inputs;
+	NodeParameter* parameters;
 }; // struct s_Node
 
 
@@ -70,10 +87,17 @@ node_init(
 
 
 extern int
-node_set_input_slot(
+node_set_input_slot_by_name(
 	Node* self,
 	const String* name,
 	Node* other
+);
+
+
+NodeParameter*
+node_get_parameter_by_name(
+	Node* self,
+	const String* name
 );
 
 

@@ -1,11 +1,74 @@
 #include "nodes/heat_diffusion.h"
 
 
-typedef struct {
-	real_t dt;
-	real_t diffusion_coeff;
-	real_t decay_coeff;
+// --- Interface --------------------------------------------------------------
 
+static int
+heat_diffusion_node_setup(
+	Node* self,
+	int width,
+	int height
+);
+
+
+static void
+heat_diffusion_node_destroy(
+	Node* self
+);
+
+
+static void
+heat_diffusion_node_update(
+	Node* self	
+);
+
+
+static const Matrix*
+heat_diffusion_node_get(
+	const Node* self
+);
+
+
+static const NodeInputSlotDefinition
+heat_diffusion_inputs[] = {
+	{
+		{ "input", 6 }
+	}
+};
+
+
+#define DECAY_PARAMETER 0
+
+static const NodeParameterDefinition
+heat_diffusion_parameters[] = {
+	{
+		{ "decay", 6 },
+		1e-2f
+	}
+};
+
+
+static const NodeDelegate
+heat_diffusion_node_delegate = {
+	{ "heat-diffusion", 15 },
+
+	1, heat_diffusion_inputs,
+
+	1, heat_diffusion_parameters,
+
+	{
+		heat_diffusion_node_setup,
+		heat_diffusion_node_destroy,
+		heat_diffusion_node_update,
+		0,
+		heat_diffusion_node_get
+	},
+};
+
+
+// --- Implementation ---------------------------------------------------------
+
+typedef struct {
 	Matrix U;
 	Matrix U_tmp;
 	Vector diff_kernel;
@@ -13,18 +76,13 @@ typedef struct {
 
 
 
-int
+static int
 heat_diffusion_node_setup(
 	Node* self,
 	int width,
 	int height
 ) {
 	HeatDiffusionData* data = (HeatDiffusionData*)self->data;
-
-	//  Animation params and variables
-	data->dt = 1e-2f;
-	data->diffusion_coeff = 1e-2f;
-	data->decay_coeff = 1e-2f;
 
 	Matrix_init(&(data->U), height, width);
 	Matrix_fill(&(data->U), (real_t)0);
@@ -64,7 +122,7 @@ heat_diffusion_node_setup(
 }
 
 
-void
+static void
 heat_diffusion_node_destroy(
 	Node* self
 ) {
@@ -76,11 +134,13 @@ heat_diffusion_node_destroy(
 }
 
 
-void
+static void
 heat_diffusion_node_update(
-	Node* self	
+	Node* self
 ) {
 	HeatDiffusionData* data = (HeatDiffusionData*)self->data;
+
+	real_t decay = self->parameters[DECAY_PARAMETER].value;
 
 	// Update U with input
 	Matrix_max(
@@ -104,43 +164,19 @@ heat_diffusion_node_update(
 	// Apply decay
 	Matrix_scale(
 		&(data->U),
-		((real_t)1) - data->decay_coeff
+		((real_t)1) - decay
 	);
 }
 
 
-const Matrix*
+static const Matrix*
 heat_diffusion_node_get(
-	const Node* self	
+	const Node* self
 ) {
 	const HeatDiffusionData* data = (const HeatDiffusionData*)self->data;
 	
 	return &(data->U);
 }
-
-static const NodeInputSlotDefinition
-heat_diffusion_inputs[] = {
-	{
-		{ "input", 6 }
-	}
-};
-
-
-static const NodeDelegate
-heat_diffusion_node_delegate = {
-	{ "heat-diffusion", 15 },
-
-	1, heat_diffusion_inputs,
-
-	{
-		heat_diffusion_node_setup,
-		heat_diffusion_node_destroy,
-		heat_diffusion_node_update,
-		0,
-		heat_diffusion_node_get
-	},
-};
-
 
 
 Node*
