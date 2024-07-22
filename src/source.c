@@ -43,7 +43,10 @@ source_setup(
 	assert(width > 0);
 	assert(height > 0);
 
-	return self->delegate->setup(self, width, height);
+	if (self->delegate->setup)
+		return self->delegate->setup(self, width, height);
+
+	return 1;
 }
 
 
@@ -54,7 +57,8 @@ source_destroy(
 	assert(self != 0);
 	assert(self->delegate != 0);
 
-	self->delegate->destroy(self);
+	if (self->delegate->destroy)
+		self->delegate->destroy(self);
 
 	if (self->delegate->input_count > 0) {
 		#ifdef DEBUG
@@ -81,7 +85,8 @@ source_update(
 	assert(self != 0);
 	assert(self->delegate != 0);
 
-	self->delegate->update(self);
+	if (self->delegate->update)
+		self->delegate->update(self);
 }
 
 
@@ -94,7 +99,8 @@ source_handle_event(
 	assert(self->delegate != 0);
 	assert(event != 0);
 
-	self->delegate->handle_event(self, event);
+	if (self->delegate->handle_event)
+		self->delegate->handle_event(self, event);
 }
 
 
@@ -104,6 +110,7 @@ source_get(
 ) {
 	assert(self != 0);
 	assert(self->delegate != 0);
+	assert(self->delegate->get != 0);
 
 	return self->delegate->get(self);
 }

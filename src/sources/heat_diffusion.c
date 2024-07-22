@@ -109,13 +109,6 @@ heat_diffusion_source_update(
 }
 
 
-void
-heat_diffusion_source_handle_event(
-	Source* self,
-	const Event* event
-) { }
-
-
 const Matrix*
 heat_diffusion_source_get(
 	const Source* self	
@@ -133,7 +126,7 @@ heat_diffusion_source_delegate = {
 	heat_diffusion_source_setup,
 	heat_diffusion_source_destroy,
 	heat_diffusion_source_update,
-	heat_diffusion_source_handle_event,
+	0,
 	heat_diffusion_source_get
 };
 
