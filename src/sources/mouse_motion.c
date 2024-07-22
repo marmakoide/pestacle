@@ -81,13 +81,18 @@ mouse_motion_source_get(
 
 static const SourceDelegate
 mouse_motion_source_delegate = {
-	"mouse-motion",
-	0,
-	mouse_motion_source_setup,
-	mouse_motion_source_destroy,
-	mouse_motion_source_update,
-	mouse_motion_source_handle_event,
-	mouse_motion_source_get
+	{ "mouse-motion", 13 },
+
+
+	0, 0,
+
+	{
+		mouse_motion_source_setup,
+		mouse_motion_source_destroy,
+		mouse_motion_source_update,
+		mouse_motion_source_handle_event,
+		mouse_motion_source_get
+	},
 };
 
 

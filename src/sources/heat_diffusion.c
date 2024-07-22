@@ -118,16 +118,27 @@ heat_diffusion_source_get(
 	return &(data->U);
 }
 
+static const SourceInputSlotDefinition
+heat_diffusion_inputs[] = {
+	{
+		{ "input", 6 }
+	}
+};
+
 
 static const SourceDelegate
 heat_diffusion_source_delegate = {
-	"heat-diffusion",
-	1,
-	heat_diffusion_source_setup,
-	heat_diffusion_source_destroy,
-	heat_diffusion_source_update,
-	0,
-	heat_diffusion_source_get
+	{ "heat-diffusion", 15 },
+
+	1, heat_diffusion_inputs,
+
+	{
+		heat_diffusion_source_setup,
+		heat_diffusion_source_destroy,
+		heat_diffusion_source_update,
+		0,
+		heat_diffusion_source_get
+	},
 };
 
 

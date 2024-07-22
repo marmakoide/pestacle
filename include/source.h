@@ -4,37 +4,49 @@
 #include <SDL.h>
 #include "event.h"
 #include "matrix.h"
+#include "strings.h"
 
 
 struct s_Source;
 typedef struct s_Source Source;
 
-typedef struct {
-	const char* name;
-	size_t input_count;
 
-	int (*setup)(
+typedef struct {
+	String name;
+} SourceInputSlotDefinition;
+
+
+typedef struct {
+	int (*setup)(              // setup method (optional, can be 0)
 		Source*,
 		int width,
 		int height
 	);
 
-	void (*destroy)(
+	void (*destroy)(           // destroy method (optional, can be 0)
 		Source*
 	);
 
-	void (*update)(
+	void (*update)(            // update method (optional, can be 0)
 		Source*
 	);
 
-	void (*handle_event)(
+	void (*handle_event)(      // handle_event (optional, can be 0)
 		Source*,
 		const Event* event	
 	);
 
-	const Matrix* (*get)(
+	const Matrix* (*get)(      // get method
 		const Source*
 	);
+} SourceDelegateMethods;
+
+
+typedef struct {
+	String name;
+	size_t input_count;
+	const SourceInputSlotDefinition* input_defs;
+	SourceDelegateMethods methods;
 } SourceDelegate;
 
 
@@ -54,6 +66,14 @@ source_init(
 	Source* self,
 	const SourceDelegate* delegate,
 	void* data
+);
+
+
+extern int
+source_set_input_slot(
+	Source* self,
+	const String* name,
+	Source* other
 );
 
 

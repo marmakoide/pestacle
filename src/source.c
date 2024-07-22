@@ -43,8 +43,8 @@ source_setup(
 	assert(width > 0);
 	assert(height > 0);
 
-	if (self->delegate->setup)
-		return self->delegate->setup(self, width, height);
+	if (self->delegate->methods.setup)
+		return self->delegate->methods.setup(self, width, height);
 
 	return 1;
 }
@@ -57,8 +57,8 @@ source_destroy(
 	assert(self != 0);
 	assert(self->delegate != 0);
 
-	if (self->delegate->destroy)
-		self->delegate->destroy(self);
+	if (self->delegate->methods.destroy)
+		self->delegate->methods.destroy(self);
 
 	if (self->delegate->input_count > 0) {
 		#ifdef DEBUG
@@ -78,6 +78,28 @@ source_destroy(
 }
 
 
+int
+source_set_input_slot(
+	Source* self,
+	const String* name,
+	Source* other
+) {
+	assert(self != 0);
+	assert(other != 0);
+	assert(name != 0);
+	assert(name->data != 0);
+
+	const SourceInputSlotDefinition* slot_ptr = self->delegate->input_defs;
+	for(size_t i = 0; i < self->delegate->input_count; ++i, ++slot_ptr)
+		if (string_equals(name, &(slot_ptr->name))) {
+			self->inputs[i] = other;
+			return 1;
+		}
+	
+	return 0;
+}
+
+
 void
 source_update(
 	Source* self
@@ -85,8 +107,8 @@ source_update(
 	assert(self != 0);
 	assert(self->delegate != 0);
 
-	if (self->delegate->update)
-		self->delegate->update(self);
+	if (self->delegate->methods.update)
+		self->delegate->methods.update(self);
 }
 
 
@@ -99,8 +121,8 @@ source_handle_event(
 	assert(self->delegate != 0);
 	assert(event != 0);
 
-	if (self->delegate->handle_event)
-		self->delegate->handle_event(self, event);
+	if (self->delegate->methods.handle_event)
+		self->delegate->methods.handle_event(self, event);
 }
 
 
@@ -110,7 +132,7 @@ source_get(
 ) {
 	assert(self != 0);
 	assert(self->delegate != 0);
-	assert(self->delegate->get != 0);
+	assert(self->delegate->methods.get != 0);
 
-	return self->delegate->get(self);
+	return self->delegate->methods.get(self);
 }

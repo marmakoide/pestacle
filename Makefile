@@ -7,6 +7,7 @@ BUILD_DIR = ./build
 all: $(TARGET)
 
 $(TARGET): \
+$(BUILD_DIR)/strings.o \
 $(BUILD_DIR)/array_ops.o \
 $(BUILD_DIR)/vector.o \
 $(BUILD_DIR)/matrix.o \

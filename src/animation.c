@@ -26,7 +26,16 @@ animation_init(
 	if (!source_setup(self->source_b, screen_width, screen_height))
 		goto failure;
 
-	self->source_b->inputs[0] = self->source_a;
+	const String slot_name = { "input", 6 };
+	if (!source_set_input_slot(self->source_b, &slot_name, self->source_a)) {
+		SDL_LogError(
+			SDL_LOG_CATEGORY_SYSTEM,
+			"Could not find slot '%s' for '%s' source type\n",
+			slot_name.data,
+			self->source_b->delegate->name.data
+		);
+		goto failure;
+	}
 
 	// Setup the renderer
 	//self->renderer = gradient_renderer_new();
@@ -68,9 +77,14 @@ void
 animation_destroy(
 	Animation* self
 ) {
-	source_destroy(self->source_a);
-	source_destroy(self->source_b);
-	renderer_destroy(self->renderer);
+	if (self->source_a)
+		source_destroy(self->source_a);
+
+	if (self->source_b)
+		source_destroy(self->source_b);
+
+	if (self->renderer)
+		renderer_destroy(self->renderer);
 
 	#ifdef DEBUG
 	self->source_a = 0;
