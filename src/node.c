@@ -2,13 +2,7 @@
 #include "node.h"
 
 
-Node*
-node_allocate() {
-	return (Node*)malloc(sizeof(Node));
-}
-
-
-Node*
+static Node*
 node_new(
 	const NodeDelegate* delegate
 ) {
@@ -104,6 +98,28 @@ node_destroy(
 }
 
 
+Node*
+node_create_by_name(
+	const String* name	
+) {
+	assert(name != 0);
+	assert(name->data != 0);
+
+	const NodeDelegate** delegate_ptr = node_delegate_list;
+	for( ; delegate_ptr != 0; ++delegate_ptr)
+		if (string_equals(name, &((*delegate_ptr)->name)))
+			return node_new(*delegate_ptr);
+
+	SDL_LogError(
+		SDL_LOG_CATEGORY_SYSTEM,
+		"Could not find node type '%s'\n",
+		name->data
+	);
+
+	return 0;
+}
+
+
 NodeParameter*
 node_get_parameter_by_name(
 	Node* self,
@@ -119,6 +135,13 @@ node_get_parameter_by_name(
 	for(size_t i = 0; i < self->delegate->parameter_count; ++i, ++param_def_ptr)
 		if (string_equals(name, &(param_def_ptr->name)))
 			return self->parameters + i;
+
+	SDL_LogError(
+		SDL_LOG_CATEGORY_SYSTEM,
+		"Could not find parameter '%s' for '%s' node type\n",
+		name->data,
+		self->delegate->name.data
+	);
 
 	return 0;
 }
@@ -142,7 +165,14 @@ node_set_input_slot_by_name(
 			self->inputs[i] = other;
 			return 1;
 		}
-	
+
+	SDL_LogError(
+		SDL_LOG_CATEGORY_SYSTEM,
+		"Could not find slot '%s' for '%s' node type\n",
+		name->data,
+		self->delegate->name.data
+	);
+
 	return 0;
 }
 

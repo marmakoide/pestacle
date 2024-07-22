@@ -15,6 +15,7 @@ $(BUILD_DIR)/event.o \
 $(BUILD_DIR)/spng.o \
 $(BUILD_DIR)/image.o \
 $(BUILD_DIR)/node.o \
+$(BUILD_DIR)/nodes_list.o \
 $(BUILD_DIR)/renderer.o \
 $(BUILD_DIR)/renderers/gradient.o \
 $(BUILD_DIR)/renderers/linear_blend.o \

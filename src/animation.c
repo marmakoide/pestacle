@@ -1,8 +1,6 @@
 #include "image.h"
 #include "animation.h"
 
-#include "nodes/heat_diffusion.h"
-#include "nodes/mouse_motion.h"
 #include "renderers/gradient.h"
 #include "renderers/linear_blend.h"
 
@@ -17,28 +15,23 @@ animation_init(
 	self->node_b = 0;
 	self->renderer = 0;
 
-	// Setup the sources
-	self->node_a = node_new(&mouse_motion_node_delegate);
+	// Setup the nodes
+	const String node_a_name = { "mouse-motion", 13 };
+	self->node_a = node_create_by_name(&node_a_name);
 	if (!node_setup(self->node_a, screen_width, screen_height))
 		goto failure;
 
 	const String param_name = { "value", 6 };
 	node_get_parameter_by_name(self->node_a, &param_name)->value = (real_t)32;
 
-	self->node_b = node_new(&heat_diffusion_node_delegate);
+	const String node_b_name = { "heat-diffusion", 15 };
+	self->node_b = node_create_by_name(&node_b_name);
 	if (!node_setup(self->node_b, screen_width, screen_height))
 		goto failure;
 
 	const String slot_name = { "input", 6 };
-	if (!node_set_input_slot_by_name(self->node_b, &slot_name, self->node_a)) {
-		SDL_LogError(
-			SDL_LOG_CATEGORY_SYSTEM,
-			"Could not find slot '%s' for '%s' source type\n",
-			slot_name.data,
-			self->node_b->delegate->name.data
-		);
+	if (!node_set_input_slot_by_name(self->node_b, &slot_name, self->node_a))
 		goto failure;
-	}
 
 	// Setup the renderer
 	//self->renderer = gradient_renderer_new();

@@ -61,6 +61,10 @@ typedef struct {
 } NodeDelegate;
 
 
+extern const NodeDelegate*
+node_delegate_list[];
+
+
 typedef struct {
 	real_t value;	
 } NodeParameter;
@@ -75,7 +79,9 @@ struct s_Node {
 
 
 extern Node*
-node_new(const NodeDelegate* delegate);
+node_create_by_name(
+	const String* name
+);
 
 
 extern int
