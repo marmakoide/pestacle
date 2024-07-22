@@ -1,5 +1,5 @@
-#ifndef PESTACLE_SOURCE_H
-#define PESTACLE_SOURCE_H
+#ifndef PESTACLE_NODE_H
+#define PESTACLE_NODE_H
 
 #include <SDL.h>
 #include "event.h"
@@ -7,107 +7,107 @@
 #include "strings.h"
 
 
-struct s_Source;
-typedef struct s_Source Source;
+struct s_Node;
+typedef struct s_Node Node;
 
 
 typedef struct {
 	String name;
-} SourceInputSlotDefinition;
+} NodeInputSlotDefinition;
 
 
 typedef struct {
 	int (*setup)(              // setup method (optional, can be 0)
-		Source*,
+		Node*,
 		int width,
 		int height
 	);
 
 	void (*destroy)(           // destroy method (optional, can be 0)
-		Source*
+		Node*
 	);
 
 	void (*update)(            // update method (optional, can be 0)
-		Source*
+		Node*
 	);
 
 	void (*handle_event)(      // handle_event (optional, can be 0)
-		Source*,
+		Node*,
 		const Event* event	
 	);
 
 	const Matrix* (*get)(      // get method
-		const Source*
+		const Node*
 	);
-} SourceDelegateMethods;
+} NodeDelegateMethods;
 
 
 typedef struct {
 	String name;
 	size_t input_count;
-	const SourceInputSlotDefinition* input_defs;
-	SourceDelegateMethods methods;
-} SourceDelegate;
+	const NodeInputSlotDefinition* input_defs;
+	NodeDelegateMethods methods;
+} NodeDelegate;
 
 
-struct s_Source {
+struct s_Node {
 	void* data;
-	const SourceDelegate* delegate;
-	Source** inputs;
-}; // struct s_Source
+	const NodeDelegate* delegate;
+	Node** inputs;
+}; // struct s_Node
 
 
-extern Source*
-source_allocate();
+extern Node*
+node_allocate();
 
 
 extern void
-source_init(
-	Source* self,
-	const SourceDelegate* delegate,
+node_init(
+	Node* self,
+	const NodeDelegate* delegate,
 	void* data
 );
 
 
 extern int
-source_set_input_slot(
-	Source* self,
+node_set_input_slot(
+	Node* self,
 	const String* name,
-	Source* other
+	Node* other
 );
 
 
 extern int
-source_setup(
-	Source* self,
+node_setup(
+	Node* self,
 	int width,
 	int height
 );
 
 
 extern void
-source_destroy(
-	Source* self
+node_destroy(
+	Node* self
 );
 
 
 extern void
-source_update(
-	Source* self
+node_update(
+	Node* self
 );
 
 
 extern void
-source_handle_event(
-	Source* self,
+node_handle_event(
+	Node* self,
 	const Event* event
 );
 
 
 extern const Matrix*
-source_get(
-	Source* self
+node_get(
+	Node* self
 );
 
 
-#endif /* PESTACLE_SOURCE_H */
+#endif /* PESTACLE_NODE_H */

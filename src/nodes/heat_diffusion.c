@@ -1,4 +1,4 @@
-#include "sources/heat_diffusion.h"
+#include "nodes/heat_diffusion.h"
 
 
 typedef struct {
@@ -14,8 +14,8 @@ typedef struct {
 
 
 int
-heat_diffusion_source_setup(
-	Source* self,
+heat_diffusion_node_setup(
+	Node* self,
 	int width,
 	int height
 ) {
@@ -65,8 +65,8 @@ heat_diffusion_source_setup(
 
 
 void
-heat_diffusion_source_destroy(
-	Source* self
+heat_diffusion_node_destroy(
+	Node* self
 ) {
 	HeatDiffusionData* data = (HeatDiffusionData*)self->data;
 
@@ -77,15 +77,15 @@ heat_diffusion_source_destroy(
 
 
 void
-heat_diffusion_source_update(
-	Source* self	
+heat_diffusion_node_update(
+	Node* self	
 ) {
 	HeatDiffusionData* data = (HeatDiffusionData*)self->data;
 
 	// Update U with input
 	Matrix_max(
 		&(data->U),
-		source_get(self->inputs[0])
+		node_get(self->inputs[0])
 	);
 
 	// Diffusion operator on U
@@ -110,15 +110,15 @@ heat_diffusion_source_update(
 
 
 const Matrix*
-heat_diffusion_source_get(
-	const Source* self	
+heat_diffusion_node_get(
+	const Node* self	
 ) {
 	const HeatDiffusionData* data = (const HeatDiffusionData*)self->data;
 	
 	return &(data->U);
 }
 
-static const SourceInputSlotDefinition
+static const NodeInputSlotDefinition
 heat_diffusion_inputs[] = {
 	{
 		{ "input", 6 }
@@ -126,27 +126,27 @@ heat_diffusion_inputs[] = {
 };
 
 
-static const SourceDelegate
-heat_diffusion_source_delegate = {
+static const NodeDelegate
+heat_diffusion_node_delegate = {
 	{ "heat-diffusion", 15 },
 
 	1, heat_diffusion_inputs,
 
 	{
-		heat_diffusion_source_setup,
-		heat_diffusion_source_destroy,
-		heat_diffusion_source_update,
+		heat_diffusion_node_setup,
+		heat_diffusion_node_destroy,
+		heat_diffusion_node_update,
 		0,
-		heat_diffusion_source_get
+		heat_diffusion_node_get
 	},
 };
 
 
 
-Source*
-heat_diffusion_source_new() {
+Node*
+heat_diffusion_node_new() {
 	// Allocation
-	Source* ret = source_allocate();
+	Node* ret = node_allocate();
 	if (!ret)
 		return ret;
 
@@ -154,7 +154,7 @@ heat_diffusion_source_new() {
 		(HeatDiffusionData*)malloc(sizeof(HeatDiffusionData));
 
 	// Initialisation
-	source_init(ret, &heat_diffusion_source_delegate, data);
+	node_init(ret, &heat_diffusion_node_delegate, data);
 
 	// Job done
 	return ret;

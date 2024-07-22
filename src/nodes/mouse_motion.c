@@ -1,4 +1,4 @@
-#include "sources/mouse_motion.h"
+#include "nodes/mouse_motion.h"
 
 
 typedef struct {
@@ -9,8 +9,8 @@ typedef struct {
 
 
 int
-mouse_motion_source_setup(
-	Source* self,
+mouse_motion_node_setup(
+	Node* self,
 	int width,
 	int height
 ) {
@@ -26,8 +26,8 @@ mouse_motion_source_setup(
 
 
 void
-mouse_motion_source_destroy(
-	Source* self
+mouse_motion_node_destroy(
+	Node* self
 ) {
 	MouseMotionData* data =
 		(MouseMotionData*)self->data;
@@ -37,8 +37,8 @@ mouse_motion_source_destroy(
 
 
 void
-mouse_motion_source_update(
-	Source* self	
+mouse_motion_node_update(
+	Node* self	
 ) {
 	MouseMotionData* data = (MouseMotionData*)self->data;
 
@@ -47,8 +47,8 @@ mouse_motion_source_update(
 
 
 void
-mouse_motion_source_handle_event(
-	Source* self,
+mouse_motion_node_handle_event(
+	Node* self,
 	const Event* event
 ) {
 	MouseMotionData* data = (MouseMotionData*)self->data;
@@ -70,8 +70,8 @@ mouse_motion_source_handle_event(
 
 
 const Matrix*
-mouse_motion_source_get(
-	const Source* self	
+mouse_motion_node_get(
+	const Node* self	
 ) {
 	const MouseMotionData* data = (const MouseMotionData*)self->data;
 	
@@ -79,30 +79,30 @@ mouse_motion_source_get(
 }
 
 
-static const SourceDelegate
-mouse_motion_source_delegate = {
+static const NodeDelegate
+mouse_motion_node_delegate = {
 	{ "mouse-motion", 13 },
 
 
 	0, 0,
 
 	{
-		mouse_motion_source_setup,
-		mouse_motion_source_destroy,
-		mouse_motion_source_update,
-		mouse_motion_source_handle_event,
-		mouse_motion_source_get
+		mouse_motion_node_setup,
+		mouse_motion_node_destroy,
+		mouse_motion_node_update,
+		mouse_motion_node_handle_event,
+		mouse_motion_node_get
 	},
 };
 
 
 
-Source*
-mouse_motion_source_new(
+Node*
+mouse_motion_node_new(
 	real_t value
 ) {
 	// Allocation
-	Source* ret = source_allocate();
+	Node* ret = node_allocate();
 	if (!ret)
 		return ret;
 
@@ -111,7 +111,7 @@ mouse_motion_source_new(
 	data->value = value;
 
 	// Initialization
-	source_init(ret, &mouse_motion_source_delegate, data);
+	node_init(ret, &mouse_motion_node_delegate, data);
 
 	// Job done
 	return ret;

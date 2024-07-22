@@ -4,13 +4,13 @@
 #include <SDL.h>
 #include "vector.h"
 #include "matrix.h"
-#include "source.h"
+#include "node.h"
 #include "renderer.h"
 
 
 typedef struct {
-	Source* source_a;
-	Source* source_b;
+	Node* node_a;
+	Node* node_b;
 	Renderer* renderer;
 } Animation;
 

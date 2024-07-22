@@ -1,17 +1,17 @@
 #include <assert.h>
-#include "source.h"
+#include "node.h"
 
 
-Source*
-source_allocate() {
-	return (Source*)malloc(sizeof(Source));
+Node*
+node_allocate() {
+	return (Node*)malloc(sizeof(Node));
 }
 
 
 void
-source_init(
-	Source* self,
-	const SourceDelegate* delegate,
+node_init(
+	Node* self,
+	const NodeDelegate* delegate,
 	void* data
 ) {
 	assert(self != 0);
@@ -23,9 +23,9 @@ source_init(
 		self->inputs = 0;
 	else {
 		self->inputs =
-			(Source**)malloc(delegate->input_count * sizeof(Source*));
+			(Node**)malloc(delegate->input_count * sizeof(Node*));
 
-		Source** input_ptr = self->inputs;
+		Node** input_ptr = self->inputs;
 		for(size_t i = delegate->input_count; i != 0; --i, ++input_ptr)
 			*input_ptr = 0;
 	}
@@ -33,8 +33,8 @@ source_init(
 
 
 int
-source_setup(
-	Source* self,
+node_setup(
+	Node* self,
 	int width,
 	int height
 ) {
@@ -51,8 +51,8 @@ source_setup(
 
 
 void
-source_destroy(
-	Source* self
+node_destroy(
+	Node* self
 ) {
 	assert(self != 0);
 	assert(self->delegate != 0);
@@ -62,7 +62,7 @@ source_destroy(
 
 	if (self->delegate->input_count > 0) {
 		#ifdef DEBUG
-		Source** input_ptr = self->inputs;
+		Node** input_ptr = self->inputs;
 		for(size_t i = delegate->input_count; i != 0; --i, ++input_ptr)
 			*input_ptr = 0;
 		#endif
@@ -79,17 +79,17 @@ source_destroy(
 
 
 int
-source_set_input_slot(
-	Source* self,
+node_set_input_slot(
+	Node* self,
 	const String* name,
-	Source* other
+	Node* other
 ) {
 	assert(self != 0);
 	assert(other != 0);
 	assert(name != 0);
 	assert(name->data != 0);
 
-	const SourceInputSlotDefinition* slot_ptr = self->delegate->input_defs;
+	const NodeInputSlotDefinition* slot_ptr = self->delegate->input_defs;
 	for(size_t i = 0; i < self->delegate->input_count; ++i, ++slot_ptr)
 		if (string_equals(name, &(slot_ptr->name))) {
 			self->inputs[i] = other;
@@ -101,8 +101,8 @@ source_set_input_slot(
 
 
 void
-source_update(
-	Source* self
+node_update(
+	Node* self
 ) {
 	assert(self != 0);
 	assert(self->delegate != 0);
@@ -113,8 +113,8 @@ source_update(
 
 
 void
-source_handle_event(
-	Source* self,
+node_handle_event(
+	Node* self,
 	const Event* event
 ) {
 	assert(self != 0);
@@ -127,8 +127,8 @@ source_handle_event(
 
 
 const Matrix*
-source_get(
-	Source* self
+node_get(
+	Node* self
 ) {
 	assert(self != 0);
 	assert(self->delegate != 0);
