@@ -18,14 +18,14 @@ animation_init(
 	self->renderer = 0;
 
 	// Setup the sources
-	self->node_a = mouse_motion_node_new();
+	self->node_a = node_new(&mouse_motion_node_delegate);
 	if (!node_setup(self->node_a, screen_width, screen_height))
 		goto failure;
 
 	const String param_name = { "value", 6 };
 	node_get_parameter_by_name(self->node_a, &param_name)->value = (real_t)32;
 
-	self->node_b = heat_diffusion_node_new();
+	self->node_b = node_new(&heat_diffusion_node_delegate);
 	if (!node_setup(self->node_b, screen_width, screen_height))
 		goto failure;
 

@@ -4,8 +4,8 @@
 #include "node.h"
 
 
-extern Node*
-heat_diffusion_node_new();
+extern const NodeDelegate
+heat_diffusion_node_delegate;
 
 
 

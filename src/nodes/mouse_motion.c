@@ -47,7 +47,7 @@ mouse_motion_parameters[] = {
 };
 
 
-static const NodeDelegate
+const NodeDelegate
 mouse_motion_node_delegate = {
 	{ "mouse-motion", 13 },
 
@@ -80,13 +80,19 @@ mouse_motion_node_setup(
 	int width,
 	int height
 ) {
-	MouseMotionData* data = (MouseMotionData*)self->data;
+	// Allocate
+	MouseMotionData* data =
+		(MouseMotionData*)malloc(sizeof(MouseMotionData));
+
+	if (!data)
+		return 0;
 
 	// Setup the accumulator matrix
 	Matrix_init(&(data->U), height, width);
 	Matrix_fill(&(data->U), (real_t)0);
 
 	// Job done
+	self->data = data;
 	return 1;
 }
 
@@ -143,22 +149,4 @@ mouse_motion_node_get(
 	const MouseMotionData* data = (const MouseMotionData*)self->data;
 	
 	return &(data->U);
-}
-
-
-Node*
-mouse_motion_node_new() {
-	// Allocation
-	Node* ret = node_allocate();
-	if (!ret)
-		return ret;
-
-	MouseMotionData* data =
-		(MouseMotionData*)malloc(sizeof(MouseMotionData));
-
-	// Initialization
-	node_init(ret, &mouse_motion_node_delegate, data);
-
-	// Job done
-	return ret;
 }

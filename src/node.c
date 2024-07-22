@@ -8,41 +8,48 @@ node_allocate() {
 }
 
 
-void
-node_init(
-	Node* self,
-	const NodeDelegate* delegate,
-	void* data
+Node*
+node_new(
+	const NodeDelegate* delegate
 ) {
-	assert(self != 0);
+	assert(delegate != 0);
 
-	self->data = data;
-	self->delegate = delegate;
+	// Allocate
+	Node* ret = (Node*)malloc(sizeof(Node));
+	if (!ret)
+		return ret;
+
+	// Setup
+	ret->data = 0;
+	ret->delegate = delegate;
 
 	// Setup inputs array
 	if (delegate->input_count == 0)
-		self->inputs = 0;
+		ret->inputs = 0;
 	else {
-		self->inputs =
+		ret->inputs =
 			(Node**)malloc(delegate->input_count * sizeof(Node*));
 
-		Node** input_ptr = self->inputs;
+		Node** input_ptr = ret->inputs;
 		for(size_t i = delegate->input_count; i != 0; --i, ++input_ptr)
 			*input_ptr = 0;
 	}
 
 	// Setup parameters array
 	if (delegate->parameter_count == 0)
-		self->parameters = 0;
+		ret->parameters = 0;
 	else {
-		self->parameters =
+		ret->parameters =
 			(NodeParameter*)malloc(delegate->parameter_count * sizeof(NodeParameter));
 
-		NodeParameter* param_ptr = self->parameters;
+		NodeParameter* param_ptr = ret->parameters;
 		const NodeParameterDefinition* param_def_ptr = delegate->parameter_defs;
 		for(size_t i = delegate->parameter_count; i != 0; --i, ++param_ptr, ++param_def_ptr)
 			param_ptr->value = param_def_ptr->default_value;
 	}
+
+	// Job done
+	return ret;
 }
 
 

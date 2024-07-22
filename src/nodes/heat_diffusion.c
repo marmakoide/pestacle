@@ -48,7 +48,7 @@ heat_diffusion_parameters[] = {
 };
 
 
-static const NodeDelegate
+const NodeDelegate
 heat_diffusion_node_delegate = {
 	{ "heat-diffusion", 15 },
 
@@ -82,8 +82,14 @@ heat_diffusion_node_setup(
 	int width,
 	int height
 ) {
-	HeatDiffusionData* data = (HeatDiffusionData*)self->data;
+	// Allocate
+	HeatDiffusionData* data =
+		(HeatDiffusionData*)malloc(sizeof(HeatDiffusionData));
 
+	if (!data)
+		return 0;
+
+	// Setup
 	Matrix_init(&(data->U), height, width);
 	Matrix_fill(&(data->U), (real_t)0);
 
@@ -118,6 +124,7 @@ heat_diffusion_node_setup(
 	Vector_scale(&(data->diff_kernel), 1.f / Vector_sum(&data->diff_kernel));
 
 	// Job done
+	self->data = data;
 	return 1;
 }
 
@@ -178,22 +185,4 @@ heat_diffusion_node_get(
 	const HeatDiffusionData* data = (const HeatDiffusionData*)self->data;
 	
 	return &(data->U);
-}
-
-
-Node*
-heat_diffusion_node_new() {
-	// Allocation
-	Node* ret = node_allocate();
-	if (!ret)
-		return ret;
-
-	HeatDiffusionData* data =
-		(HeatDiffusionData*)malloc(sizeof(HeatDiffusionData));
-
-	// Initialisation
-	node_init(ret, &heat_diffusion_node_delegate, data);
-
-	// Job done
-	return ret;
 }

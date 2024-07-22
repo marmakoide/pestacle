@@ -4,8 +4,8 @@
 #include "node.h"
 
 
-extern Node*
-mouse_motion_node_new();
+extern const NodeDelegate
+mouse_motion_node_delegate;
 
 
 

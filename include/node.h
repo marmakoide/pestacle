@@ -75,15 +75,7 @@ struct s_Node {
 
 
 extern Node*
-node_allocate();
-
-
-extern void
-node_init(
-	Node* self,
-	const NodeDelegate* delegate,
-	void* data
-);
+node_new(const NodeDelegate* delegate);
 
 
 extern int
