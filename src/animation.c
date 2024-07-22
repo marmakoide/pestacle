@@ -66,14 +66,20 @@ void
 animation_destroy(
 	Animation* self
 ) {
-	if (self->node_a)
+	if (self->node_a) {
 		node_destroy(self->node_a);
+		free(self->node_a);
+	}
 
-	if (self->node_b)
+	if (self->node_b) {
 		node_destroy(self->node_b);
+		free(self->node_b);
+	}
 
-	if (self->renderer)
+	if (self->renderer) {
 		renderer_destroy(self->renderer);
+		free(self->renderer);
+	}
 
 	#ifdef DEBUG
 	self->node_a = 0;
