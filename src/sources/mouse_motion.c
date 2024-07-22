@@ -3,6 +3,7 @@
 
 typedef struct {
 	Matrix U;
+	real_t value;
 } MouseMotionData;
 
 
@@ -58,7 +59,8 @@ mouse_motion_source_handle_event(
 				&(data->U),
 				(size_t)floorf(event->mouse_motion.y),
 				(size_t)floorf(event->mouse_motion.x),
-				(real_t)1);
+				data->value
+			);
 			break;
 
 		default:
@@ -80,6 +82,7 @@ mouse_motion_source_get(
 static const SourceDelegate
 mouse_motion_source_delegate = {
 	"mouse-motion",
+	0,
 	mouse_motion_source_setup,
 	mouse_motion_source_destroy,
 	mouse_motion_source_update,
@@ -90,17 +93,20 @@ mouse_motion_source_delegate = {
 
 
 Source*
-mouse_motion_source_new() {
+mouse_motion_source_new(
+	real_t value
+) {
 	// Allocation
 	Source* ret = source_allocate();
 	if (!ret)
 		return ret;
 
-	MouseMotionData* data = (MouseMotionData*)malloc(sizeof(MouseMotionData));
+	MouseMotionData* data =
+		(MouseMotionData*)malloc(sizeof(MouseMotionData));
+	data->value = value;
 
-	// Delegate setup
-	ret->data = data;
-	ret->delegate = &mouse_motion_source_delegate;
+	// Initialization
+	source_init(ret, &mouse_motion_source_delegate, data);
 
 	// Job done
 	return ret;

@@ -82,6 +82,12 @@ heat_diffusion_source_update(
 ) {
 	HeatDiffusionData* data = (HeatDiffusionData*)self->data;
 
+	// Update U with input
+	Matrix_max(
+		&(data->U),
+		source_get(self->inputs[0])
+	);
+
 	// Diffusion operator on U
 	Matrix_rowwise_correlation(
 		&(data->U),
@@ -107,22 +113,7 @@ void
 heat_diffusion_source_handle_event(
 	Source* self,
 	const Event* event
-) {
-	HeatDiffusionData* data = (HeatDiffusionData*)self->data;
-
-	switch(event->type) {
-		case EventType_MouseMotion:
-			Matrix_set_coeff(
-				&(data->U),
-				(size_t)floorf(event->mouse_motion.y),
-				(size_t)floorf(event->mouse_motion.x),
-				(real_t)32);
-			break;
-
-		default:
-			break;
-	}
-}
+) { }
 
 
 const Matrix*
@@ -138,6 +129,7 @@ heat_diffusion_source_get(
 static const SourceDelegate
 heat_diffusion_source_delegate = {
 	"heat-diffusion",
+	1,
 	heat_diffusion_source_setup,
 	heat_diffusion_source_destroy,
 	heat_diffusion_source_update,
@@ -157,9 +149,8 @@ heat_diffusion_source_new() {
 	HeatDiffusionData* data =
 		(HeatDiffusionData*)malloc(sizeof(HeatDiffusionData));
 
-	// Delegate setup
-	ret->data = data;
-	ret->delegate = &heat_diffusion_source_delegate;
+	// Initialisation
+	source_init(ret, &heat_diffusion_source_delegate, data);
 
 	// Job done
 	return ret;

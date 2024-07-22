@@ -199,6 +199,86 @@ Vector_scaled_add(
 
 
 void
+Vector_min(
+	Vector* self,
+	const Vector* in
+) {
+	assert(self != 0);
+	assert(self->data != 0);
+	assert(in != 0);
+	assert(in->data != 0);
+	assert(self->len == in->len);
+
+	array_ops_min(
+		self->data,
+		in->data,
+		self->len
+	);
+}
+
+
+void
+Vector_scaled_min(
+	Vector* self,
+	const Vector* in,
+	real_t value
+) {
+	assert(self != 0);
+	assert(self->data != 0);
+	assert(in != 0);
+	assert(in->data != 0);
+	assert(self->len == in->len);
+
+	array_ops_scaled_min(
+		self->data,
+		in->data,
+		self->len,
+		value
+	);
+}
+
+
+void
+Vector_max(
+	Vector* self,
+	const Vector* in
+) {
+	assert(self != 0);
+	assert(self->data != 0);
+	assert(in != 0);
+	assert(in->data != 0);
+	assert(self->len == in->len);
+
+	array_ops_max(
+		self->data,
+		in->data,
+		self->len
+	);
+}
+
+
+void
+Vector_scaled_max(
+	Vector* self,
+	const Vector* in,
+	real_t value
+) {
+	assert(self != 0);
+	assert(self->data != 0);
+	assert(in != 0);
+	assert(in->data != 0);
+	assert(self->len == in->len);
+
+	array_ops_scaled_max(
+		self->data,
+		in->data,
+		self->len,
+		value
+	);
+}
+
+
+void
 Vector_correlation(
 	const Vector* self,
 	const Vector* kernel,

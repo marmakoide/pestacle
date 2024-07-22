@@ -172,6 +172,90 @@ Matrix_scaled_add(
 
 
 void
+Matrix_min(
+	Matrix* self,
+	const Matrix* in
+) {
+	assert(self != 0);
+	assert(self->data != 0);
+	assert(in != 0);
+	assert(in->data != 0);
+	assert(self->row_count == in->row_count);
+	assert(self->col_count == in->col_count);
+
+	array_ops_min(
+		self->data,
+		in->data,
+		self->data_len
+	);
+}
+
+
+void
+Matrix_scaled_min(
+	Matrix* self,
+	const Matrix* in,
+	real_t value
+) {
+	assert(self != 0);
+	assert(self->data != 0);
+	assert(in != 0);
+	assert(in->data != 0);
+	assert(self->row_count == in->row_count);
+	assert(self->col_count == in->col_count);
+
+	array_ops_scaled_min(
+		self->data,
+		in->data,
+		self->data_len,
+		value
+	);
+}
+
+
+void
+Matrix_max(
+	Matrix* self,
+	const Matrix* in
+) {
+	assert(self != 0);
+	assert(self->data != 0);
+	assert(in != 0);
+	assert(in->data != 0);
+	assert(self->row_count == in->row_count);
+	assert(self->col_count == in->col_count);
+
+	array_ops_max(
+		self->data,
+		in->data,
+		self->data_len
+	);
+}
+
+
+void
+Matrix_scaled_max(
+	Matrix* self,
+	const Matrix* in,
+	real_t value
+) {
+	assert(self != 0);
+	assert(self->data != 0);
+	assert(in != 0);
+	assert(in->data != 0);
+	assert(self->row_count == in->row_count);
+	assert(self->col_count == in->col_count);
+
+	array_ops_scaled_max(
+		self->data,
+		in->data,
+		self->data_len,
+		value
+	);
+}
+
+
+void
 Matrix_rowwise_correlation(
 	const Matrix* self,
 	const Vector* kernel,

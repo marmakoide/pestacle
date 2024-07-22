@@ -98,6 +98,40 @@ array_ops_scaled_add(
 
 
 extern void
+array_ops_min(
+	real_t* dst,
+	const real_t* src,
+	size_t len
+);
+
+
+extern void
+array_ops_scaled_min(
+	real_t* dst,
+	const real_t* src,
+	size_t len,
+	real_t factor
+);
+
+
+extern void
+array_ops_max(
+	real_t* dst,
+	const real_t* src,
+	size_t len
+);
+
+
+extern void
+array_ops_scaled_max(
+	real_t* dst,
+	const real_t* src,
+	size_t len,
+	real_t factor
+);
+
+
+extern void
 array_ops_correlation(
 	real_t* dst,
 	const real_t* src,

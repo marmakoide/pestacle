@@ -96,6 +96,36 @@ Vector_scaled_add(
 
 
 extern void
+Vector_min(
+	Vector* self,
+	const Vector* in
+);
+
+
+extern void
+Vector_scaled_fmin(
+	Vector* self,
+	const Vector* in,
+	real_t value
+);
+
+
+extern void
+Vector_max(
+	Vector* self,
+	const Vector* in
+);
+
+
+extern void
+Vector_scaled_fmax(
+	Vector* self,
+	const Vector* in,
+	real_t value
+);
+
+
+extern void
 Vector_correlation(
 	const Vector* self,
 	const Vector* kernel,

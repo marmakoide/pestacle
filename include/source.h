@@ -11,6 +11,7 @@ typedef struct s_Source Source;
 
 typedef struct {
 	const char* name;
+	size_t input_count;
 
 	int (*setup)(
 		Source*,
@@ -40,11 +41,20 @@ typedef struct {
 struct s_Source {
 	void* data;
 	const SourceDelegate* delegate;
+	Source** inputs;
 }; // struct s_Source
 
 
 extern Source*
 source_allocate();
+
+
+extern void
+source_init(
+	Source* self,
+	const SourceDelegate* delegate,
+	void* data
+);
 
 
 extern int

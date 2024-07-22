@@ -9,7 +9,8 @@
 
 
 typedef struct {
-	Source* source;
+	Source* source_a;
+	Source* source_b;
 	Renderer* renderer;
 } Animation;
 

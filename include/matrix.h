@@ -82,6 +82,36 @@ Matrix_scaled_add(
 
 
 extern void
+Matrix_min(
+	Matrix* self,
+	const Matrix* in
+);
+
+
+extern void
+Matrix_scaled_min(
+	Matrix* self,
+	const Matrix* in,
+	real_t value
+);
+
+
+extern void
+Matrix_max(
+	Matrix* self,
+	const Matrix* in
+);
+
+
+extern void
+Matrix_scaled_max(
+	Matrix* self,
+	const Matrix* in,
+	real_t value
+);
+
+
+extern void
 Matrix_rowwise_correlation(
 	const Matrix* self,
 	const Vector* kernel,

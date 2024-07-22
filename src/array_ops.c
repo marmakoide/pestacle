@@ -1,3 +1,4 @@
+#include <math.h>
 #include <stdlib.h>
 #include "array_ops.h"
 
@@ -129,6 +130,52 @@ array_ops_scaled_add(
 ) {
 	for( ; len != 0; --len, ++dst, ++src)
 		*dst += factor * (*src);
+}
+
+
+void
+array_ops_min(
+	real_t* dst,
+	const real_t* src,
+	size_t len
+) {
+	for( ; len != 0; --len, ++dst, ++src)
+		*dst = fminf(*dst, *src);
+}
+
+
+void
+array_ops_scaled_min(
+	real_t* dst,
+	const real_t* src,
+	size_t len,
+	real_t factor
+) {
+	for( ; len != 0; --len, ++dst, ++src)
+		*dst = factor * fminf(*dst, *src);
+}
+
+
+void
+array_ops_max(
+	real_t* dst,
+	const real_t* src,
+	size_t len
+) {
+	for( ; len != 0; --len, ++dst, ++src)
+		*dst = fmaxf(*dst, *src);
+}
+
+
+void
+array_ops_scaled_max(
+	real_t* dst,
+	const real_t* src,
+	size_t len,
+	real_t factor
+) {
+	for( ; len != 0; --len, ++dst, ++src)
+		*dst = factor * fmaxf(*dst, *src);
 }
 
 

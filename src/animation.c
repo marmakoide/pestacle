@@ -2,6 +2,7 @@
 #include "animation.h"
 
 #include "sources/heat_diffusion.h"
+#include "sources/mouse_motion.h"
 #include "renderers/gradient.h"
 #include "renderers/linear_blend.h"
 
@@ -12,28 +13,54 @@ animation_init(
 	int screen_width,
 	int screen_height
 ) {
-	self->source = 0;
+	self->source_a = 0;
+	self->source_b = 0;
 	self->renderer = 0;
 
-	// Setup the source
-	self->source = heat_diffusion_source_new();
-	if (!source_setup(self->source, screen_width,screen_height))
-		return 0;
-	
+	// Setup the sources
+	self->source_a = mouse_motion_source_new((real_t)32);
+	if (!source_setup(self->source_a, screen_width, screen_height))
+		goto failure;
+
+	self->source_b = heat_diffusion_source_new();
+	if (!source_setup(self->source_b, screen_width, screen_height))
+		goto failure;
+
+	self->source_b->inputs[0] = self->source_a;
+
 	// Setup the renderer
 	//self->renderer = gradient_renderer_new();
-	
+
 	self->renderer =
 		linear_blend_renderer_new(
 			"assets/paysage-vignoble_200x100.png",
 			"assets/soif_200x100.png"
 		);
-		
+
 	if (!renderer_setup(self->renderer, screen_width, screen_height))
-		return 0;
+		goto failure;
 
 	// Job done
 	return 1;
+
+	// Failure handling
+failure:
+	if (self->source_a) {
+		source_destroy(self->source_a);
+		self->source_a = 0;
+	}
+
+	if (self->source_b) {
+		source_destroy(self->source_b);
+		self->source_b = 0;
+	}
+
+	if (self->renderer) {
+		renderer_destroy(self->renderer);
+		self->renderer = 0;
+	}
+
+	return 0;
 }
 
 
@@ -41,11 +68,13 @@ void
 animation_destroy(
 	Animation* self
 ) {
-	source_destroy(self->source);
+	source_destroy(self->source_a);
+	source_destroy(self->source_b);
 	renderer_destroy(self->renderer);
 
 	#ifdef DEBUG
-	self->source = 0;
+	self->source_a = 0;
+	self->source_b = 0;
 	self->renderer = 0;
 	#endif
 }
@@ -56,7 +85,8 @@ animation_handle_event(
 	Animation* self,
 	const Event* event
 ) {
-	source_handle_event(self->source, event);
+	source_handle_event(self->source_a, event);
+	source_handle_event(self->source_b, event);
 }
 
 
@@ -65,7 +95,7 @@ animation_render(
 	const Animation* self,
 	SDL_Surface* dst
 ) {
-	renderer_render(self->renderer, source_get(self->source), dst);
+	renderer_render(self->renderer, source_get(self->source_b), dst);
 }
 
 
@@ -73,5 +103,6 @@ void
 animation_update(
 	Animation* self
 ) {
-	source_update(self->source);
+	source_update(self->source_b);
+	source_update(self->source_a);
 }

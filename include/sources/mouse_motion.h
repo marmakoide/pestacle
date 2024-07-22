@@ -5,7 +5,9 @@
 
 
 extern Source*
-mouse_motion_source_new();
+mouse_motion_source_new(
+	real_t value
+);
 
 
 
