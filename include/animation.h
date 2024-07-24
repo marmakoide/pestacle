@@ -19,7 +19,7 @@ typedef struct {
 
 
 extern int
-animation_init(
+Animation_init(
 	Animation* self,
 	int screen_width,
 	int screen_height
@@ -27,20 +27,20 @@ animation_init(
 
 
 extern void
-animation_destroy(
+Animation_destroy(
 	Animation* self
 );
 
 
 extern Node*
-animation_get_node_instance(
+Animation_get_node_instance(
 	Animation* self,
 	const String* instance_name
 );
 
 
 extern int
-animation_add_node_instance(
+Animation_add_node_instance(
 	Animation* self,
 	const String* instance_name,
 	const String* delegate_name
@@ -48,21 +48,21 @@ animation_add_node_instance(
 
 
 extern void
-animation_handle_event(
+Animation_handle_event(
 	Animation* self,
 	const Event* event
 );
 
 
 extern void
-animation_render(
+Animation_render(
 	const Animation* self,
 	SDL_Surface* surface
 );
 
 
 extern void
-animation_update(
+Animation_update(
 	Animation* self
 );
 

@@ -30,7 +30,7 @@ static Uint32
 animation_state_update_callback(Uint32 interval, void* param) {
 	// Update the animation statex
 	SDL_LockMutex(animation_state_mutex);
-	animation_update(&animation);
+	Animation_update(&animation);
 	SDL_UnlockMutex(animation_state_mutex);
 
 	// Job done
@@ -44,7 +44,7 @@ framebuffer_update_callback(Uint32 interval, void* param) {
 
 	// Render
 	SDL_LockMutex(animation_state_mutex);
-	animation_render(&animation, framebuffer_rgb24);
+	Animation_render(&animation, framebuffer_rgb24);
 	SDL_UnlockMutex(animation_state_mutex);
 	
 	// Update the framebuffer
@@ -86,7 +86,7 @@ main(int argc, char* argv[]) {
 		EMULATED_DISPLAY_HEIGHT
 	);
 
-	if (!animation_init(
+	if (!Animation_init(
 		&animation,
 		EMULATED_DISPLAY_WIDTH,
 		EMULATED_DISPLAY_HEIGHT)
@@ -203,7 +203,7 @@ main(int argc, char* argv[]) {
 				case SDL_MOUSEBUTTONDOWN:
 					if (cast_mouse_button_event(&display, &src_event, &dst_event)) {
 						SDL_LockMutex(animation_state_mutex);
-						animation_handle_event(&animation, &dst_event);
+						Animation_handle_event(&animation, &dst_event);
 						SDL_UnlockMutex(animation_state_mutex);
 					}
 					break;
@@ -211,7 +211,7 @@ main(int argc, char* argv[]) {
 				case SDL_MOUSEMOTION:
 					if (cast_mouse_motion_event(&display, &src_event, &dst_event)) {
 						SDL_LockMutex(animation_state_mutex);
-						animation_handle_event(&animation, &dst_event);
+						Animation_handle_event(&animation, &dst_event);
 						SDL_UnlockMutex(animation_state_mutex);
 					}
 					break;
@@ -233,7 +233,7 @@ termination:
 	if (framebuffer_update_timer)
 		SDL_RemoveTimer(framebuffer_update_timer);
 
-	animation_destroy(&animation);
+	Animation_destroy(&animation);
 	
 	if (framebuffer_rgb24)
 		SDL_FreeSurface(framebuffer_rgb24);

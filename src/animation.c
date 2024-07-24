@@ -9,7 +9,7 @@
 
 
 static int
-animation_topological_sort(Animation* self) {
+Animation_topological_sort(Animation* self) {
 	Stack stack;
 	Stack_init(&stack);
 
@@ -18,7 +18,7 @@ animation_topological_sort(Animation* self) {
 
 	// Get the root node
 	const String root_node_instance_name = { "main", 5 };
-	Node* root = animation_get_node_instance(self, &root_node_instance_name);
+	Node* root = Animation_get_node_instance(self, &root_node_instance_name);
 	if (!root)
 		return 0;
 
@@ -75,7 +75,7 @@ animation_topological_sort(Animation* self) {
 
 
 static int
-animation_build(Animation* self) {
+Animation_build(Animation* self) {
 	const String node_instance_a_name = { "input", 6 };
 	const String node_a_name = { "mouse-motion", 13 };
 
@@ -83,17 +83,17 @@ animation_build(Animation* self) {
 	const String node_b_name = { "heat-diffusion", 15 };
 
 	// Create nodes
-	if (!animation_add_node_instance(self, &node_instance_a_name, &node_a_name))
+	if (!Animation_add_node_instance(self, &node_instance_a_name, &node_a_name))
 		return 0;
 
-	if (!animation_add_node_instance(self, &node_instance_b_name, &node_b_name))
+	if (!Animation_add_node_instance(self, &node_instance_b_name, &node_b_name))
 		return 0;
 
-	Node* node_a = animation_get_node_instance(self, &node_instance_a_name);
+	Node* node_a = Animation_get_node_instance(self, &node_instance_a_name);
 	if (!node_a)
 		return 0;
 
-	Node* node_b = animation_get_node_instance(self, &node_instance_b_name);
+	Node* node_b = Animation_get_node_instance(self, &node_instance_b_name);
 	if (!node_b)
 		return 0;
 
@@ -116,7 +116,7 @@ animation_build(Animation* self) {
 
 
 int
-animation_init(
+Animation_init(
 	Animation* self,
 	int screen_width,
 	int screen_height
@@ -128,10 +128,10 @@ animation_init(
 	self->renderer = 0;
 
 	//
-	if (!animation_build(self))
+	if (!Animation_build(self))
 		goto failure;
 
-	if (!animation_topological_sort(self))
+	if (!Animation_topological_sort(self))
 		goto failure;
 
 	// Setup the nodes
@@ -157,13 +157,13 @@ animation_init(
 
 	// Failure handling
 failure:
-	animation_destroy(self);
+	Animation_destroy(self);
 	return 0;
 }
 
 
 void
-animation_destroy(
+Animation_destroy(
 	Animation* self
 ) {
 	if (self->sorted_nodes) {
@@ -196,7 +196,7 @@ animation_destroy(
 
 
 Node*
-animation_get_node_instance(
+Animation_get_node_instance(
 	Animation* self,
 	const String* instance_name
 ) {
@@ -221,7 +221,7 @@ animation_get_node_instance(
 
 
 int
-animation_add_node_instance(
+Animation_add_node_instance(
 	Animation* self,
 	const String* instance_name,
 	const String* delegate_name
@@ -257,7 +257,7 @@ animation_add_node_instance(
 
 
 void
-animation_handle_event(
+Animation_handle_event(
 	Animation* self,
 	const Event* event
 ) {
@@ -268,7 +268,7 @@ animation_handle_event(
 
 
 void
-animation_render(
+Animation_render(
 	const Animation* self,
 	SDL_Surface* dst
 ) {
@@ -277,7 +277,7 @@ animation_render(
 
 
 void
-animation_update(
+Animation_update(
 	Animation* self
 ) {
 	Node** node_ptr = self->sorted_nodes;
