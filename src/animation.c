@@ -11,7 +11,7 @@
 static int
 animation_topological_sort(Animation* self) {
 	Stack stack;
-	stack_init(&stack);
+	Stack_init(&stack);
 
 	Dict visited;
 	Dict_init(&visited);
@@ -25,9 +25,9 @@ animation_topological_sort(Animation* self) {
 	// Count the size of the component corresponding to the root node
 	size_t component_size = 0;
 
-	stack_push(&stack, root);
-	while(!stack_empty(&stack)) {
-		Node* node = (Node*)stack_pop(&stack);
+	Stack_push(&stack, root);
+	while(!Stack_empty(&stack)) {
+		Node* node = (Node*)Stack_pop(&stack);
 
 		if (!Dict_find(&visited, &(node->name))) {
 			Dict_insert(&visited, &(node->name));
@@ -37,7 +37,7 @@ animation_topological_sort(Animation* self) {
 			Node** input_node_ptr = node->inputs;
 			for(size_t i = node->delegate->input_count; i != 0; --i, ++input_node_ptr)
 				if (input_node_ptr)
-					stack_push(&stack, *input_node_ptr);
+					Stack_push(&stack, *input_node_ptr);
 		}
 	}
 
@@ -50,9 +50,9 @@ animation_topological_sort(Animation* self) {
 	self->sorted_nodes = (Node**)checked_malloc(component_size * sizeof(Node*));
 	Node** sorted_node_ptr = self->sorted_nodes;
 
-	stack_push(&stack, root);
-	while(!stack_empty(&stack)) {
-		Node* node = (Node*)stack_pop(&stack);
+	Stack_push(&stack, root);
+	while(!Stack_empty(&stack)) {
+		Node* node = (Node*)Stack_pop(&stack);
 
 		if (!Dict_find(&visited, &(node->name))) {
 			Dict_insert(&visited, &(node->name));
@@ -63,13 +63,13 @@ animation_topological_sort(Animation* self) {
 			Node** input_node_ptr = node->inputs;
 			for(size_t i = node->delegate->input_count; i != 0; --i, ++input_node_ptr)
 				if (input_node_ptr)
-					stack_push(&stack, *input_node_ptr);
+					Stack_push(&stack, *input_node_ptr);
 		}
 	}
 
 	// Job done
 	Dict_destroy(&visited);
-	stack_destroy(&stack);
+	Stack_destroy(&stack);
 	return 1;
 }
 

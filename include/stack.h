@@ -13,44 +13,44 @@ typedef struct {
 
 
 extern void
-stack_init(
+Stack_init(
 	Stack* self
 );
 
 
 extern void
-stack_destroy(
+Stack_destroy(
 	Stack* self
 );
 
 
 extern void
-stack_clear(
+Stack_clear(
 	Stack* self
 );
 
 
 extern void
-stack_push(
+Stack_push(
 	Stack* self,
 	void* item
 );
 
 
 extern void*
-stack_pop(
+Stack_pop(
 	Stack* self
 );
 
 
 extern void*
-stack_peek(
+Stack_peek(
 	Stack* self
 );
 
 
 extern bool
-stack_empty(
+Stack_empty(
 	const Stack* self
 );
 

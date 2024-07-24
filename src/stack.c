@@ -9,7 +9,7 @@
 
 #ifdef DEBUG
 static void
-stack_fill_stack_with_null(
+Stack_fill_stack_with_null(
 	Stack* self
 ) {
 	void** ptr = self->data;
@@ -20,7 +20,7 @@ stack_fill_stack_with_null(
 
 
 void
-stack_init(
+Stack_init(
 	Stack* self
 ) {
 	assert(self != 0);
@@ -30,19 +30,19 @@ stack_init(
 	self->data = (void**)checked_malloc(self->physical_len * sizeof(void*));
 
 	#ifdef DEBUG
-	stack_fill_stack_with_null(self);
+	Stack_fill_stack_with_null(self);
 	#endif
 }
 
 void
-stack_destroy(
+Stack_destroy(
 	Stack* self
 ) {
 	assert(self != 0);
 	assert(self->data != 0);
 
 	#ifdef DEBUG
-	stack_fill_stack_with_null(self);
+	Stack_fill_stack_with_null(self);
 	#endif
 
 	free(self->data);
@@ -56,7 +56,7 @@ stack_destroy(
 
 
 void
-stack_clear(
+Stack_clear(
 	Stack* self
 ) {
 	assert(self != 0);
@@ -65,13 +65,13 @@ stack_clear(
 	self->logical_len = 0;
 
 	#ifdef DEBUG
-	stack_fill_stack_with_null(self);
+	Stack_fill_stack_with_null(self);
 	#endif
 }
 
 
 void
-stack_push(
+Stack_push(
 	Stack* self,
 	void* item
 ) {
@@ -94,7 +94,7 @@ stack_push(
 
 
 void*
-stack_pop(
+Stack_pop(
 	Stack* self
 ) {
 	assert(self != 0);
@@ -113,7 +113,7 @@ stack_pop(
 
 
 void*
-stack_peek(
+Stack_peek(
 	Stack* self
 ) {
 	assert(self != 0);
@@ -125,7 +125,7 @@ stack_peek(
 
 
 bool
-stack_empty(
+Stack_empty(
 	const Stack* self
 ) {
 	assert(self != 0);
