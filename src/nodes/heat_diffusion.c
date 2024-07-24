@@ -155,7 +155,7 @@ heat_diffusion_node_update(
 	// Update U with input
 	Matrix_max(
 		&(data->U),
-		node_get(self->inputs[0])
+		Node_get(self->inputs[0])
 	);
 
 	// Diffusion operator on U

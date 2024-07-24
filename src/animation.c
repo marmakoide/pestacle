@@ -99,12 +99,12 @@ Animation_build(Animation* self) {
 
 	// Link nodes
 	const String slot_name = { "input", 6 };
-	if (!node_set_input_slot_by_name(node_b, &slot_name, node_a))
+	if (!Node_set_input_slot_by_name(node_b, &slot_name, node_a))
 		return 0;
 
 	// Setup parameters
 	const String param_name = { "value", 6 };
-	NodeParameter* param = node_get_parameter_by_name(node_a, &param_name);
+	NodeParameter* param = Node_get_parameter_by_name(node_a, &param_name);
 	if (!param)
 		return 0;
 
@@ -137,7 +137,7 @@ Animation_init(
 	// Setup the nodes
 	Node** node_ptr = self->sorted_nodes;
 	for(size_t i = self->sorted_node_count; i != 0; --i, ++node_ptr)
-		if (!node_setup(*node_ptr, screen_width, screen_height))
+		if (!Node_setup(*node_ptr, screen_width, screen_height))
 			goto failure;
 
 	// Setup the renderer
@@ -170,7 +170,7 @@ Animation_destroy(
 		// Deallocate all nodes
 		Node** node_ptr = self->sorted_nodes;
 		for(size_t i = self->sorted_node_count; i != 0; --i, ++node_ptr) {
-			node_destroy(*node_ptr);
+			Node_destroy(*node_ptr);
 			free(*node_ptr);
 		}
 		free(self->sorted_nodes);
@@ -244,7 +244,7 @@ Animation_add_node_instance(
 	}
 
 	// Create the node instance
-	Node* node = node_create_by_name(instance_name, delegate_name);
+	Node* node = Node_create_by_name(instance_name, delegate_name);
 	if (!node)
 		return 0;
 
@@ -263,7 +263,7 @@ Animation_handle_event(
 ) {
 	Node** node_ptr = self->sorted_nodes;
 	for(size_t i = self->sorted_node_count; i != 0; --i, ++node_ptr)
-		node_handle_event(*node_ptr, event);
+		Node_handle_event(*node_ptr, event);
 }
 
 
@@ -272,7 +272,7 @@ Animation_render(
 	const Animation* self,
 	SDL_Surface* dst
 ) {
-	renderer_render(self->renderer, node_get(self->sorted_nodes[0]), dst);
+	renderer_render(self->renderer, Node_get(self->sorted_nodes[0]), dst);
 }
 
 
@@ -282,5 +282,5 @@ Animation_update(
 ) {
 	Node** node_ptr = self->sorted_nodes;
 	for(size_t i = self->sorted_node_count; i != 0; --i, ++node_ptr)
-		node_update(*node_ptr);
+		Node_update(*node_ptr);
 }

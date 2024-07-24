@@ -4,7 +4,7 @@
 
 
 static Node*
-node_new(
+Node_new(
 	const String* name,
 	const NodeDelegate* delegate
 ) {
@@ -49,7 +49,7 @@ node_new(
 
 
 int
-node_setup(
+Node_setup(
 	Node* self,
 	int width,
 	int height
@@ -67,7 +67,7 @@ node_setup(
 
 
 void
-node_destroy(
+Node_destroy(
 	Node* self
 ) {
 	assert(self != 0);
@@ -103,7 +103,7 @@ node_destroy(
 
 
 Node*
-node_create_by_name(
+Node_create_by_name(
 	const String* name,
 	const String* delegate_name	
 ) {
@@ -113,7 +113,7 @@ node_create_by_name(
 	const NodeDelegate** delegate_ptr = node_delegate_list;
 	for( ; delegate_ptr != 0; ++delegate_ptr)
 		if (String_equals(delegate_name, &((*delegate_ptr)->name)))
-			return node_new(name, *delegate_ptr);
+			return Node_new(name, *delegate_ptr);
 
 	SDL_LogError(
 		SDL_LOG_CATEGORY_SYSTEM,
@@ -126,7 +126,7 @@ node_create_by_name(
 
 
 NodeParameter*
-node_get_parameter_by_name(
+Node_get_parameter_by_name(
 	Node* self,
 	const String* name
 ) {
@@ -154,7 +154,7 @@ node_get_parameter_by_name(
 
 
 int
-node_set_input_slot_by_name(
+Node_set_input_slot_by_name(
 	Node* self,
 	const String* name,
 	Node* other
@@ -183,7 +183,7 @@ node_set_input_slot_by_name(
 
 
 void
-node_update(
+Node_update(
 	Node* self
 ) {
 	assert(self != 0);
@@ -195,7 +195,7 @@ node_update(
 
 
 void
-node_handle_event(
+Node_handle_event(
 	Node* self,
 	const Event* event
 ) {
@@ -209,7 +209,7 @@ node_handle_event(
 
 
 const Matrix*
-node_get(
+Node_get(
 	Node* self
 ) {
 	assert(self != 0);

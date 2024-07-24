@@ -80,14 +80,14 @@ struct s_Node {
 
 
 extern Node*
-node_create_by_name(
+Node_create_by_name(
 	const String* name,
 	const String* delegate_name
 );
 
 
 extern int
-node_set_input_slot_by_name(
+Node_set_input_slot_by_name(
 	Node* self,
 	const String* name,
 	Node* other
@@ -95,14 +95,14 @@ node_set_input_slot_by_name(
 
 
 NodeParameter*
-node_get_parameter_by_name(
+Node_get_parameter_by_name(
 	Node* self,
 	const String* name
 );
 
 
 extern int
-node_setup(
+Node_setup(
 	Node* self,
 	int width,
 	int height
@@ -110,26 +110,26 @@ node_setup(
 
 
 extern void
-node_destroy(
+Node_destroy(
 	Node* self
 );
 
 
 extern void
-node_update(
+Node_update(
 	Node* self
 );
 
 
 extern void
-node_handle_event(
+Node_handle_event(
 	Node* self,
 	const Event* event
 );
 
 
 extern const Matrix*
-node_get(
+Node_get(
 	Node* self
 );
 
