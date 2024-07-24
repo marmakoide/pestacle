@@ -82,7 +82,7 @@ Node_destroy(
 	if (self->delegate->input_count > 0) {
 		#ifdef DEBUG
 		Node** input_ptr = self->inputs;
-		for(size_t i = delegate->input_count; i != 0; --i, ++input_ptr)
+		for(size_t i = self->delegate->input_count; i != 0; --i, ++input_ptr)
 			*input_ptr = 0;
 		#endif
 	
@@ -179,6 +179,21 @@ Node_set_input_slot_by_name(
 	);
 
 	return 0;
+}
+
+
+int
+Node_is_complete(
+	const Node* self
+) {
+	assert(self != 0);
+
+	Node* const* node_ptr = self->inputs;
+	for(size_t i = 0; i < self->delegate->input_count; ++i, ++node_ptr)
+		if (*node_ptr == 0)
+			return 0;
+
+	return 1;
 }
 
 

@@ -9,6 +9,26 @@
 
 
 static int
+Animation_check_graph_is_complete(Animation* self) {
+	assert(self != 0);
+	assert(self->sorted_nodes != 0);
+
+	Node** node_ptr = self->sorted_nodes;
+	for(size_t i = self->sorted_node_count; i != 0; --i, ++node_ptr)
+		if (!Node_is_complete(*node_ptr)) {
+			SDL_LogError(
+				SDL_LOG_CATEGORY_SYSTEM,
+				"node '%s' is not complete\n",
+				(*node_ptr)->name.data
+			);
+			return 0;
+		}
+
+	return 1;
+}
+
+
+static int
 Animation_topological_sort(Animation* self) {
 	int ret = 1;
 
@@ -40,7 +60,7 @@ Animation_topological_sort(Animation* self) {
 
 			Node** input_node_ptr = node->inputs;
 			for(size_t i = node->delegate->input_count; i != 0; --i, ++input_node_ptr)
-				if (input_node_ptr)
+				if (*input_node_ptr)
 					Stack_push(&stack, *input_node_ptr);
 		}
 	}
@@ -65,7 +85,7 @@ Animation_topological_sort(Animation* self) {
 
 			Node** input_node_ptr = node->inputs;
 			for(size_t i = node->delegate->input_count; i != 0; --i, ++input_node_ptr)
-				if (input_node_ptr)
+				if (*input_node_ptr)
 					Stack_push(&stack, *input_node_ptr);
 		}
 	}
@@ -136,6 +156,9 @@ Animation_init(
 		goto failure;
 
 	if (!Animation_topological_sort(self))
+		goto failure;
+
+	if (!Animation_check_graph_is_complete(self))
 		goto failure;
 
 	// Setup the nodes

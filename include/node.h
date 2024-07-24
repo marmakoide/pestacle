@@ -115,6 +115,12 @@ Node_destroy(
 );
 
 
+extern int
+Node_is_complete(
+	const Node* self
+);
+
+
 extern void
 Node_update(
 	Node* self

@@ -104,9 +104,10 @@ mouse_motion_node_destroy(
 ) {
 	MouseMotionData* data = (MouseMotionData*)self->data;
 
-	Matrix_destroy(&(data->accumulator));
-
-	free(data);
+	if (data != 0) {
+		Matrix_destroy(&(data->accumulator));
+		free(data);
+	}
 }
 
 
