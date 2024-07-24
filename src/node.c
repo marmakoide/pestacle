@@ -5,6 +5,7 @@
 
 static Node*
 node_new(
+	const String* name,
 	const NodeDelegate* delegate
 ) {
 	assert(delegate != 0);
@@ -15,6 +16,7 @@ node_new(
 	// Setup
 	ret->data = 0;
 	ret->delegate = delegate;
+	string_clone(&(ret->name), name);
 
 	// Setup inputs array
 	if (delegate->input_count == 0)
@@ -74,6 +76,8 @@ node_destroy(
 	if (self->delegate->methods.destroy)
 		self->delegate->methods.destroy(self);
 
+	string_destroy(&(self->name));
+
 	// Deallocate input array
 	if (self->delegate->input_count > 0) {
 		#ifdef DEBUG
@@ -92,6 +96,7 @@ node_destroy(
 	#ifdef DEBUG
 	self->data = 0;
 	self->delegate = 0;
+	self->name.data = 0;
 	self->inputs = 0;
 	#endif
 }
@@ -99,20 +104,21 @@ node_destroy(
 
 Node*
 node_create_by_name(
-	const String* name	
+	const String* name,
+	const String* delegate_name	
 ) {
 	assert(name != 0);
 	assert(name->data != 0);
 
 	const NodeDelegate** delegate_ptr = node_delegate_list;
 	for( ; delegate_ptr != 0; ++delegate_ptr)
-		if (string_equals(name, &((*delegate_ptr)->name)))
-			return node_new(*delegate_ptr);
+		if (string_equals(delegate_name, &((*delegate_ptr)->name)))
+			return node_new(name, *delegate_ptr);
 
 	SDL_LogError(
 		SDL_LOG_CATEGORY_SYSTEM,
 		"Could not find node type '%s'\n",
-		name->data
+		delegate_name->data
 	);
 
 	return 0;

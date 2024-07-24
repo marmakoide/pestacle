@@ -1,0 +1,135 @@
+#include <string.h>
+#include <assert.h>
+#include <stdlib.h>
+#include "stack.h"
+#include "memory.h"
+
+#define INITIAL_PHYSICAL_LEN 8
+
+
+#ifdef DEBUG
+static void
+stack_fill_stack_with_null(
+	Stack* self
+) {
+	void** ptr = self->data;
+	for(size_t i = self->physical_len; i != 0; --i, ++ptr)
+		*ptr = 0;
+}
+#endif
+
+
+void
+stack_init(
+	Stack* self
+) {
+	assert(self != 0);
+
+	self->logical_len = 0;
+	self->physical_len = INITIAL_PHYSICAL_LEN;
+	self->data = (void**)checked_malloc(self->physical_len * sizeof(void*));
+
+	#ifdef DEBUG
+	stack_fill_stack_with_null(self);
+	#endif
+}
+
+void
+stack_destroy(
+	Stack* self
+) {
+	assert(self != 0);
+	assert(self->data != 0);
+
+	#ifdef DEBUG
+	stack_fill_stack_with_null(self);
+	#endif
+
+	free(self->data);
+
+	#ifdef DEBUG
+	self->logical_len = 0;
+	self->physical_len = 0;
+	self->data = 0;
+	#endif
+}
+
+
+void
+stack_clear(
+	Stack* self
+) {
+	assert(self != 0);
+	assert(self->data != 0);
+
+	self->logical_len = 0;
+
+	#ifdef DEBUG
+	stack_fill_stack_with_null(self);
+	#endif
+}
+
+
+void
+stack_push(
+	Stack* self,
+	void* item
+) {
+	assert(self != 0);
+	assert(self->data != 0);
+
+	// Extend the stack storage if required
+	if (self->physical_len == self->logical_len) {
+		void** new_data = (void**)checked_malloc(2 * self->physical_len * sizeof(void*));
+		memcpy(new_data, self->data, self->physical_len * sizeof(void*));
+		self->physical_len *= 2;
+		free(self->data);
+		self->data = new_data;
+	}
+
+	// Append the new item
+	self->data[self->logical_len] = item;
+	self->logical_len += 1;
+}
+
+
+void*
+stack_pop(
+	Stack* self
+) {
+	assert(self != 0);
+	assert(self->data != 0);
+	assert(self->logical_len != 0);
+
+	self->logical_len -= 1;
+	void* ret = self->data[self->logical_len];
+	
+	#ifdef DEBUG
+	self->data[self->logical_len] = 0;
+	#endif
+
+	return ret;
+}
+
+
+void*
+stack_peek(
+	Stack* self
+) {
+	assert(self != 0);
+	assert(self->data != 0);
+	assert(self->logical_len != 0);
+
+	return self->data[self->logical_len - 1];
+}
+
+
+bool
+stack_empty(
+	const Stack* self
+) {
+	assert(self != 0);
+	assert(self->data != 0);
+
+	return self->logical_len == 0;
+}

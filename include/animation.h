@@ -6,11 +6,14 @@
 #include "matrix.h"
 #include "node.h"
 #include "renderer.h"
+#include "dict.h"
 
 
 typedef struct {
-	Node* node_a;
-	Node* node_b;
+	Dict node_instance_dict;
+	size_t sorted_node_count;
+	Node** sorted_nodes;
+
 	Renderer* renderer;
 } Animation;
 
@@ -26,6 +29,21 @@ animation_init(
 extern void
 animation_destroy(
 	Animation* self
+);
+
+
+extern Node*
+animation_get_node_instance(
+	Animation* self,
+	const String* instance_name
+);
+
+
+extern int
+animation_add_node_instance(
+	Animation* self,
+	const String* instance_name,
+	const String* delegate_name
 );
 
 

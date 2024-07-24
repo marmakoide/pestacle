@@ -28,48 +28,74 @@ typedef struct {
 
 
 extern void
-DictIterator_init(DictIterator* self,
-                  Dict* dict);
+DictIterator_init(
+	DictIterator* self,
+	Dict* dict
+);
 
 
 extern void
-Dict_destroy(Dict* self);
+Dict_destroy(
+	Dict* self
+);
 
 
 extern void
-DictIterator_next(DictIterator* self);
+DictIterator_next(
+	DictIterator* self
+);
 
 
 extern bool
-DictIterator_has_next(const DictIterator* self);
+DictIterator_has_next(
+	const DictIterator* self
+);
 
 
 extern void
-Dict_init(Dict* self);
+Dict_init(
+	Dict* self
+);
 
 
 extern void
-Dict_clone(Dict* dst,
-           Dict* src);
-
-
-extern DictEntry*
-Dict_pick(Dict *restrict self);
-
-
-extern DictEntry*
-Dict_find(Dict *restrict self,
-          const String *restrict key);
-
-
-extern DictEntry*
-Dict_insert(Dict* self,
-            const String *restrict key);
+Dict_clear(
+	Dict* self
+);
 
 
 extern void
-Dict_erase(Dict* self,
-           DictEntry* entry);
+Dict_clone(
+	Dict* dst,
+	Dict* src
+);
+
+
+extern DictEntry*
+Dict_pick(
+	Dict *restrict self
+);
+
+
+extern DictEntry*
+Dict_find(
+	Dict *restrict self,
+	const String *restrict key
+);
+
+
+extern DictEntry*
+Dict_insert(
+	Dict* self,
+	const String *restrict key
+);
+
+
+extern void
+Dict_erase(
+	Dict* self,
+	DictEntry* entry
+);
 
 
 #endif /* PESTACLE_DICT_H */

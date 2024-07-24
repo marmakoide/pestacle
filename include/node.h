@@ -73,6 +73,7 @@ typedef struct {
 struct s_Node {
 	void* data;
 	const NodeDelegate* delegate;
+	String name;
 	Node** inputs;
 	NodeParameter* parameters;
 }; // struct s_Node
@@ -80,7 +81,8 @@ struct s_Node {
 
 extern Node*
 node_create_by_name(
-	const String* name
+	const String* name,
+	const String* delegate_name
 );
 
 

@@ -10,6 +10,20 @@ typedef struct {
 } String;
 
 
+extern void
+string_clone(
+	String* self,
+	const String* other
+);
+
+
+
+extern void
+string_destroy(
+	String* self
+);
+
+
 extern int
 string_equals(
 	const String* self,

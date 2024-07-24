@@ -85,6 +85,18 @@ Dict_init(Dict* self) {
 
 
 void
+Dict_clear(Dict* self) {
+	assert(self != 0);
+
+	self->key_count = 0;
+
+	DictEntry* entry = self->entries;
+	for(size_t i = self->size; i != 0; --i, ++entry)
+		DictEntry_init(entry);
+}
+
+
+void
 Dict_clone(Dict* dst,
            Dict* src) {
 	assert(dst != 0);
