@@ -16,7 +16,7 @@ node_new(
 	// Setup
 	ret->data = 0;
 	ret->delegate = delegate;
-	string_clone(&(ret->name), name);
+	String_clone(&(ret->name), name);
 
 	// Setup inputs array
 	if (delegate->input_count == 0)
@@ -76,7 +76,7 @@ node_destroy(
 	if (self->delegate->methods.destroy)
 		self->delegate->methods.destroy(self);
 
-	string_destroy(&(self->name));
+	String_destroy(&(self->name));
 
 	// Deallocate input array
 	if (self->delegate->input_count > 0) {
@@ -112,7 +112,7 @@ node_create_by_name(
 
 	const NodeDelegate** delegate_ptr = node_delegate_list;
 	for( ; delegate_ptr != 0; ++delegate_ptr)
-		if (string_equals(delegate_name, &((*delegate_ptr)->name)))
+		if (String_equals(delegate_name, &((*delegate_ptr)->name)))
 			return node_new(name, *delegate_ptr);
 
 	SDL_LogError(
@@ -138,7 +138,7 @@ node_get_parameter_by_name(
 		self->delegate->parameter_defs;
 
 	for(size_t i = 0; i < self->delegate->parameter_count; ++i, ++param_def_ptr)
-		if (string_equals(name, &(param_def_ptr->name)))
+		if (String_equals(name, &(param_def_ptr->name)))
 			return self->parameters + i;
 
 	SDL_LogError(
@@ -166,7 +166,7 @@ node_set_input_slot_by_name(
 
 	const NodeInputSlotDefinition* slot_ptr = self->delegate->input_defs;
 	for(size_t i = 0; i < self->delegate->input_count; ++i, ++slot_ptr)
-		if (string_equals(name, &(slot_ptr->name))) {
+		if (String_equals(name, &(slot_ptr->name))) {
 			self->inputs[i] = other;
 			return 1;
 		}

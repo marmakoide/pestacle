@@ -140,7 +140,7 @@ Dict_probe(Dict *restrict self,
 		// If the entry is not a tombstome
 		if (entry->value != DICT_ENTRY_TOMBSTONE_VALUE)
 			// Check if the entry is unused or matching the key
-			if ((entry->key == 0) || string_equals(entry->key, key))
+			if ((entry->key == 0) || String_equals(entry->key, key))
 				return entry;
 	}
 

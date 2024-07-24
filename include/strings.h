@@ -11,7 +11,7 @@ typedef struct {
 
 
 extern void
-string_clone(
+String_clone(
 	String* self,
 	const String* other
 );
@@ -19,13 +19,13 @@ string_clone(
 
 
 extern void
-string_destroy(
+String_destroy(
 	String* self
 );
 
 
 extern int
-string_equals(
+String_equals(
 	const String* self,
 	const String* other
 );
