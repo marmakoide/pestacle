@@ -10,6 +10,8 @@
 
 static int
 Animation_topological_sort(Animation* self) {
+	int ret = 1;
+
 	Stack stack;
 	Stack_init(&stack);
 
@@ -19,8 +21,10 @@ Animation_topological_sort(Animation* self) {
 	// Get the root node
 	const String root_node_instance_name = { "main", 5 };
 	Node* root = Animation_get_node_instance(self, &root_node_instance_name);
-	if (!root)
-		return 0;
+	if (!root) {
+		ret = 0;
+		goto termination;
+	}
 
 	// Count the size of the component corresponding to the root node
 	size_t component_size = 0;
@@ -40,7 +44,6 @@ Animation_topological_sort(Animation* self) {
 					Stack_push(&stack, *input_node_ptr);
 		}
 	}
-
 
 	self->sorted_node_count = component_size;
 
@@ -68,9 +71,10 @@ Animation_topological_sort(Animation* self) {
 	}
 
 	// Job done
+termination:
 	Dict_destroy(&visited);
 	Stack_destroy(&stack);
-	return 1;
+	return ret;
 }
 
 
@@ -127,7 +131,7 @@ Animation_init(
 
 	self->renderer = 0;
 
-	//
+	// Setup the graph
 	if (!Animation_build(self))
 		goto failure;
 
