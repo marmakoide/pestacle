@@ -16,7 +16,7 @@ typedef struct {
 
 
 extern void
-display_init(
+Display_init(
 	Display* display,
 	uint32_t physical_width,
 	uint32_t physical_height,

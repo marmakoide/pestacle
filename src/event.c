@@ -3,7 +3,7 @@
 
 
 void
-display_init(
+Display_init(
 	Display* self,
 	uint32_t physical_width,
 	uint32_t physical_height,

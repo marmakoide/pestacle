@@ -78,7 +78,7 @@ main(int argc, char* argv[]) {
 	// Initialize animation
 	Display display;
 
-	display_init(
+	Display_init(
 		&display,
 		DISPLAY_WIDTH,
 		DISPLAY_HEIGHT,
