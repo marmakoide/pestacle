@@ -8,4 +8,8 @@ extern noreturn void
 handle_out_of_memory_error();
 
 
+extern noreturn void
+handle_input_read_error();
+
+
 #endif // PESTACLE_ERRORS_H 

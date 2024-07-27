@@ -10,6 +10,7 @@ $(TARGET): \
 $(BUILD_DIR)/errors.o \
 $(BUILD_DIR)/memory.o \
 $(BUILD_DIR)/strings.o \
+$(BUILD_DIR)/input_buffer.o \
 $(BUILD_DIR)/dict.o \
 $(BUILD_DIR)/stack.o \
 $(BUILD_DIR)/array_ops.o \
@@ -37,12 +38,20 @@ $(BUILD_DIR)/nodes/%.deps: src/nodes/%.c
 	@mkdir --parents $(BUILD_DIR)/nodes
 	$(CC) $(INCLUDES) -MM -MG -MT$(patsubst src/nodes/%.c, $(BUILD_DIR)/nodes/%.o, $^) -MF $@ $^
 
+$(BUILD_DIR)/parser/%.deps: src/parser/%.c
+	@mkdir --parents $(BUILD_DIR)/parser
+	$(CC) $(INCLUDES) -MM -MG -MT$(patsubst src/parser/%.c, $(BUILD_DIR)/parser/%.o, $^) -MF $@ $^
+
 $(BUILD_DIR)/renderers/%.deps: src/renderers/%.c
 	@mkdir --parents $(BUILD_DIR)/renderers
 	$(CC) $(INCLUDES) -MM -MG -MT$(patsubst src/renderers/%.c, $(BUILD_DIR)/renderers/%.o, $^) -MF $@ $^
 
 $(BUILD_DIR)/%.o: src/%.c
 	@mkdir --parents $(BUILD_DIR)
+	$(CC) -o $@ -c $(CFLAGS) $<
+
+$(BUILD_DIR)/parser/%.o: src/parser/%.c
+	@mkdir --parents $(BUILD_DIR)/parser
 	$(CC) -o $@ -c $(CFLAGS) $<
 
 $(BUILD_DIR)/nodes/%.o: src/nodes/%.c
@@ -60,5 +69,6 @@ clean:
 .PHONY: all clean
 
 -include $(patsubst src/%.c, $(BUILD_DIR)/%.deps, $(wildcard src/*.c))
+-include $(patsubst src/parser/%.c, $(BUILD_DIR)/parser/%.deps, $(wildcard src/parser/*.c))
 -include $(patsubst src/nodes/%.c, $(BUILD_DIR)/nodes/%.deps, $(wildcard src/nodes/*.c))
 -include $(patsubst src/renderers/%.c, $(BUILD_DIR)/renderers/%.deps, $(wildcard src/renderers/*.c))
