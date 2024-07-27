@@ -1,7 +1,7 @@
 #include <ctype.h>
 #include <string.h>
 #include "errors.h"
-#include "lexer.h"
+#include "parser/lexer.h"
 
 
 void
