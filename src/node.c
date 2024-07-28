@@ -111,7 +111,7 @@ Node_create_by_name(
 	assert(name->data != 0);
 
 	const NodeDelegate** delegate_ptr = node_delegate_list;
-	for( ; delegate_ptr != 0; ++delegate_ptr)
+	for( ; *delegate_ptr != 0; ++delegate_ptr)
 		if (String_equals(delegate_name, &((*delegate_ptr)->name)))
 			return Node_new(name, *delegate_ptr);
 

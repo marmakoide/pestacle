@@ -18,8 +18,14 @@ typedef struct {
 } Animation;
 
 
-extern int
+extern void
 Animation_init(
+	Animation* self
+);
+
+
+extern int
+Animation_setup(
 	Animation* self,
 	int screen_width,
 	int screen_height

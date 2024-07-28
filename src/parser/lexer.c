@@ -372,7 +372,7 @@ Lexer_test() {
 	Lexer_init(&lexer, stdin);
 	Lexer_next_token(&lexer);
 	for( ; (lexer.token.type != TokenType__invalid) && (lexer.token.type != TokenType__eof); Lexer_next_token(&lexer))
-		printf("[%s]", lexer.token.text);
+		printf("[%s]", lexer.token.text.data);
 	printf("\n");
 }
 #endif

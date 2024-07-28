@@ -98,6 +98,7 @@ termination:
 }
 
 
+/*
 static int
 Animation_build(Animation* self) {
 	const String node_instance_a_name = { "input", 6 };
@@ -137,23 +138,32 @@ Animation_build(Animation* self) {
 	// Job done
 	return 1;
 }
+*/
+
+void
+Animation_init(
+	Animation* self
+) {
+	assert(self != 0);
+
+	Dict_init(&(self->node_instance_dict));
+	self->sorted_node_count = 0;
+	self->sorted_nodes = 0;
+	self->renderer = 0;
+}
 
 
 int
-Animation_init(
+Animation_setup(
 	Animation* self,
 	int screen_width,
 	int screen_height
 ) {
-	Dict_init(&(self->node_instance_dict));
-	self->sorted_node_count = 0;
-	self->sorted_nodes = 0;
-
-	self->renderer = 0;
+	assert(self != 0);
 
 	// Setup the graph
-	if (!Animation_build(self))
-		goto failure;
+	//if (!Animation_build(self))
+	//	goto failure;
 
 	if (!Animation_topological_sort(self))
 		goto failure;

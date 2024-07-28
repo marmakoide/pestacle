@@ -1,5 +1,5 @@
-#ifndef PESTACLE_LEXER_H
-#define PESTACLE_LEXER_H
+#ifndef PESTACLE_PARSER_LEXER_H
+#define PESTACLE_PARSER_LEXER_H
 
 /******************************************************************************
   Return tokens from an input file
@@ -7,19 +7,20 @@
 
 
 #include <stdint.h>
+#include "strings.h"
 #include "input_buffer.h"
 #include "file_location.h"
 
 
 enum TokenType {
-    TokenType__invalid = 0,       // debugging help
-    TokenType__identifier,        // identifier
-    TokenType__integer,           // integer constant
-    TokenType__colon,             // :
-    TokenType__dot,               // .
-    TokenType__equal,             // =
-    TokenType__left_arrow,        // ->
-    TokenType__eof                // end of file
+    TokenType__invalid = 0, // debugging help
+    TokenType__identifier,  // identifier
+    TokenType__integer,     // integer constant
+    TokenType__colon,       // :
+    TokenType__dot,         // .
+    TokenType__equal,       // =
+    TokenType__left_arrow,  // ->
+    TokenType__eof          // end of file
 }; // enum TokenType
 
 
@@ -28,8 +29,9 @@ enum TokenType {
 typedef struct {
 	enum TokenType type;
 	FileLocation location;
-	char text[LEXER_TOKEN_TEXT_MAX_SIZE];
+	char text_data[LEXER_TOKEN_TEXT_MAX_SIZE];
 	char* text_end;
+	String text;
 	int64_t value;	
 } TokenData;
 
@@ -47,8 +49,8 @@ Lexer_next_token(
 );
 
 
-extern size_t
-Lexer_token_text_len(
+extern const String*
+Lexer_token_text(
 	Lexer* self
 );
 
@@ -66,4 +68,4 @@ Lexer_test();
 #endif // DEBUG
 
 
-#endif /* PESTACLE_LEXER_H */
+#endif /* PESTACLE_PARSER_LEXER_H */

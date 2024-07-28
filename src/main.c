@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <SDL.h>
 #include "event.h"
+#include "parser/parser.h"
 #include "animation.h"
 
 
@@ -59,6 +60,17 @@ framebuffer_update_callback(Uint32 interval, void* param) {
 }
 
 
+static void
+load_config() {
+	Lexer lexer;
+	Lexer_init(&lexer, stdin);
+
+	ParseContext context;
+	context.animation = &animation;
+	ParseContext_parse(&context, &lexer);
+}
+
+
 int
 main(int argc, char* argv[]) {
 	SDL_TimerID animation_state_update_timer = 0;
@@ -76,6 +88,19 @@ main(int argc, char* argv[]) {
 	}
 
 	// Initialize animation
+	Animation_init(&animation);
+
+	load_config();
+
+	if (!Animation_setup(
+		&animation,
+		EMULATED_DISPLAY_WIDTH,
+		EMULATED_DISPLAY_HEIGHT)
+	)
+		goto termination;
+
+
+	//
 	Display display;
 
 	Display_init(
@@ -85,13 +110,6 @@ main(int argc, char* argv[]) {
 		EMULATED_DISPLAY_WIDTH,
 		EMULATED_DISPLAY_HEIGHT
 	);
-
-	if (!Animation_init(
-		&animation,
-		EMULATED_DISPLAY_WIDTH,
-		EMULATED_DISPLAY_HEIGHT)
-	)
-		goto termination;
 
 	// Initialize the animation state mutex
 	animation_state_mutex = SDL_CreateMutex();
