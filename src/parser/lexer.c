@@ -33,7 +33,7 @@ Lexer_token_text_len(const Lexer* self) {
 
 const String*
 Lexer_token_text(Lexer* self) {
-	self->token.text.len = Lexer_token_text_len(self) + 1;
+	self->token.text.len = Lexer_token_text_len(self);
 	return &(self->token.text);
 }
 
