@@ -60,14 +60,14 @@ framebuffer_update_callback(Uint32 interval, void* param) {
 }
 
 
-static void
+static int
 load_config() {
 	Lexer lexer;
 	Lexer_init(&lexer, stdin);
 
 	ParseContext context;
 	context.animation = &animation;
-	ParseContext_parse(&context, &lexer);
+	return ParseContext_parse(&context, &lexer);
 }
 
 
@@ -90,7 +90,8 @@ main(int argc, char* argv[]) {
 	// Initialize animation
 	Animation_init(&animation);
 
-	load_config();
+	if (!load_config())
+		goto termination;
 
 	if (!Animation_setup(
 		&animation,
