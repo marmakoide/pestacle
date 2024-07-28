@@ -1,10 +1,16 @@
 #ifndef PESTACLE_DICT_H
 #define PESTACLE_DICT_H
 
+/******************************************************************************
+  Implementation of a dictionary aka hashmap with strings as keys
+    - Linear probing
+    - Open addressing
+    - Lazy deletion
+ *****************************************************************************/
+
+
 #include <stdbool.h>
 #include "strings.h"
-
-// Implements a linear probing, open addressing hashmap with lazy deletion
 
 #define DICT_ENTRY_TOMBSTONE_VALUE ((void*)-1)
 

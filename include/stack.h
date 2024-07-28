@@ -1,6 +1,11 @@
 #ifndef PESTACLE_STACK_H
 #define PESTACLE_STACK_H
 
+/******************************************************************************
+  Implementation of a stack, that will extend itself as needed
+ *****************************************************************************/
+
+
 #include <stddef.h>
 #include <stdbool.h>
 

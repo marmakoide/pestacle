@@ -1,6 +1,13 @@
 #ifndef PESTACLE_STRING_H
 #define PESTACLE_STRING_H
 
+/******************************************************************************
+  Implementation of strings.
+  The main reason to not just use raw char arrays is to avoid using functions
+  like strcpy which makes buffer overuns very easy to run into.
+ *****************************************************************************/
+
+
 #include <stddef.h>
 
 
