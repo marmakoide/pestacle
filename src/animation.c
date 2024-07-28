@@ -158,13 +158,8 @@ void
 Animation_destroy(
 	Animation* self
 ) {
+	// Deallocate sorted node dictionary
 	if (self->sorted_nodes) {
-		// Deallocate all nodes
-		Node** node_ptr = self->sorted_nodes;
-		for(size_t i = self->sorted_node_count; i != 0; --i, ++node_ptr) {
-			Node_destroy(*node_ptr);
-			free(*node_ptr);
-		}
 		free(self->sorted_nodes);
 
 		#ifdef DEBUG
@@ -173,15 +168,25 @@ Animation_destroy(
 		#endif
 	}
 
+	// Deallocate all nodes
+	DictIterator it;
+	DictIterator_init(&it, &(self->node_instance_dict));
+	for( ; DictIterator_has_next(&it); DictIterator_next(&it)) {
+		Node* node = (Node*)it.entry->value;
+		Node_destroy(node);
+		free(node);
+	}
+
+	// Deallocate node dictionary
+	Dict_destroy(&(self->node_instance_dict)); 
+
+	// Deallocate renderer
 	if (self->renderer) {
 		renderer_destroy(self->renderer);
 		free(self->renderer);
 	}
 
-	Dict_destroy(&(self->node_instance_dict));
-
 	#ifdef DEBUG
-	self->sorted_nodes = 0;
 	self->renderer = 0;
 	#endif
 }
