@@ -37,10 +37,25 @@ String_destroy(
 }
 
 
+uint32_t
+String_djb_hash(const String *restrict str) {
+	// Classic DJB hash, by Daniel J. Berstein
+	assert(str != 0);
+	
+	uint32_t hash = 5381;
+
+	const char* char_ptr = str->data;
+	for(size_t i = str->len - 1; i != 0; --i, ++char_ptr)
+		hash = ((hash << 5) + hash) + *char_ptr; // equivalent to hash * 33 + c
+
+	return hash;
+}
+
+
 int
 String_equals(
-	const String* self,
-	const String* other
+	const String *restrict self,
+	const String *restrict other
 ) {
 	assert(self != 0);
 	assert(other != 0);

@@ -7,21 +7,6 @@
 #include "dict.h"
 
 
-// Classic DJB hash, by Daniel J. Berstein
-static uint32_t
-djb_hash(const String *restrict str) {
-	assert(str != 0);
-	
-	uint32_t hash = 5381;
-
-	const char* char_ptr = str->data;
-	for(size_t i = str->len - 1; i != 0; --i, ++char_ptr)
-		hash = ((hash << 5) + hash) + *char_ptr; // equivalent to hash * 33 + c
-
-	return hash;
-}
-
-
 void
 DictIterator_next(DictIterator* self) {
 	assert(self != 0);
@@ -131,7 +116,7 @@ Dict_probe(Dict *restrict self,
 	assert(key != 0);
 
 	// Initial search locus
-	size_t i = djb_hash(key);
+	size_t i = String_djb_hash(key);
 
 	// Linear search
 	for(size_t j = 0; j < self->size; ++j) {

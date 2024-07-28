@@ -9,6 +9,7 @@
 
 
 #include <stddef.h>
+#include <stdint.h>
 
 
 typedef struct {
@@ -24,17 +25,22 @@ String_clone(
 );
 
 
-
 extern void
 String_destroy(
 	String* self
 );
 
 
+extern uint32_t
+String_djb_hash(
+	const String *restrict str
+);
+
+
 extern int
 String_equals(
-	const String* self,
-	const String* other
+	const String *restrict self,
+	const String *restrict other
 );
 
 
