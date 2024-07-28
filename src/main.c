@@ -16,6 +16,7 @@ const unsigned int EMULATED_DISPLAY_HEIGHT = 100;
 
 // --- Main entry point -------------------------------------------------------
 
+bool quit = false;
 static SDL_Window* window = 0;
 static SDL_Surface* window_surface = 0;
 static SDL_Renderer* renderer = 0;
@@ -29,34 +30,43 @@ Animation animation;
 
 static Uint32
 animation_state_update_callback(Uint32 interval, void* param) {
+	Uint32 ret = 0;
+
 	// Update the animation statex
 	SDL_LockMutex(animation_state_mutex);
-	Animation_update(&animation);
+	if (!quit) {
+		Animation_update(&animation);
+		ret = interval;
+	}
 	SDL_UnlockMutex(animation_state_mutex);
 
 	// Job done
-	return interval;
+	return ret;
 }
 
 
 static Uint32
 framebuffer_update_callback(Uint32 interval, void* param) {
+	Uint32 ret = 0;
 	Display* display = (Display*)param;
 
 	// Render
 	SDL_LockMutex(animation_state_mutex);
-	Animation_render(&animation, framebuffer_rgb24);
+	if (!quit) {
+		Animation_render(&animation, framebuffer_rgb24);
+		ret = interval;
+	}
 	SDL_UnlockMutex(animation_state_mutex);
-	
+
 	// Update the framebuffer
 	SDL_BlitSurface(framebuffer_rgb24, 0, framebuffer_native, 0);
 
 	// Update the display
 	SDL_BlitScaled(framebuffer_native, 0, window_surface, &(display->visible_area));
 	SDL_UpdateWindowSurface(window);
-
+	
 	// Job done
-	return interval;
+	return ret;
 }
 
 
@@ -99,7 +109,6 @@ main(int argc, char* argv[]) {
 		EMULATED_DISPLAY_HEIGHT)
 	)
 		goto termination;
-
 
 	//
 	Display display;
@@ -208,14 +217,16 @@ main(int argc, char* argv[]) {
 	}
 
 	// Event processing loop
-	for(bool quit = false; !quit; ) {
+	for(quit = false; !quit; ) {
 		SDL_Event src_event;
 		Event dst_event;
 
 		if (SDL_WaitEvent(&src_event)) {
 			switch(src_event.type) {
 				case SDL_QUIT:
+					SDL_LockMutex(animation_state_mutex);
 					quit = true;
+					SDL_UnlockMutex(animation_state_mutex);
 					break;
 
 				case SDL_MOUSEBUTTONUP:
@@ -241,11 +252,11 @@ main(int argc, char* argv[]) {
 		}
 	}
 
+	// Wait for the timers to stop
+	SDL_Delay(100);
+
 	// Free ressources
 termination:
-	if (animation_state_mutex)
-		SDL_DestroyMutex(animation_state_mutex);
-
 	if (animation_state_update_timer)
 		SDL_RemoveTimer(animation_state_update_timer);
 
@@ -265,6 +276,9 @@ termination:
 
 	if (window)
 		SDL_DestroyWindow(window);
+
+	if (animation_state_mutex)
+		SDL_DestroyMutex(animation_state_mutex);
 	
 	SDL_Quit();
 
