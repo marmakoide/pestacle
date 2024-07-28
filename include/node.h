@@ -62,7 +62,7 @@ typedef struct {
 
 
 extern const NodeDelegate*
-node_delegate_list[];
+get_node_delegate_by_name(const String* name);
 
 
 typedef struct {

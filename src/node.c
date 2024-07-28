@@ -112,18 +112,11 @@ Node_create_by_name(
 	assert(delegate_name != 0);
 	assert(delegate_name->data != 0);
 
-	const NodeDelegate** delegate_ptr = node_delegate_list;
-	for( ; *delegate_ptr != 0; ++delegate_ptr)
-		if (String_equals(delegate_name, &((*delegate_ptr)->name)))
-			return Node_new(name, *delegate_ptr);
+	const NodeDelegate* delegate = get_node_delegate_by_name(delegate_name);
+	if (!delegate)
+		return 0;
 
-	SDL_LogError(
-		SDL_LOG_CATEGORY_SYSTEM,
-		"Could not find node type '%s'\n",
-		delegate_name->data
-	);
-
-	return 0;
+	return Node_new(name, delegate);
 }
 
 
@@ -142,13 +135,6 @@ Node_get_parameter_by_name(
 	for(size_t i = 0; i < self->delegate->parameter_count; ++i, ++param_def_ptr)
 		if (String_equals(name, &(param_def_ptr->name)))
 			return self->parameters + i;
-
-	SDL_LogError(
-		SDL_LOG_CATEGORY_SYSTEM,
-		"Could not find parameter '%s' for '%s' node type\n",
-		name->data,
-		self->delegate->name.data
-	);
 
 	return 0;
 }
@@ -172,13 +158,6 @@ Node_set_input_slot_by_name(
 			self->inputs[i] = other;
 			return true;
 		}
-
-	SDL_LogError(
-		SDL_LOG_CATEGORY_SYSTEM,
-		"Could not find slot '%s' for '%s' node type\n",
-		name->data,
-		self->delegate->name.data
-	);
 
 	return false;
 }

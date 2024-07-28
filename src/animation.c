@@ -199,18 +199,13 @@ Animation_get_node_instance(
 ) {
 	assert(self != 0);
 	assert(instance_name != 0);
+	assert(instance_name->data != 0);
 
 	DictEntry* entry =
 		Dict_find(&(self->node_instance_dict), instance_name);
 
-	if (!entry) {
-		SDL_LogError(
-			SDL_LOG_CATEGORY_SYSTEM,
-			"Node instance '%s' is not defined\n",
-			instance_name->data
-		);
+	if (!entry)
 		return 0;
-	}
 
 	return (Node*)entry->value;
 }
@@ -231,14 +226,8 @@ Animation_add_node_instance(
 	DictEntry* entry =
 		Dict_find(&(self->node_instance_dict), instance_name);
 
-	if (entry) {
-		SDL_LogError(
-			SDL_LOG_CATEGORY_SYSTEM,
-			"Node instance '%s' is already defined\n",
-			instance_name->data
-		);
+	if (entry)
 		return false;
-	}
 
 	// Create the node instance
 	Node* node = Node_create_by_name(instance_name, delegate_name);
