@@ -109,6 +109,7 @@ Node_create_by_name(
 ) {
 	assert(name != 0);
 	assert(name->data != 0);
+	assert(name->delegate_data != 0);
 
 	const NodeDelegate** delegate_ptr = node_delegate_list;
 	for( ; *delegate_ptr != 0; ++delegate_ptr)
