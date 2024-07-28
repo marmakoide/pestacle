@@ -1,5 +1,6 @@
 #include <ctype.h>
 #include <string.h>
+#include <stdlib.h>
 #include "errors.h"
 #include "parser/lexer.h"
 
@@ -17,7 +18,7 @@ Lexer_init(
 	self->token.type = TokenType__invalid;
 	self->token.text.data = self->token.text_data;
 	self->token.text.len = 0;
-	self->token.value = 0;
+	self->token.value.int64_value = 0;
 
 	// Initialize the token text buffer
 	memset(self->token.text_data, 0, LEXER_TOKEN_TEXT_MAX_SIZE);
@@ -63,6 +64,12 @@ Lexer_accept(Lexer* self, char c) {
 
 
 static void
+Lexer_skip_char(Lexer* self) {
+	InputBuffer_next(&(self->input_buffer));
+}
+
+
+static void
 Lexer_accept_char(Lexer* self) {
 	Lexer_accept(self, InputBuffer_get(&(self->input_buffer)));
 }
@@ -76,7 +83,14 @@ Lexer_accept_and_next_char(Lexer* self) {
 
 
 static void
-	Lexer_parse_decimal_integer(Lexer* self) {
+Lexer_parse_real(Lexer* self) {
+	char* end_ptr = 0;
+	self->token.value.real_value = strtof(self->token.text_data, &end_ptr);
+}
+
+
+static void
+Lexer_parse_decimal_integer(Lexer* self) {
 	uint32_t value = 0;
 
 	const char* str = self->token.text_data;
@@ -92,7 +106,7 @@ static void
 		value += *str - '0';
 	}
     
-	self->token.value = value;
+	self->token.value.int64_value = value;
 }
 
 
@@ -119,7 +133,7 @@ Lexer_parse_hexadecimal_integer(Lexer* self) {
 		value |= hex_char_to_digit[toupper(*str) - '0'];
 	}
 
-	self->token.value = value;
+	self->token.value.int64_value = value;
 }
 
 
@@ -128,12 +142,14 @@ enum LexerParsingState {
 	LexerParsingState__identifier,
 	LexerParsingState__minus,
 	LexerParsingState__slash,
+	LexerParsingState__dot,
 	LexerParsingState__single_line_comment,
 	LexerParsingState__multi_line_comment,
 	LexerParsingState__multi_line_comment_end,
 	LexerParsingState__zero_digit,
 	LexerParsingState__decimal_integer,
 	LexerParsingState__hexadecimal_integer,
+	LexerParsingState__real,
 }; // enum LexerParsingState
 
 
@@ -141,7 +157,7 @@ void
 Lexer_next_token(Lexer* self) {
 	enum LexerParsingState state = LexerParsingState__init;
 	Lexer_clear_token_text(self);
-	self->token.value = 0;
+	self->token.value.int64_value = 0;
 	self->token.type = TokenType__invalid;
     
 	while(self->token.type != TokenType__eof) {
@@ -157,23 +173,23 @@ Lexer_next_token(Lexer* self) {
 					case ' ':
 					case '\t':
 					case '\r':
-						InputBuffer_next(&(self->input_buffer));
+						Lexer_skip_char(self);
 						break;
 					case '\n':
 						self->location.line += 1;
-						InputBuffer_next(&(self->input_buffer));
+						Lexer_skip_char(self);
 						break;
 					case ':':
 						self->token.type = TokenType__colon;
 						Lexer_accept_and_next_char(self);
 						return;
 					case '.':
-						self->token.type = TokenType__dot;
+						state = LexerParsingState__dot;
 						Lexer_accept_and_next_char(self);
-						return;
+						break;
 					case '/':
 						state = LexerParsingState__slash;
-						InputBuffer_next(&(self->input_buffer));
+						Lexer_skip_char(self);
 						break;
 					case '=':
 						self->token.type = TokenType__equal;
@@ -222,22 +238,33 @@ Lexer_next_token(Lexer* self) {
 				switch(current_char) {
 					case '>':
 						self->token.type = TokenType__left_arrow;
-						InputBuffer_next(&(self->input_buffer));
+						Lexer_accept_and_next_char(self);
 						return;
 					default:
 						return;
 				}
 				break;
 				// case LexerParsingState__minus
+			case LexerParsingState__dot:
+				if (isdigit(current_char)) {
+					state = LexerParsingState__real;
+					Lexer_accept_and_next_char(self);
+				}
+				else {
+					self->token.type = TokenType__dot;
+					return;
+				}
+				break;
+				// case LexerParsingState__dot
 			case LexerParsingState__slash:
 				switch(current_char) {
 					case '/':
 						state = LexerParsingState__single_line_comment;
-						InputBuffer_next(&(self->input_buffer));
+						Lexer_skip_char(self);
 						break;
 					case '*':
 						state = LexerParsingState__multi_line_comment;
-						InputBuffer_next(&(self->input_buffer));
+						Lexer_skip_char(self);
 						break;
 					default:
 						return;
@@ -249,13 +276,13 @@ Lexer_next_token(Lexer* self) {
 					case '\n':
 						state = LexerParsingState__init;
 						self->location.line += 1;
-						InputBuffer_next(&(self->input_buffer));
+						Lexer_skip_char(self);
 						break;
 					case -1:
 						state = LexerParsingState__init;
 						break;
 					default:
-						InputBuffer_next(&(self->input_buffer));
+						Lexer_skip_char(self);
 				}
 				break;
 				// case LexerParsingState__single_line_comment
@@ -263,7 +290,7 @@ Lexer_next_token(Lexer* self) {
 				switch(current_char) {
 					case '*':
 						state = LexerParsingState__multi_line_comment_end;
-						InputBuffer_next(&(self->input_buffer));
+						Lexer_skip_char(self);
 						break;
 					case -1:
 						handle_processing_error(
@@ -274,7 +301,7 @@ Lexer_next_token(Lexer* self) {
 					case '\n':
 						self->location.line += 1;
 					default:
-						InputBuffer_next(&(self->input_buffer));
+						Lexer_skip_char(self);
 				}
 				break;
 				// case LexerParsingState__multi_line_comment
@@ -282,7 +309,7 @@ Lexer_next_token(Lexer* self) {
 				switch(current_char) {
 					case '/':
 						state = LexerParsingState__init;
-						InputBuffer_next(&(self->input_buffer));
+						Lexer_skip_char(self);
 						break;
 					default:
 						state = LexerParsingState__multi_line_comment;
@@ -314,9 +341,13 @@ Lexer_next_token(Lexer* self) {
 				// LexerParsingState__identifier
 				case LexerParsingState__zero_digit:
 					switch(current_char) {
+						case '.':
+							state = LexerParsingState__real;
+							Lexer_accept_and_next_char(self);
+							break;
 						case 'X':
 						case 'x':
-						 state = LexerParsingState__hexadecimal_integer;
+							state = LexerParsingState__hexadecimal_integer;
 							Lexer_accept_and_next_char(self);
 							break;
 						case '1':
@@ -338,12 +369,19 @@ Lexer_next_token(Lexer* self) {
 					break;
 					// case LexerParsingState__zero_digit
 				case LexerParsingState__decimal_integer:
-					if (isdigit(current_char))
-						Lexer_accept_and_next_char(self);
-					else {
-						Lexer_parse_decimal_integer(self);
-						self->token.type = TokenType__integer;
-						return;
+					switch(current_char) {
+						case '.':
+							state = LexerParsingState__real;
+							Lexer_accept_and_next_char(self);
+							break;
+						case '0': case '1': case '2': case '3': case '4':
+						case '5': case '6': case '7': case '8': case '9':
+							Lexer_accept_and_next_char(self);
+							break;
+						default:
+							Lexer_parse_decimal_integer(self);
+							self->token.type = TokenType__integer;
+							return;
 					}
 					break;
 					// case LexerParsingState__decimal_integer
@@ -357,6 +395,15 @@ Lexer_next_token(Lexer* self) {
 					}
 					break;
 					// case LexerParsingState__hexadecimal_integer
+				case LexerParsingState__real:
+					if (isdigit(current_char))
+						Lexer_accept_and_next_char(self);
+					else {
+						Lexer_parse_real(self);
+						self->token.type = TokenType__real;
+						return;
+					}
+					break;
 		}
 	}
 }

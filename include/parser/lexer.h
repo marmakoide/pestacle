@@ -7,6 +7,7 @@
 
 
 #include <stdint.h>
+#include "array_ops.h"
 #include "strings.h"
 #include "input_buffer.h"
 #include "file_location.h"
@@ -16,6 +17,7 @@ enum TokenType {
     TokenType__invalid = 0, // debugging help
     TokenType__identifier,  // identifier
     TokenType__integer,     // integer constant
+    TokenType__real,        // real constant
     TokenType__colon,       // :
     TokenType__dot,         // .
     TokenType__equal,       // =
@@ -26,13 +28,19 @@ enum TokenType {
 
 #define LEXER_TOKEN_TEXT_MAX_SIZE 1024
 
+typedef union {
+	int64_t int64_value;
+	real_t real_value;
+} TokenValue;
+
+
 typedef struct {
 	enum TokenType type;
 	FileLocation location;
 	char text_data[LEXER_TOKEN_TEXT_MAX_SIZE];
 	char* text_end;
 	String text;
-	int64_t value;	
+	TokenValue value;
 } TokenData;
 
 
