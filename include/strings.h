@@ -10,6 +10,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 
 typedef struct {
@@ -37,7 +38,7 @@ String_djb_hash(
 );
 
 
-extern int
+extern bool
 String_equals(
 	const String *restrict self,
 	const String *restrict other

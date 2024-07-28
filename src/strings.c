@@ -52,7 +52,7 @@ String_djb_hash(const String *restrict str) {
 }
 
 
-int
+bool
 String_equals(
 	const String *restrict self,
 	const String *restrict other
