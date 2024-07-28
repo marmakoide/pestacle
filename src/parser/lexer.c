@@ -143,6 +143,8 @@ enum LexerParsingState {
 	LexerParsingState__minus,
 	LexerParsingState__slash,
 	LexerParsingState__dot,
+	LexerParsingState__string,
+	LexerParsingState__string_escape,
 	LexerParsingState__single_line_comment,
 	LexerParsingState__multi_line_comment,
 	LexerParsingState__multi_line_comment_end,
@@ -177,6 +179,10 @@ Lexer_next_token(Lexer* self) {
 						break;
 					case '\n':
 						self->location.line += 1;
+						Lexer_skip_char(self);
+						break;
+					case '"':
+						state = LexerParsingState__string;
 						Lexer_skip_char(self);
 						break;
 					case ':':
@@ -216,15 +222,8 @@ Lexer_next_token(Lexer* self) {
 						state = LexerParsingState__zero_digit;
 						Lexer_accept_and_next_char(self);
 					break;
-					case '1':
-					case '2':
-					case '3':
-					case '4':
-					case '5':
-					case '6':
-					case '7':
-					case '8':
-					case '9':
+					case '1': case '2': case '3': case '4':
+					case '5': case '6': case '7': case '8': case '9':
 						state = LexerParsingState__decimal_integer;
 						Lexer_accept_and_next_char(self);
 					break;
@@ -245,6 +244,52 @@ Lexer_next_token(Lexer* self) {
 				}
 				break;
 				// case LexerParsingState__minus
+			case LexerParsingState__string:
+				switch(current_char) {
+					case '"':
+						self->token.type = TokenType__string;
+						Lexer_skip_char(self);
+						return;
+					case '\n':
+						self->location.line += 1;
+						Lexer_accept_and_next_char(self);
+						break;
+					case '\\':
+						state = LexerParsingState__string_escape;
+						Lexer_skip_char(self);
+						break;
+					case -1:
+						handle_processing_error(
+							&(self->location),
+							"unterminated string constant"
+						);
+						break;
+					default:
+						Lexer_accept_and_next_char(self);
+				}
+				break;
+				// case LexerParsingState__string
+			case LexerParsingState__string_escape:
+				switch(current_char) {
+					case 'n':
+						Lexer_accept(self, '\n');
+						break;
+					case '\\':
+						Lexer_accept(self, '\\');
+						break;
+					case '\"':
+						Lexer_accept(self, '\"');
+						break;
+					default:
+						handle_processing_error(
+							&(self->location),
+							"unsupported string escape sequence"
+						);
+						break;
+				}
+				Lexer_skip_char(self);
+				state = LexerParsingState__string;
+				break;
 			case LexerParsingState__dot:
 				if (isdigit(current_char)) {
 					state = LexerParsingState__real;
@@ -328,7 +373,7 @@ Lexer_next_token(Lexer* self) {
 					case 'g': case 'h': case 'i': case 'j': case 'k': case 'l':
 					case 'm': case 'n': case 'o': case 'p': case 'q': case 'r':
 					case 's': case 't': case 'u': case 'v': case 'w': case 'x':
-					case 'y': case 'z':                      
+					case 'y': case 'z':
 					case '0': case '1': case '2': case '3': case '4':
 					case '5': case '6': case '7': case '8': case '9':
 						Lexer_accept_and_next_char(self);
