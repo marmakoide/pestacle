@@ -98,48 +98,6 @@ termination:
 }
 
 
-/*
-static int
-Animation_build(Animation* self) {
-	const String node_instance_a_name = { "input", 6 };
-	const String node_a_name = { "mouse-motion", 13 };
-
-	const String node_instance_b_name = { "main", 5 };
-	const String node_b_name = { "heat-diffusion", 15 };
-
-	// Create nodes
-	if (!Animation_add_node_instance(self, &node_instance_a_name, &node_a_name))
-		return 0;
-
-	if (!Animation_add_node_instance(self, &node_instance_b_name, &node_b_name))
-		return 0;
-
-	Node* node_a = Animation_get_node_instance(self, &node_instance_a_name);
-	if (!node_a)
-		return 0;
-
-	Node* node_b = Animation_get_node_instance(self, &node_instance_b_name);
-	if (!node_b)
-		return 0;
-
-	// Link nodes
-	const String slot_name = { "input", 6 };
-	if (!Node_set_input_slot_by_name(node_b, &slot_name, node_a))
-		return 0;
-
-	// Setup parameters
-	const String param_name = { "value", 6 };
-	NodeParameter* param = Node_get_parameter_by_name(node_a, &param_name);
-	if (!param)
-		return 0;
-
-	param->value = (real_t)32;
-
-	// Job done
-	return 1;
-}
-*/
-
 void
 Animation_init(
 	Animation* self
@@ -162,9 +120,6 @@ Animation_setup(
 	assert(self != 0);
 
 	// Setup the graph
-	//if (!Animation_build(self))
-	//	goto failure;
-
 	if (!Animation_topological_sort(self))
 		goto failure;
 
