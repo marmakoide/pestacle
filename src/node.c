@@ -48,7 +48,7 @@ Node_new(
 }
 
 
-int
+bool
 Node_setup(
 	Node* self,
 	int width,
@@ -62,7 +62,7 @@ Node_setup(
 	if (self->delegate->methods.setup)
 		return self->delegate->methods.setup(self, width, height);
 
-	return 1;
+	return true;
 }
 
 
@@ -155,7 +155,7 @@ Node_get_parameter_by_name(
 
 
 
-int
+bool
 Node_set_input_slot_by_name(
 	Node* self,
 	const String* name,
@@ -170,7 +170,7 @@ Node_set_input_slot_by_name(
 	for(size_t i = 0; i < self->delegate->input_count; ++i, ++slot_ptr)
 		if (String_equals(name, &(slot_ptr->name))) {
 			self->inputs[i] = other;
-			return 1;
+			return true;
 		}
 
 	SDL_LogError(
@@ -180,11 +180,11 @@ Node_set_input_slot_by_name(
 		self->delegate->name.data
 	);
 
-	return 0;
+	return false;
 }
 
 
-int
+bool
 Node_is_complete(
 	const Node* self
 ) {
@@ -193,9 +193,9 @@ Node_is_complete(
 	Node* const* node_ptr = self->inputs;
 	for(size_t i = 0; i < self->delegate->input_count; ++i, ++node_ptr)
 		if (*node_ptr == 0)
-			return 0;
+			return false;
 
-	return 1;
+	return true;
 }
 
 

@@ -4,7 +4,7 @@
 
 // --- Interface --------------------------------------------------------------
 
-static int
+static bool
 mouse_motion_node_setup(
 	Node* self,
 	int width,
@@ -75,7 +75,7 @@ typedef struct {
 
 
 
-static int
+static bool
 mouse_motion_node_setup(
 	Node* self,
 	int width,
@@ -86,7 +86,7 @@ mouse_motion_node_setup(
 		(MouseMotionData*)checked_malloc(sizeof(MouseMotionData));
 
 	if (!data)
-		return 0;
+		return false;
 
 	// Setup the accumulator matrix
 	Matrix_init(&(data->accumulator), height, width);
@@ -94,7 +94,7 @@ mouse_motion_node_setup(
 
 	// Job done
 	self->data = data;
-	return 1;
+	return true;
 }
 
 

@@ -8,7 +8,7 @@
 #include "renderers/linear_blend.h"
 
 
-static int
+static bool
 Animation_check_graph_is_complete(Animation* self) {
 	assert(self != 0);
 	assert(self->sorted_nodes != 0);
@@ -21,16 +21,16 @@ Animation_check_graph_is_complete(Animation* self) {
 				"node '%s' is not complete\n",
 				(*node_ptr)->name.data
 			);
-			return 0;
+			return false;
 		}
 
-	return 1;
+	return true;
 }
 
 
-static int
+static bool
 Animation_topological_sort(Animation* self) {
-	int ret = 1;
+	bool ret = true;
 
 	Stack stack;
 	Stack_init(&stack);
@@ -42,7 +42,7 @@ Animation_topological_sort(Animation* self) {
 	const String root_node_instance_name = { "main", 5 };
 	Node* root = Animation_get_node_instance(self, &root_node_instance_name);
 	if (!root) {
-		ret = 0;
+		ret = false;
 		goto termination;
 	}
 
@@ -111,7 +111,7 @@ Animation_init(
 }
 
 
-int
+bool
 Animation_setup(
 	Animation* self,
 	int screen_width,
@@ -145,12 +145,12 @@ Animation_setup(
 		goto failure;
 
 	// Job done
-	return 1;
+	return true;
 
 	// Failure handling
 failure:
 	Animation_destroy(self);
-	return 0;
+	return false;
 }
 
 
@@ -217,7 +217,7 @@ Animation_get_node_instance(
 
 
 
-int
+bool
 Animation_add_node_instance(
 	Animation* self,
 	const String* instance_name,
@@ -237,19 +237,19 @@ Animation_add_node_instance(
 			"Node instance '%s' is already defined\n",
 			instance_name->data
 		);
-		return 0;
+		return false;
 	}
 
 	// Create the node instance
 	Node* node = Node_create_by_name(instance_name, delegate_name);
 	if (!node)
-		return 0;
+		return false;
 
 	// Update the instance dictionary
 	Dict_insert(&(self->node_instance_dict), &(node->name))->value = node;
 	
 	// Job done
-	return 1;
+	return true;
 }
 
 

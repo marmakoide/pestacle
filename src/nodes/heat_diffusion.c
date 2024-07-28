@@ -4,7 +4,7 @@
 
 // --- Interface --------------------------------------------------------------
 
-static int
+static bool
 heat_diffusion_node_setup(
 	Node* self,
 	int width,
@@ -77,7 +77,7 @@ typedef struct {
 
 
 
-static int
+static bool
 heat_diffusion_node_setup(
 	Node* self,
 	int width,
@@ -88,7 +88,7 @@ heat_diffusion_node_setup(
 		(HeatDiffusionData*)checked_malloc(sizeof(HeatDiffusionData));
 
 	if (!data)
-		return 0;
+		return false;
 
 	// Setup
 	Matrix_init(&(data->U), height, width);
@@ -126,7 +126,7 @@ heat_diffusion_node_setup(
 
 	// Job done
 	self->data = data;
-	return 1;
+	return true;
 }
 
 

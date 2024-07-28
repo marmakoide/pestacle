@@ -24,7 +24,7 @@ Animation_init(
 );
 
 
-extern int
+extern bool
 Animation_setup(
 	Animation* self,
 	int screen_width,
@@ -45,7 +45,7 @@ Animation_get_node_instance(
 );
 
 
-extern int
+extern bool
 Animation_add_node_instance(
 	Animation* self,
 	const String* instance_name,

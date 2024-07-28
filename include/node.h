@@ -23,7 +23,7 @@ typedef struct {
 
 
 typedef struct {
-	int (*setup)(              // setup method (optional, can be 0)
+	bool (*setup)(             // setup method (optional, can be 0)
 		Node*,
 		int width,
 		int height
@@ -86,7 +86,7 @@ Node_create_by_name(
 );
 
 
-extern int
+extern bool
 Node_set_input_slot_by_name(
 	Node* self,
 	const String* name,
@@ -101,7 +101,7 @@ Node_get_parameter_by_name(
 );
 
 
-extern int
+extern bool
 Node_setup(
 	Node* self,
 	int width,
@@ -115,7 +115,7 @@ Node_destroy(
 );
 
 
-extern int
+extern bool
 Node_is_complete(
 	const Node* self
 );
