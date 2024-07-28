@@ -15,24 +15,33 @@ Lexer_init(
 
 	self->token.location.line = 0;
 	self->token.type = TokenType__invalid;
+	self->token.text.data = self->token.text_data;
+	self->token.text.len = 0;
 	self->token.value = 0;
 
 	// Initialize the token text buffer
-	memset(self->token.text, 0, LEXER_TOKEN_TEXT_MAX_SIZE);
-	self->token.text_end = self->token.text;
+	memset(self->token.text_data, 0, LEXER_TOKEN_TEXT_MAX_SIZE);
+	self->token.text_end = self->token.text_data;
 }
 
 
-size_t
-Lexer_token_text_len(Lexer* self) {
-	return self->token.text_end - self->token.text + 1;
+static size_t
+Lexer_token_text_len(const Lexer* self) {
+	return self->token.text_end - self->token.text_data + 1;
+}
+
+
+const String*
+Lexer_token_text(Lexer* self) {
+	self->token.text.len = Lexer_token_text_len(self) + 1;
+	return &(self->token.text);
 }
 
 
 static void
 Lexer_clear_token_text(Lexer* self) {
-	self->token.text_end = self->token.text;
-	*(self->token.text) = '\0';
+	self->token.text_end = self->token.text_data;
+	*(self->token.text_data) = '\0';
 }
 
 
@@ -42,7 +51,7 @@ Lexer_accept(Lexer* self, char c) {
 		handle_processing_error(
 			&(self->location),
 			"token '%s%c' too long (more than %d characters)",
-			self->token.text,
+			self->token.text_data,
 			c,
 			LEXER_TOKEN_TEXT_MAX_SIZE - 1
 		);
@@ -70,7 +79,7 @@ static void
 	Lexer_parse_decimal_integer(Lexer* self) {
 	uint32_t value = 0;
 
-	const char* str = self->token.text;
+	const char* str = self->token.text_data;
 	for(int i = 0; *str != '\0'; ++i, ++str) {
 		if ((value >= 429496729) && (*str > '5'))
 			handle_processing_error(
@@ -97,7 +106,7 @@ static void
 Lexer_parse_hexadecimal_integer(Lexer* self) {
 	uint32_t value = 0; 
 
-	const char* str = self->token.text + 2;
+	const char* str = self->token.text_data + 2;
 	for(int i = 0; *str != '\0'; ++i, ++str) {
 		if ((value & 0x10000000) != 0)
 			handle_processing_error(
@@ -212,9 +221,9 @@ Lexer_next_token(Lexer* self) {
 			case LexerParsingState__minus:
 				switch(current_char) {
 					case '>':
-						state = LexerParsingState__single_line_comment;
+						self->token.type = TokenType__left_arrow;
 						InputBuffer_next(&(self->input_buffer));
-						break;
+						return;
 					default:
 						return;
 				}
