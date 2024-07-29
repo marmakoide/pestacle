@@ -42,10 +42,11 @@ mouse_motion_node_get(
 static const NodeParameterDefinition
 mouse_motion_parameters[] = {
 	{
-		{ "value", 6 },
 		NodeParameterType__real,
+		{ "value", 6 },
 		{ .real_value = (real_t)1 }
-	}
+	},
+	{ NodeParameterType__last }
 };
 
 
@@ -53,11 +54,9 @@ const NodeDelegate
 mouse_motion_node_delegate = {
 	{ "mouse-motion", 13 },
 
-
 	0, 0,
 
-	1, mouse_motion_parameters,
-
+	mouse_motion_parameters,
 	{
 		mouse_motion_node_setup,
 		mouse_motion_node_destroy,

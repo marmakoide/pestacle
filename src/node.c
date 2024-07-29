@@ -16,6 +16,7 @@ NodeParameterValue_copy(
 
 	switch(type) {
 		case NodeParameterType__invalid:
+		case NodeParameterType__last:
 			assert(0);
 			break;
 		case NodeParameterType__integer:
@@ -28,6 +29,28 @@ NodeParameterValue_copy(
 			String_clone(&(dst->string_value), &(src->string_value));
 			break;
 	}
+}
+
+
+// --- NodeDelegate -----------------------------------------------------------
+
+static bool
+NodeDelegate_has_parameters(const NodeDelegate* self) {
+	assert(self != 0);
+
+	return self->parameter_defs->type == NodeParameterType__last;
+}
+
+
+static size_t
+NodeDelegate_parameter_count(const NodeDelegate* self) {
+	assert(self != 0);
+
+	size_t count = 0;
+	const NodeParameterDefinition* param_def = self->parameter_defs;
+	for( ; param_def->type != NodeParameterType__last; ++param_def, ++count);
+
+	return count;
 }
 
 
@@ -61,19 +84,21 @@ Node_new(
 	}
 
 	// Setup parameters array
-	if (delegate->parameter_count == 0)
+	if (NodeDelegate_has_parameters(delegate))
 		ret->parameters = 0;
 	else {
+		size_t parameter_count = NodeDelegate_parameter_count(delegate);
+		
 		ret->parameters =
-			(NodeParameterValue*)checked_malloc(delegate->parameter_count * sizeof(NodeParameterValue));
+			(NodeParameterValue*)checked_malloc(parameter_count * sizeof(NodeParameterValue));
 
-		NodeParameterValue* param_ptr = ret->parameters;
-		const NodeParameterDefinition* param_def_ptr = delegate->parameter_defs;
-		for(size_t i = delegate->parameter_count; i != 0; --i, ++param_ptr, ++param_def_ptr)
+		NodeParameterValue* param = ret->parameters;
+		const NodeParameterDefinition* param_def = delegate->parameter_defs;
+		for( ; param_def->type != NodeParameterType__last; ++param, ++param_def)
 			NodeParameterValue_copy(
-				param_ptr,
-				&(param_def_ptr->default_value),
-				param_def_ptr->type
+				param,
+				&(param_def->default_value),
+				param_def->type
 			);
 	}
 
@@ -124,18 +149,19 @@ Node_destroy(
 	}
 
 	// Deallocate parameters
-	for(size_t i = 0; i < self->delegate->parameter_count; ++i) {
-		const NodeParameterDefinition* param_def = self->delegate->parameter_defs;
+	NodeParameterValue* param = self->parameters;
+	const NodeParameterDefinition* param_def = self->delegate->parameter_defs;
+	for( ; param_def->type != NodeParameterType__last; ++param, ++param_def) {
 		if (param_def->type == NodeParameterType__string)
-			String_destroy(&(self->parameters[i].string_value));
+			String_destroy(&(param->string_value));
 
 		#ifdef DEBUG
-		param_def = NodeParameterType__invalid;
+		param_def->type = NodeParameterType__invalid;
 		#endif
 	}
 
 	// Deallocate parameter array
-	if (self->delegate->parameter_count > 0)
+	if (NodeDelegate_has_parameters(self->delegate))
 		free(self->parameters);
 
 	#ifdef DEBUG
@@ -169,24 +195,24 @@ bool
 Node_get_parameter_by_name(
 	Node* self,
 	const String* name,
-	const NodeParameterDefinition** node_def_ptr,
-	NodeParameterValue** node_value_ptr
+	const NodeParameterDefinition** param_def_ptr,
+	NodeParameterValue** param_value_ptr
 ) {
 	assert(self != 0);
 	assert(name != 0);
 	assert(name->data != 0);
 
-	const NodeParameterDefinition* param_def_ptr =
-		self->delegate->parameter_defs;
+	NodeParameterValue* param_value = self->parameters;
+	const NodeParameterDefinition* param_def = self->delegate->parameter_defs;
+	
+	for( ; param_def->type != NodeParameterType__last; ++param_value, ++param_def)
+		if (String_equals(name, &(param_def->name))) {
+			if (param_def_ptr)
+				*param_def_ptr = param_def;
 
-	for(size_t i = 0; i < self->delegate->parameter_count; ++i, ++param_def_ptr)
-		if (String_equals(name, &(param_def_ptr->name))) {
-			if (node_def_ptr)
-				*node_def_ptr = param_def_ptr;
+			if (param_value_ptr)
+				*param_value_ptr = param_value;
 
-			if (node_value_ptr)
-				*node_value_ptr = self->parameters + i;
-			
 			return true;
 		}
 		

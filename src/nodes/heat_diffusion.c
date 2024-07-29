@@ -43,10 +43,11 @@ heat_diffusion_inputs[] = {
 static const NodeParameterDefinition
 heat_diffusion_parameters[] = {
 	{
-		{ "decay", 6 },
 		NodeParameterType__real,
+		{ "decay", 6 },
 		{ .real_value = 1e-2f }
-	}
+	},
+	{ NodeParameterType__last }
 };
 
 
@@ -56,8 +57,7 @@ heat_diffusion_node_delegate = {
 
 	1, heat_diffusion_inputs,
 
-	1, heat_diffusion_parameters,
-
+	heat_diffusion_parameters,
 	{
 		heat_diffusion_node_setup,
 		heat_diffusion_node_destroy,

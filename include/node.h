@@ -10,10 +10,11 @@
 // --- Node parameter definitons ----------------------------------------------
 
 enum NodeParameterType {
-	NodeParameterType__invalid = 0,
+	NodeParameterType__invalid = 0, // Used as a debugging help
 	NodeParameterType__integer,
 	NodeParameterType__real,
-	NodeParameterType__string
+	NodeParameterType__string,
+	NodeParameterType__last         // Used to mark the end of an array of NodeParameterType
 }; // enum NodeParameterType
 
 
@@ -25,8 +26,8 @@ typedef union {
 
 
 typedef struct {
-	String name;
 	enum NodeParameterType type;
+	String name;
 	NodeParameterValue default_value;
 } NodeParameterDefinition;
 
@@ -76,9 +77,7 @@ typedef struct {
 	size_t input_count;
 	const NodeInputDefinition* input_defs;
 
-	size_t parameter_count;
 	const NodeParameterDefinition* parameter_defs;
-
 	NodeDelegateMethods methods;
 } NodeDelegate;
 
