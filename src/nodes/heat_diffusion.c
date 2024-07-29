@@ -30,7 +30,7 @@ heat_diffusion_node_get(
 );
 
 
-static const NodeInputSlotDefinition
+static const NodeInputDefinition
 heat_diffusion_inputs[] = {
 	{
 		{ "input", 6 }

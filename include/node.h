@@ -7,14 +7,7 @@
 #include "strings.h"
 
 
-struct s_Node;
-typedef struct s_Node Node;
-
-
-typedef struct {
-	String name;
-} NodeInputSlotDefinition;
-
+// --- Node parameter definitons ----------------------------------------------
 
 enum NodeParameterType {
 	NodeParameterType__invalid = 0,
@@ -36,6 +29,19 @@ typedef struct {
 	enum NodeParameterType type;
 	NodeParameterValue default_value;
 } NodeParameterDefinition;
+
+
+// --- Node input definitions -------------------------------------------------
+
+typedef struct {
+	String name;
+} NodeInputDefinition;
+
+
+// --- Node definitions -------------------------------------------------------
+
+struct s_Node;
+typedef struct s_Node Node;
 
 
 typedef struct {
@@ -68,7 +74,7 @@ typedef struct {
 	String name;
 
 	size_t input_count;
-	const NodeInputSlotDefinition* input_defs;
+	const NodeInputDefinition* input_defs;
 
 	size_t parameter_count;
 	const NodeParameterDefinition* parameter_defs;

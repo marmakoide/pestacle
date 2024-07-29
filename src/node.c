@@ -206,9 +206,9 @@ Node_set_input_slot_by_name(
 	assert(name != 0);
 	assert(name->data != 0);
 
-	const NodeInputSlotDefinition* slot_ptr = self->delegate->input_defs;
-	for(size_t i = 0; i < self->delegate->input_count; ++i, ++slot_ptr)
-		if (String_equals(name, &(slot_ptr->name))) {
+	const NodeInputDefinition* input_ptr = self->delegate->input_defs;
+	for(size_t i = 0; i < self->delegate->input_count; ++i, ++input_ptr)
+		if (String_equals(name, &(input_ptr->name))) {
 			self->inputs[i] = other;
 			return true;
 		}
