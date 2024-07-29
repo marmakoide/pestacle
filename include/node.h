@@ -16,9 +16,25 @@ typedef struct {
 } NodeInputSlotDefinition;
 
 
+enum NodeParameterType {
+	NodeParameterType__invalid = 0,
+	NodeParameterType__integer,
+	NodeParameterType__real,
+	NodeParameterType__string
+}; // enum NodeParameterType
+
+
+typedef union {
+	int64_t int64_value;
+	real_t real_value;
+	String string_value;
+} NodeParameterValue;
+
+
 typedef struct {
 	String name;
-	real_t default_value;
+	enum NodeParameterType type;
+	NodeParameterValue default_value;
 } NodeParameterDefinition;
 
 
@@ -65,17 +81,12 @@ extern const NodeDelegate*
 get_node_delegate_by_name(const String* name);
 
 
-typedef struct {
-	real_t value;	
-} NodeParameter;
-
-
 struct s_Node {
 	void* data;
 	const NodeDelegate* delegate;
 	String name;
 	Node** inputs;
-	NodeParameter* parameters;
+	NodeParameterValue* parameters;
 }; // struct s_Node
 
 
@@ -94,10 +105,12 @@ Node_set_input_slot_by_name(
 );
 
 
-NodeParameter*
+bool
 Node_get_parameter_by_name(
 	Node* self,
-	const String* name
+	const String* name,
+	const NodeParameterDefinition** node_def_ptr,
+	NodeParameterValue** node_value_ptr
 );
 
 

@@ -44,7 +44,8 @@ static const NodeParameterDefinition
 heat_diffusion_parameters[] = {
 	{
 		{ "decay", 6 },
-		1e-2f
+		NodeParameterType__real,
+		{ .real_value = 1e-2f }
 	}
 };
 
@@ -152,7 +153,7 @@ heat_diffusion_node_update(
 ) {
 	HeatDiffusionData* data = (HeatDiffusionData*)self->data;
 
-	real_t decay = self->parameters[DECAY_PARAMETER].value;
+	real_t decay = self->parameters[DECAY_PARAMETER].real_value;
 
 	// Update U with input
 	Matrix_max(

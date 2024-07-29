@@ -43,7 +43,8 @@ static const NodeParameterDefinition
 mouse_motion_parameters[] = {
 	{
 		{ "value", 6 },
-		(real_t)1
+		NodeParameterType__real,
+		{ .real_value = (real_t)1 }
 	}
 };
 
@@ -134,7 +135,7 @@ mouse_motion_node_handle_event(
 				&(data->accumulator),
 				(size_t)floorf(event->mouse_motion.y),
 				(size_t)floorf(event->mouse_motion.x),
-				self->parameters[VALUE_PARAMETER].value
+				self->parameters[VALUE_PARAMETER].real_value
 			);
 			break;
 

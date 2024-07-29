@@ -3,6 +3,36 @@
 #include "memory.h"
 
 
+// --- NodeParameter ----------------------------------------------------------
+
+static void
+NodeParameterValue_copy(
+	NodeParameterValue* dst,
+	const NodeParameterValue* src,
+	enum NodeParameterType type
+) {
+	assert(dst != 0);
+	assert(src != 0);
+
+	switch(type) {
+		case NodeParameterType__invalid:
+			assert(0);
+			break;
+		case NodeParameterType__integer:
+			dst->int64_value = src->int64_value;
+			break;
+		case NodeParameterType__real:
+			dst->real_value = src->real_value;
+			break;
+		case NodeParameterType__string:
+			String_clone(&(dst->string_value), &(src->string_value));
+			break;
+	}
+}
+
+
+// --- Node -------------------------------------------------------------------
+
 static Node*
 Node_new(
 	const String* name,
@@ -35,12 +65,16 @@ Node_new(
 		ret->parameters = 0;
 	else {
 		ret->parameters =
-			(NodeParameter*)checked_malloc(delegate->parameter_count * sizeof(NodeParameter));
+			(NodeParameterValue*)checked_malloc(delegate->parameter_count * sizeof(NodeParameterValue));
 
-		NodeParameter* param_ptr = ret->parameters;
+		NodeParameterValue* param_ptr = ret->parameters;
 		const NodeParameterDefinition* param_def_ptr = delegate->parameter_defs;
 		for(size_t i = delegate->parameter_count; i != 0; --i, ++param_ptr, ++param_def_ptr)
-			param_ptr->value = param_def_ptr->default_value;
+			NodeParameterValue_copy(
+				param_ptr,
+				&(param_def_ptr->default_value),
+				param_def_ptr->type
+			);
 	}
 
 	// Job done
@@ -89,6 +123,17 @@ Node_destroy(
 		free(self->inputs);
 	}
 
+	// Deallocate parameters
+	for(size_t i = 0; i < self->delegate->parameter_count; ++i) {
+		const NodeParameterDefinition* param_def = self->delegate->parameter_defs;
+		if (param_def->type == NodeParameterType__string)
+			String_destroy(&(self->parameters[i].string_value));
+
+		#ifdef DEBUG
+		param_def = NodeParameterType__invalid;
+		#endif
+	}
+
 	// Deallocate parameter array
 	if (self->delegate->parameter_count > 0)
 		free(self->parameters);
@@ -120,10 +165,12 @@ Node_create_by_name(
 }
 
 
-NodeParameter*
+bool
 Node_get_parameter_by_name(
 	Node* self,
-	const String* name
+	const String* name,
+	const NodeParameterDefinition** node_def_ptr,
+	NodeParameterValue** node_value_ptr
 ) {
 	assert(self != 0);
 	assert(name != 0);
@@ -133,10 +180,17 @@ Node_get_parameter_by_name(
 		self->delegate->parameter_defs;
 
 	for(size_t i = 0; i < self->delegate->parameter_count; ++i, ++param_def_ptr)
-		if (String_equals(name, &(param_def_ptr->name)))
-			return self->parameters + i;
+		if (String_equals(name, &(param_def_ptr->name))) {
+			if (node_def_ptr)
+				*node_def_ptr = param_def_ptr;
 
-	return 0;
+			if (node_value_ptr)
+				*node_value_ptr = self->parameters + i;
+			
+			return true;
+		}
+		
+	return false;
 }
 
 

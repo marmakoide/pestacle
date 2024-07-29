@@ -18,7 +18,7 @@ enum TokenType {
     TokenType__identifier,  // identifier
     TokenType__integer,     // integer constant
     TokenType__real,        // real constant
-    TokenType__string,      // string constant    
+    TokenType__string,      // string constant
     TokenType__colon,       // :
     TokenType__dot,         // .
     TokenType__equal,       // =
