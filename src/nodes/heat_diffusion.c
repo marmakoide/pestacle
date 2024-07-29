@@ -20,7 +20,7 @@ heat_diffusion_node_destroy(
 
 static void
 heat_diffusion_node_update(
-	Node* self	
+	Node* self
 );
 
 
@@ -33,8 +33,10 @@ heat_diffusion_node_get(
 static const NodeInputDefinition
 heat_diffusion_inputs[] = {
 	{
+		NodeInputType__matrix,
 		{ "input", 6 }
-	}
+	},
+	{ NodeInputType__last }
 };
 
 
@@ -54,9 +56,7 @@ heat_diffusion_parameters[] = {
 const NodeDelegate
 heat_diffusion_node_delegate = {
 	{ "heat-diffusion", 15 },
-
-	1, heat_diffusion_inputs,
-
+	heat_diffusion_inputs,
 	heat_diffusion_parameters,
 	{
 		heat_diffusion_node_setup,

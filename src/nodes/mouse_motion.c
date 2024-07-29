@@ -20,7 +20,7 @@ mouse_motion_node_destroy(
 
 static void
 mouse_motion_node_update(
-	Node* self	
+	Node* self
 );
 
 
@@ -33,8 +33,14 @@ mouse_motion_node_handle_event(
 
 static const Matrix*
 mouse_motion_node_get(
-	const Node* self	
+	const Node* self
 );
+
+
+static const NodeInputDefinition
+mouse_motion_inputs[] = {
+	{ NodeInputType__last }
+};
 
 
 #define VALUE_PARAMETER 0
@@ -53,9 +59,7 @@ mouse_motion_parameters[] = {
 const NodeDelegate
 mouse_motion_node_delegate = {
 	{ "mouse-motion", 13 },
-
-	0, 0,
-
+	mouse_motion_inputs,
 	mouse_motion_parameters,
 	{
 		mouse_motion_node_setup,

@@ -28,6 +28,16 @@ Animation_check_graph_is_complete(Animation* self) {
 }
 
 
+static void
+push_node_inputs(Stack* stack, Node* node) {
+	Node** input_ptr = node->inputs;
+	const NodeInputDefinition* input_def = node->delegate->input_defs;
+	for(; input_def->type != NodeInputType__last; ++input_ptr, ++input_def)
+		if (*input_ptr)
+			Stack_push(stack, *input_ptr);
+}
+
+
 static bool
 Animation_topological_sort(Animation* self) {
 	bool ret = true;
@@ -57,11 +67,7 @@ Animation_topological_sort(Animation* self) {
 			Dict_insert(&visited, &(node->name));
 
 			component_size += 1;
-
-			Node** input_node_ptr = node->inputs;
-			for(size_t i = node->delegate->input_count; i != 0; --i, ++input_node_ptr)
-				if (*input_node_ptr)
-					Stack_push(&stack, *input_node_ptr);
+			push_node_inputs(&stack, node);
 		}
 	}
 
@@ -82,11 +88,7 @@ Animation_topological_sort(Animation* self) {
 
 			*sorted_node_ptr = node;
 			sorted_node_ptr += 1;
-
-			Node** input_node_ptr = node->inputs;
-			for(size_t i = node->delegate->input_count; i != 0; --i, ++input_node_ptr)
-				if (*input_node_ptr)
-					Stack_push(&stack, *input_node_ptr);
+			push_node_inputs(&stack, node);
 		}
 	}
 

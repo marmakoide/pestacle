@@ -35,6 +35,26 @@ NodeParameterValue_copy(
 // --- NodeDelegate -----------------------------------------------------------
 
 static bool
+NodeDelegate_has_inputs(const NodeDelegate* self) {
+	assert(self != 0);
+
+	return self->input_defs->type == NodeInputType__last;
+}
+
+
+static size_t
+NodeDelegate_input_count(const NodeDelegate* self) {
+	assert(self != 0);
+
+	size_t count = 0;
+	const NodeInputDefinition* input_def = self->input_defs;
+	for( ; input_def->type != NodeInputType__last; ++input_def, ++count);
+
+	return count;
+}
+
+
+static bool
 NodeDelegate_has_parameters(const NodeDelegate* self) {
 	assert(self != 0);
 
@@ -72,14 +92,15 @@ Node_new(
 	String_clone(&(ret->name), name);
 
 	// Setup inputs array
-	if (delegate->input_count == 0)
+	if (NodeDelegate_has_inputs(delegate))
 		ret->inputs = 0;
 	else {
-		ret->inputs =
-			(Node**)checked_malloc(delegate->input_count * sizeof(Node*));
+		size_t input_count = NodeDelegate_input_count(delegate);
+		ret->inputs = (Node**)checked_malloc(input_count * sizeof(Node*));
 
 		Node** input_ptr = ret->inputs;
-		for(size_t i = delegate->input_count; i != 0; --i, ++input_ptr)
+		const NodeInputDefinition* input_def = ret->delegate->input_defs;
+		for( ; input_def->type != NodeInputType__last; ++input_ptr, ++input_def)
 			*input_ptr = 0;
 	}
 
@@ -138,10 +159,11 @@ Node_destroy(
 	String_destroy(&(self->name));
 
 	// Deallocate input array
-	if (self->delegate->input_count > 0) {
+	if (NodeDelegate_has_inputs(self->delegate)) {
 		#ifdef DEBUG
 		Node** input_ptr = self->inputs;
-		for(size_t i = self->delegate->input_count; i != 0; --i, ++input_ptr)
+		const NodeInputDefinition* input_def = self->delegate->input_defs;
+		for( ; input_def->type != NodeInputType__last; ++input_ptr, ++input_def)
 			*input_ptr = 0;
 		#endif
 	
@@ -154,10 +176,6 @@ Node_destroy(
 	for( ; param_def->type != NodeParameterType__last; ++param, ++param_def) {
 		if (param_def->type == NodeParameterType__string)
 			String_destroy(&(param->string_value));
-
-		#ifdef DEBUG
-		param_def->type = NodeParameterType__invalid;
-		#endif
 	}
 
 	// Deallocate parameter array
@@ -222,7 +240,7 @@ Node_get_parameter_by_name(
 
 
 bool
-Node_set_input_slot_by_name(
+Node_set_input_by_name(
 	Node* self,
 	const String* name,
 	Node* other
@@ -232,10 +250,11 @@ Node_set_input_slot_by_name(
 	assert(name != 0);
 	assert(name->data != 0);
 
-	const NodeInputDefinition* input_ptr = self->delegate->input_defs;
-	for(size_t i = 0; i < self->delegate->input_count; ++i, ++input_ptr)
-		if (String_equals(name, &(input_ptr->name))) {
-			self->inputs[i] = other;
+	Node** input_ptr = self->inputs;
+	const NodeInputDefinition* input_def = self->delegate->input_defs;
+	for( ; input_def->type != NodeInputType__last; ++input_ptr, ++input_def)
+		if (String_equals(name, &(input_def->name))) {
+			*input_ptr = other;
 			return true;
 		}
 
@@ -249,9 +268,10 @@ Node_is_complete(
 ) {
 	assert(self != 0);
 
-	Node* const* node_ptr = self->inputs;
-	for(size_t i = 0; i < self->delegate->input_count; ++i, ++node_ptr)
-		if (*node_ptr == 0)
+	Node* const* input_ptr = self->inputs;
+	const NodeInputDefinition* input_def = self->delegate->input_defs;
+	for( ; input_def->type != NodeInputType__last; ++input_ptr, ++input_def)
+		if (*input_ptr == 0)
 			return false;
 
 	return true;
