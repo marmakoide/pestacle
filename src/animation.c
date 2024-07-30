@@ -127,6 +127,15 @@ Animation_setup(
 	if (!Animation_check_graph_is_complete(self))
 		goto failure;
 
+	// Check that the root node have proper type
+	if (self->sorted_nodes[0]->delegate->type != NodeType__rgb_surface) {
+		SDL_LogError(
+			SDL_LOG_CATEGORY_SYSTEM,
+			"'main' node output type is not rgb_surface\n"
+		);
+		return false;
+	}
+
 	// Setup the nodes
 	Node** node_ptr = self->sorted_nodes;
 	for(size_t i = self->sorted_node_count; i != 0; --i, ++node_ptr)

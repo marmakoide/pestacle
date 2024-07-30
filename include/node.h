@@ -167,6 +167,16 @@ Node_get_parameter_by_name(
 );
 
 
+/*
+ * Returns true if all the inputs of a node are connected
+ */
+
+extern bool
+Node_is_complete(
+	const Node* self
+);
+
+
 extern bool
 Node_setup(
 	Node* self,
@@ -178,12 +188,6 @@ Node_setup(
 extern void
 Node_destroy(
 	Node* self
-);
-
-
-extern bool
-Node_is_complete(
-	const Node* self
 );
 
 
