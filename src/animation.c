@@ -32,7 +32,7 @@ static void
 push_node_inputs(Stack* stack, Node* node) {
 	Node** input_ptr = node->inputs;
 	const NodeInputDefinition* input_def = node->delegate->input_defs;
-	for(; input_def->type != NodeInputType__last; ++input_ptr, ++input_def)
+	for(; input_def->type != NodeType__last; ++input_ptr, ++input_def)
 		if (*input_ptr)
 			Stack_push(stack, *input_ptr);
 }

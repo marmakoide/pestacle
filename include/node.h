@@ -34,16 +34,16 @@ typedef struct {
 
 // --- Node input definitions -------------------------------------------------
 
-enum NodeInputType {
-	NodeInputType__invalid = 0, // Used as a debugging help
-	NodeInputType__matrix,
-	NodeInputType__rgb_surface,
-	NodeInputType__last         // Used to mark the end of an array of NodeInputType
-}; // enum NodeParameterType
+enum NodeType {
+	NodeType__invalid = 0, // Used as a debugging help
+	NodeType__matrix,
+	NodeType__rgb_surface,
+	NodeType__last         // Used to mark the end of an array of NodeInputType
+}; // enum NodeType
 
 
 typedef struct {
-	enum NodeInputType type;
+	enum NodeType type;
 	String name;
 } NodeInputDefinition;
 
@@ -82,7 +82,7 @@ typedef struct {
 
 typedef struct {
 	String name;
-	enum NodeInputType type;
+	enum NodeType type;
 	const NodeInputDefinition* input_defs;
 	const NodeParameterDefinition* parameter_defs;
 	NodeDelegateMethods methods;

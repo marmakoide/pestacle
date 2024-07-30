@@ -39,7 +39,7 @@ mouse_motion_node_get(
 
 static const NodeInputDefinition
 mouse_motion_inputs[] = {
-	{ NodeInputType__last }
+	{ NodeType__last }
 };
 
 
@@ -59,7 +59,7 @@ mouse_motion_parameters[] = {
 const NodeDelegate
 mouse_motion_node_delegate = {
 	{ "mouse-motion", 13 },
-	NodeInputType__matrix,
+	NodeType__matrix,
 	mouse_motion_inputs,
 	mouse_motion_parameters,
 	{

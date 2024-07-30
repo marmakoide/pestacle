@@ -38,7 +38,7 @@ static bool
 NodeDelegate_has_inputs(const NodeDelegate* self) {
 	assert(self != 0);
 
-	return self->input_defs->type == NodeInputType__last;
+	return self->input_defs->type == NodeType__last;
 }
 
 
@@ -48,7 +48,7 @@ NodeDelegate_input_count(const NodeDelegate* self) {
 
 	size_t count = 0;
 	const NodeInputDefinition* input_def = self->input_defs;
-	for( ; input_def->type != NodeInputType__last; ++input_def, ++count);
+	for( ; input_def->type != NodeType__last; ++input_def, ++count);
 
 	return count;
 }
@@ -100,7 +100,7 @@ Node_new(
 
 		Node** input_ptr = ret->inputs;
 		const NodeInputDefinition* input_def = ret->delegate->input_defs;
-		for( ; input_def->type != NodeInputType__last; ++input_ptr, ++input_def)
+		for( ; input_def->type != NodeType__last; ++input_ptr, ++input_def)
 			*input_ptr = 0;
 	}
 
@@ -163,7 +163,7 @@ Node_destroy(
 		#ifdef DEBUG
 		Node** input_ptr = self->inputs;
 		const NodeInputDefinition* input_def = self->delegate->input_defs;
-		for( ; input_def->type != NodeInputType__last; ++input_ptr, ++input_def)
+		for( ; input_def->type != NodeType__last; ++input_ptr, ++input_def)
 			*input_ptr = 0;
 		#endif
 	
@@ -252,7 +252,7 @@ Node_set_input_by_name(
 
 	Node** input_ptr = self->inputs;
 	const NodeInputDefinition* input_def = self->delegate->input_defs;
-	for( ; input_def->type != NodeInputType__last; ++input_ptr, ++input_def)
+	for( ; input_def->type != NodeType__last; ++input_ptr, ++input_def)
 		if (String_equals(name, &(input_def->name))) {
 			*input_ptr = other;
 			return true;
@@ -270,7 +270,7 @@ Node_is_complete(
 
 	Node* const* input_ptr = self->inputs;
 	const NodeInputDefinition* input_def = self->delegate->input_defs;
-	for( ; input_def->type != NodeInputType__last; ++input_ptr, ++input_def)
+	for( ; input_def->type != NodeType__last; ++input_ptr, ++input_def)
 		if (*input_ptr == 0)
 			return false;
 

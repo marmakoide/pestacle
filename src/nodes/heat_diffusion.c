@@ -33,10 +33,10 @@ heat_diffusion_node_get(
 static const NodeInputDefinition
 heat_diffusion_inputs[] = {
 	{
-		NodeInputType__matrix,
+		NodeType__matrix,
 		{ "input", 6 }
 	},
-	{ NodeInputType__last }
+	{ NodeType__last }
 };
 
 
@@ -56,7 +56,7 @@ heat_diffusion_parameters[] = {
 const NodeDelegate
 heat_diffusion_node_delegate = {
 	{ "heat-diffusion", 15 },
-	NodeInputType__matrix,
+	NodeType__matrix,
 	heat_diffusion_inputs,
 	heat_diffusion_parameters,
 	{
