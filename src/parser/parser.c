@@ -9,7 +9,7 @@
 
 
 static Node*
-parse_get_node_instance(
+Parser_parse_get_node_instance(
 	ParseContext* context,
 	Lexer* lexer,
 	const String* instance_name_str
@@ -32,7 +32,7 @@ parse_get_node_instance(
 
 
 static bool
-parse_instance_creation(
+Parser_parse_instance_creation(
 	ParseContext* context,
 	Lexer* lexer,
 	const String* instance_name_str
@@ -80,7 +80,7 @@ parse_instance_creation(
 
 
 static bool
-parse_parameter_assignment(
+Parser_parse_parameter_assignment(
 	ParseContext* context,
 	Lexer* lexer,
 	const String* instance_name_str
@@ -108,7 +108,7 @@ parse_parameter_assignment(
 		);
 
 	// Fetch the node instance
-	Node* node = parse_get_node_instance(context, lexer, instance_name_str);
+	Node* node = Parser_parse_get_node_instance(context, lexer, instance_name_str);
 	if (!node) {
 		ret = false;
 		Lexer_next_token(lexer);
@@ -189,7 +189,7 @@ termination:
 
 
 static bool
-parse_input_assignment(
+Parser_parse_input_assignment(
 	ParseContext* context,
 	Lexer* lexer,
 	const String* src_instance_name_str
@@ -229,13 +229,13 @@ parse_input_assignment(
 	String_clone(&input_name_str, Lexer_token_text(lexer));
 
 	// Assign the input to the instance
-	Node* src_node = parse_get_node_instance(context, lexer, src_instance_name_str);
+	Node* src_node = Parser_parse_get_node_instance(context, lexer, src_instance_name_str);
 	if (!src_node) {
 		ret = false;
 		goto termination;
 	}
 
-	Node* dst_node = parse_get_node_instance(context, lexer, &dst_instance_name_str);
+	Node* dst_node = Parser_parse_get_node_instance(context, lexer, &dst_instance_name_str);
 	if (!dst_node) {
 		ret = false;
 		goto termination;
@@ -267,7 +267,7 @@ termination:
 
 
 static bool
-parse_declaration(
+Parser_parse_declaration(
 	ParseContext* context, 
 	Lexer* lexer
 ) {
@@ -289,19 +289,19 @@ parse_declaration(
 	switch(lexer->token.type) {
 		case TokenType__colon:
 			Lexer_next_token(lexer);
-			if (!parse_instance_creation(context, lexer, &identifier_str))
+			if (!Parser_parse_instance_creation(context, lexer, &identifier_str))
 				ret = false;
 			break;
 
 		case TokenType__dot:
 			Lexer_next_token(lexer);
-			if (!parse_parameter_assignment(context, lexer, &identifier_str))
+			if (!Parser_parse_parameter_assignment(context, lexer, &identifier_str))
 				ret = false;
 			break;
 
 		case TokenType__left_arrow:
 			Lexer_next_token(lexer);
-			if (!parse_input_assignment(context, lexer, &identifier_str))
+			if (!Parser_parse_input_assignment(context, lexer, &identifier_str))
 				ret = false;
 			break;
 
@@ -322,12 +322,11 @@ parse_declaration(
 
 
 static bool
-parse_declaration_list(
+Parser_parse_declaration_list(
 	ParseContext* context,
 	Lexer* lexer
 ) {
 	int error_count = 0;
-
 	for(bool done = false; (!done) && (error_count < MAX_PARSING_ERROR_COUNT); ) {
 		Lexer_next_token(lexer);
 
@@ -338,7 +337,7 @@ parse_declaration_list(
 				continue;
 
 			default:
-				if (!parse_declaration(context, lexer))
+				if (!Parser_parse_declaration(context, lexer))
 					error_count += 1;
 		}
 	}
@@ -358,9 +357,11 @@ parse_declaration_list(
 // --- Main entry point -------------------------------------------------------
 
 bool
-ParseContext_parse(
-	ParseContext* context,
-	Lexer* lexer
+Parser_parse(
+	Lexer* lexer,
+	Graph* graph
 ) {
-	return parse_declaration_list(context, lexer);
+	ParseContext context;
+	context.graph = graph;
+	return Parser_parse_declaration_list(&context, lexer);
 }

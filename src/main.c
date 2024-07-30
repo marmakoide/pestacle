@@ -73,10 +73,7 @@ static bool
 load_graph() {
 	Lexer lexer;
 	Lexer_init(&lexer, stdin);
-
-	ParseContext context;
-	context.graph = &graph;
-	return ParseContext_parse(&context, &lexer);
+	return Parser_parse(&lexer, &graph);
 }
 
 
