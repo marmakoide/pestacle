@@ -239,17 +239,11 @@ Animation_handle_event(
 }
 
 
-void
-Animation_render(
-	const Animation* self,
-	SDL_Surface* dst
+SDL_Surface*
+Animation_output(
+	const Animation* self
 ) {
-	SDL_BlitSurface(
-		Node_get(self->sorted_nodes[0]).rgb_surface,
-		0,
-		dst,
-		0
-	);
+	return Node_output(self->sorted_nodes[0]).rgb_surface;
 }
 
 

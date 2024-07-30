@@ -291,12 +291,12 @@ Node_handle_event(
 
 
 NodeOutput
-Node_get(
+Node_output(
 	Node* self
 ) {
 	assert(self != 0);
 	assert(self->delegate != 0);
-	assert(self->delegate->methods.get != 0);
+	assert(self->delegate->methods.output != 0);
 
-	return self->delegate->methods.get(self);
+	return self->delegate->methods.output(self);
 }

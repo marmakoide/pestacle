@@ -25,7 +25,7 @@ gradient_map_node_update(
 
 
 static NodeOutput
-gradient_map_node_get(
+gradient_map_node_output(
 	const Node* self
 );
 
@@ -60,7 +60,7 @@ gradient_map_node_delegate = {
 		gradient_map_node_destroy,
 		gradient_map_node_update,
 		0,
-		gradient_map_node_get
+		gradient_map_node_output
 	},
 };
 
@@ -109,7 +109,7 @@ gradient_map_node_update(
 ) {
 	// Retrieve inputs and outputs
 	const Matrix* src =
-		Node_get(self->inputs[SOURCE_INPUT]).matrix;
+		Node_output(self->inputs[SOURCE_INPUT]).matrix;
 
 	SDL_Surface* dst =
 		(SDL_Surface*)self->data;
@@ -130,7 +130,7 @@ gradient_map_node_update(
 
 
 static NodeOutput
-gradient_map_node_get(
+gradient_map_node_output(
 	const Node* self
 ) {
 	NodeOutput ret = { .rgb_surface = (SDL_Surface*)self->data };

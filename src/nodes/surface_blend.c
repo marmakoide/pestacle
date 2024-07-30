@@ -25,7 +25,7 @@ surface_blend_node_update(
 
 
 static NodeOutput
-surface_blend_node_get(
+surface_blend_node_output(
 	const Node* self
 );
 
@@ -70,7 +70,7 @@ surface_blend_node_delegate = {
 		surface_blend_node_destroy,
 		surface_blend_node_update,
 		0,
-		surface_blend_node_get
+		surface_blend_node_output
 	},
 };
 
@@ -119,13 +119,13 @@ surface_blend_node_update(
 ) {
 	// Retrieve inputs and outputs
 	const SDL_Surface* src_a =
-		Node_get(self->inputs[SOURCE_A_INPUT]).rgb_surface;
+		Node_output(self->inputs[SOURCE_A_INPUT]).rgb_surface;
 
 	const SDL_Surface* src_b =
-		Node_get(self->inputs[SOURCE_B_INPUT]).rgb_surface;
+		Node_output(self->inputs[SOURCE_B_INPUT]).rgb_surface;
 
 	const Matrix* mask =
-		Node_get(self->inputs[MASK_INPUT]).matrix;
+		Node_output(self->inputs[MASK_INPUT]).matrix;
 
 	SDL_Surface* dst =
 		(SDL_Surface*)self->data;
@@ -152,7 +152,7 @@ surface_blend_node_update(
 
 
 static NodeOutput
-surface_blend_node_get(
+surface_blend_node_output(
 	const Node* self
 ) {
 	NodeOutput ret = { .rgb_surface = (SDL_Surface*)self->data };

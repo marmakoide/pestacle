@@ -19,7 +19,7 @@ picture_node_destroy(
 
 
 static NodeOutput
-picture_node_get(
+picture_node_output(
 	const Node* self
 );
 
@@ -54,7 +54,7 @@ picture_node_delegate = {
 		picture_node_destroy,
 		0,
 		0,
-		picture_node_get
+		picture_node_output
 	},
 };
 
@@ -90,7 +90,7 @@ picture_node_destroy(
 
 
 static NodeOutput
-picture_node_get(
+picture_node_output(
 	const Node* self
 ) {
 	NodeOutput ret = { .rgb_surface = (SDL_Surface*)self->data };

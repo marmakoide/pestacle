@@ -75,12 +75,12 @@ typedef struct {
 		Node*
 	);
 
-	void (*handle_event)(      // handle_event (optional, can be 0)
+	void (*handle_event)(      // handle_event output (optional, can be 0)
 		Node*,
 		const Event* event	
 	);
 
-	NodeOutput (*get)(      // get method
+	NodeOutput (*output)(      // output method
 		const Node*
 	);
 } NodeDelegateMethods;
@@ -205,7 +205,7 @@ Node_handle_event(
 
 
 extern NodeOutput
-Node_get(
+Node_output(
 	Node* self
 );
 

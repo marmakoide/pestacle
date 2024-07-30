@@ -32,7 +32,7 @@ mouse_motion_node_handle_event(
 
 
 static NodeOutput
-mouse_motion_node_get(
+mouse_motion_node_output(
 	const Node* self
 );
 
@@ -67,7 +67,7 @@ mouse_motion_node_delegate = {
 		mouse_motion_node_destroy,
 		mouse_motion_node_update,
 		mouse_motion_node_handle_event,
-		mouse_motion_node_get
+		mouse_motion_node_output
 	},
 };
 
@@ -150,7 +150,7 @@ mouse_motion_node_handle_event(
 
 
 static NodeOutput
-mouse_motion_node_get(
+mouse_motion_node_output(
 	const Node* self
 ) {
 	const MouseMotionData* data = (const MouseMotionData*)self->data;

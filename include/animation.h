@@ -70,10 +70,9 @@ Animation_handle_event(
 );
 
 
-extern void
-Animation_render(
-	const Animation* self,
-	SDL_Surface* surface
+extern SDL_Surface*
+Animation_output(
+	const Animation* self
 );
 
 

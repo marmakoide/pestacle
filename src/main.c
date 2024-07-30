@@ -49,18 +49,22 @@ framebuffer_update_callback(Uint32 interval, void* param) {
 	Uint32 ret = 0;
 	Display* display = (Display*)param;
 
-	// Render to framebuffer
+	// Generate the output
+	SDL_Surface* out = 0;
 	SDL_LockMutex(animation_state_mutex);
 	if (!quit) {
-		Animation_render(&animation, framebuffer_native);
+		out = Animation_output(&animation);
 		ret = interval;
 	}
 	SDL_UnlockMutex(animation_state_mutex);
 
 	// Update the display
-	SDL_BlitScaled(framebuffer_native, 0, window_surface, &(display->visible_area));
-	SDL_UpdateWindowSurface(window);
-	
+	if (out) {
+		SDL_BlitSurface(out, 0, framebuffer_native, 0);
+		SDL_BlitScaled(framebuffer_native, 0, window_surface, &(display->visible_area));
+		SDL_UpdateWindowSurface(window);
+	}
+
 	// Job done
 	return ret;
 }
