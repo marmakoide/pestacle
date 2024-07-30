@@ -20,14 +20,14 @@ $(BUILD_DIR)/vector.o \
 $(BUILD_DIR)/matrix.o \
 $(BUILD_DIR)/event.o \
 $(BUILD_DIR)/spng.o \
-$(BUILD_DIR)/image.o \
+$(BUILD_DIR)/picture.o \
 $(BUILD_DIR)/node.o \
 $(BUILD_DIR)/nodes_list.o \
-$(BUILD_DIR)/renderer.o \
-$(BUILD_DIR)/renderers/gradient.o \
-$(BUILD_DIR)/renderers/linear_blend.o \
+$(BUILD_DIR)/nodes/gradient_map.o \
 $(BUILD_DIR)/nodes/heat_diffusion.o \
 $(BUILD_DIR)/nodes/mouse_motion.o \
+$(BUILD_DIR)/nodes/picture.o \
+$(BUILD_DIR)/nodes/surface_blend.o \
 $(BUILD_DIR)/animation.o \
 $(BUILD_DIR)/main.o
 	$(CC) -o $@ $^ $(LIBS)
@@ -44,10 +44,6 @@ $(BUILD_DIR)/parser/%.deps: src/parser/%.c
 	@mkdir --parents $(BUILD_DIR)/parser
 	$(CC) $(INCLUDES) -MM -MG -MT$(patsubst src/parser/%.c, $(BUILD_DIR)/parser/%.o, $^) -MF $@ $^
 
-$(BUILD_DIR)/renderers/%.deps: src/renderers/%.c
-	@mkdir --parents $(BUILD_DIR)/renderers
-	$(CC) $(INCLUDES) -MM -MG -MT$(patsubst src/renderers/%.c, $(BUILD_DIR)/renderers/%.o, $^) -MF $@ $^
-
 $(BUILD_DIR)/%.o: src/%.c
 	@mkdir --parents $(BUILD_DIR)
 	$(CC) -o $@ -c $(CFLAGS) $<
@@ -60,10 +56,6 @@ $(BUILD_DIR)/nodes/%.o: src/nodes/%.c
 	@mkdir --parents $(BUILD_DIR)/nodes
 	$(CC) -o $@ -c $(CFLAGS) $<
 
-$(BUILD_DIR)/renderers/%.o: src/renderers/%.c
-	@mkdir --parents $(BUILD_DIR)/renderers
-	$(CC) -o $@ -c $(CFLAGS) $<
-
 clean:
 	@rm -rf $(BUILD_DIR)
 	@rm -f $(TARGET)
@@ -73,4 +65,3 @@ clean:
 -include $(patsubst src/%.c, $(BUILD_DIR)/%.deps, $(wildcard src/*.c))
 -include $(patsubst src/parser/%.c, $(BUILD_DIR)/parser/%.deps, $(wildcard src/parser/*.c))
 -include $(patsubst src/nodes/%.c, $(BUILD_DIR)/nodes/%.deps, $(wildcard src/nodes/*.c))
--include $(patsubst src/renderers/%.c, $(BUILD_DIR)/renderers/%.deps, $(wildcard src/renderers/*.c))

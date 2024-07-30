@@ -250,10 +250,12 @@ Node_set_input_by_name(
 	assert(name != 0);
 	assert(name->data != 0);
 
+	// Scan inputs to find one with matching name and types
 	Node** input_ptr = self->inputs;
 	const NodeInputDefinition* input_def = self->delegate->input_defs;
 	for( ; input_def->type != NodeType__last; ++input_ptr, ++input_def)
-		if (String_equals(name, &(input_def->name))) {
+		if (String_equals(name, &(input_def->name)) && 
+		    (other->delegate->type == input_def->type)) {
 			*input_ptr = other;
 			return true;
 		}
@@ -304,7 +306,7 @@ Node_handle_event(
 }
 
 
-const Matrix*
+NodeOutput
 Node_get(
 	Node* self
 ) {

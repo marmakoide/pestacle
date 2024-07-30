@@ -20,7 +20,6 @@ bool quit = false;
 static SDL_Window* window = 0;
 static SDL_Surface* window_surface = 0;
 static SDL_Renderer* renderer = 0;
-static SDL_Surface* framebuffer_rgb24 = 0;
 static SDL_Surface* framebuffer_native = 0;
 
 static SDL_mutex* animation_state_mutex = 0;
@@ -50,16 +49,13 @@ framebuffer_update_callback(Uint32 interval, void* param) {
 	Uint32 ret = 0;
 	Display* display = (Display*)param;
 
-	// Render
+	// Render to framebuffer
 	SDL_LockMutex(animation_state_mutex);
 	if (!quit) {
-		Animation_render(&animation, framebuffer_rgb24);
+		Animation_render(&animation, framebuffer_native);
 		ret = interval;
 	}
 	SDL_UnlockMutex(animation_state_mutex);
-
-	// Update the framebuffer
-	SDL_BlitSurface(framebuffer_rgb24, 0, framebuffer_native, 0);
 
 	// Update the display
 	SDL_BlitScaled(framebuffer_native, 0, window_surface, &(display->visible_area));
@@ -156,22 +152,6 @@ main(int argc, char* argv[]) {
 		SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Could not create SDL renderer : %s\n", SDL_GetError());
 		goto termination;
 	}
-	
-	// Create a RGB framebuffer
-	framebuffer_rgb24 =
-		SDL_CreateRGBSurfaceWithFormat(
-			0,
-			EMULATED_DISPLAY_WIDTH,
-			EMULATED_DISPLAY_HEIGHT,
-			24,
-			SDL_PIXELFORMAT_RGB24
-		);
-
-	if (!framebuffer_rgb24) {
-		exit_code = EXIT_FAILURE;
-		SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Could not create SDL surface : %s\n", SDL_GetError());
-		goto termination;
-	}
 
 	// Create a framebuffer with same format as window surface
 	framebuffer_native =
@@ -264,10 +244,7 @@ termination:
 		SDL_RemoveTimer(framebuffer_update_timer);
 
 	Animation_destroy(&animation);
-	
-	if (framebuffer_rgb24)
-		SDL_FreeSurface(framebuffer_rgb24);
-	
+
 	if (framebuffer_native)
 		SDL_FreeSurface(framebuffer_native);
 

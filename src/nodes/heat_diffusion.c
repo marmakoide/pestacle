@@ -24,17 +24,19 @@ heat_diffusion_node_update(
 );
 
 
-static const Matrix*
+static NodeOutput
 heat_diffusion_node_get(
 	const Node* self
 );
 
 
+#define SOURCE_INPUT 0
+
 static const NodeInputDefinition
 heat_diffusion_inputs[] = {
 	{
 		NodeType__matrix,
-		{ "input", 6 }
+		{ "source", 7 }
 	},
 	{ NodeType__last }
 };
@@ -159,7 +161,7 @@ heat_diffusion_node_update(
 	// Update U with input
 	Matrix_max(
 		&(data->U),
-		Node_get(self->inputs[0])
+		Node_get(self->inputs[SOURCE_INPUT]).matrix
 	);
 
 	// Diffusion operator on U
@@ -183,11 +185,12 @@ heat_diffusion_node_update(
 }
 
 
-static const Matrix*
+static NodeOutput
 heat_diffusion_node_get(
 	const Node* self
 ) {
 	const HeatDiffusionData* data = (const HeatDiffusionData*)self->data;
-	
-	return &(data->U);
+
+	NodeOutput ret = { .matrix = &(data->U) };
+	return ret;
 }

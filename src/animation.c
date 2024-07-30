@@ -1,11 +1,7 @@
 #include <assert.h>
 #include "stack.h"
-#include "image.h"
 #include "animation.h"
 #include "memory.h"
-
-#include "renderers/gradient.h"
-#include "renderers/linear_blend.h"
 
 
 static bool
@@ -52,6 +48,10 @@ Animation_topological_sort(Animation* self) {
 	const String root_node_instance_name = { "main", 5 };
 	Node* root = Animation_get_node_instance(self, &root_node_instance_name);
 	if (!root) {
+		SDL_LogError(
+			SDL_LOG_CATEGORY_SYSTEM,
+			"no 'main' node defined\n"
+		);
 		ret = false;
 		goto termination;
 	}
@@ -109,7 +109,6 @@ Animation_init(
 	Dict_init(&(self->node_instance_dict));
 	self->sorted_node_count = 0;
 	self->sorted_nodes = 0;
-	self->renderer = 0;
 }
 
 
@@ -133,18 +132,6 @@ Animation_setup(
 	for(size_t i = self->sorted_node_count; i != 0; --i, ++node_ptr)
 		if (!Node_setup(*node_ptr, screen_width, screen_height))
 			goto failure;
-
-	// Setup the renderer
-	//self->renderer = gradient_renderer_new();
-
-	self->renderer =
-		linear_blend_renderer_new(
-			"assets/paysage-vignoble_200x100.png",
-			"assets/soif_200x100.png"
-		);
-
-	if (!renderer_setup(self->renderer, screen_width, screen_height))
-		goto failure;
 
 	// Job done
 	return true;
@@ -181,16 +168,6 @@ Animation_destroy(
 
 	// Deallocate node dictionary
 	Dict_destroy(&(self->node_instance_dict)); 
-
-	// Deallocate renderer
-	if (self->renderer) {
-		renderer_destroy(self->renderer);
-		free(self->renderer);
-	}
-
-	#ifdef DEBUG
-	self->renderer = 0;
-	#endif
 }
 
 
@@ -260,7 +237,12 @@ Animation_render(
 	const Animation* self,
 	SDL_Surface* dst
 ) {
-	renderer_render(self->renderer, Node_get(self->sorted_nodes[0]), dst);
+	SDL_BlitSurface(
+		Node_get(self->sorted_nodes[0]).rgb_surface,
+		0,
+		dst,
+		0
+	);
 }
 
 

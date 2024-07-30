@@ -31,7 +31,7 @@ mouse_motion_node_handle_event(
 );
 
 
-static const Matrix*
+static NodeOutput
 mouse_motion_node_get(
 	const Node* self
 );
@@ -149,11 +149,12 @@ mouse_motion_node_handle_event(
 }
 
 
-static const Matrix*
+static NodeOutput
 mouse_motion_node_get(
 	const Node* self
 ) {
 	const MouseMotionData* data = (const MouseMotionData*)self->data;
-	
-	return &(data->accumulator);
+
+	NodeOutput ret = { .matrix = &(data->accumulator) };
+	return ret;
 }

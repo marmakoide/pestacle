@@ -32,7 +32,7 @@ typedef struct {
 } NodeParameterDefinition;
 
 
-// --- Node input definitions -------------------------------------------------
+// --- Node I/O definitions ---------------------------------------------------
 
 enum NodeType {
 	NodeType__invalid = 0, // Used as a debugging help
@@ -46,6 +46,12 @@ typedef struct {
 	enum NodeType type;
 	String name;
 } NodeInputDefinition;
+
+
+typedef union {
+	const Matrix* matrix;
+	SDL_Surface* rgb_surface;
+} NodeOutput;
 
 
 // --- Node definitions -------------------------------------------------------
@@ -74,7 +80,7 @@ typedef struct {
 		const Event* event	
 	);
 
-	const Matrix* (*get)(      // get method
+	NodeOutput (*get)(      // get method
 		const Node*
 	);
 } NodeDelegateMethods;
@@ -159,7 +165,7 @@ Node_handle_event(
 );
 
 
-extern const Matrix*
+extern NodeOutput
 Node_get(
 	Node* self
 );

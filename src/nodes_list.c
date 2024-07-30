@@ -1,15 +1,19 @@
+#include "nodes/gradient_map.h"
 #include "nodes/heat_diffusion.h"
 #include "nodes/mouse_motion.h"
-
+#include "nodes/picture.h"
+#include "nodes/surface_blend.h"
 
 
 static const NodeDelegate*
 node_delegate_list[] = {
+	&gradient_map_node_delegate,
 	&heat_diffusion_node_delegate,
 	&mouse_motion_node_delegate,
+	&picture_node_delegate,
+	&surface_blend_node_delegate,
 	0 // Last one should be always 0
 };
-
 
 
 const NodeDelegate*

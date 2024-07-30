@@ -1,6 +1,6 @@
 #include <spng.h>
 #include <errno.h>
-#include "image.h"
+#include "picture.h"
 
 
 SDL_Surface*

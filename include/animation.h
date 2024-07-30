@@ -5,7 +5,6 @@
 #include "vector.h"
 #include "matrix.h"
 #include "node.h"
-#include "renderer.h"
 #include "dict.h"
 
 
@@ -13,8 +12,6 @@ typedef struct {
 	Dict node_instance_dict;
 	size_t sorted_node_count;
 	Node** sorted_nodes;
-
-	Renderer* renderer;
 } Animation;
 
 
