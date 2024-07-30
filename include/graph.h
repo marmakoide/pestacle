@@ -1,5 +1,5 @@
-#ifndef PESTACLE_ANIMATION_H
-#define PESTACLE_ANIMATION_H
+#ifndef PESTACLE_GRAPH_H
+#define PESTACLE_GRAPH_H
 
 #include <SDL.h>
 #include "vector.h"
@@ -12,26 +12,26 @@ typedef struct {
 	Dict node_instance_dict;
 	size_t sorted_node_count;
 	Node** sorted_nodes;
-} Animation;
+} Graph;
 
 
 extern void
-Animation_init(
-	Animation* self
+Graph_init(
+	Graph* self
 );
 
 
 extern bool
-Animation_setup(
-	Animation* self,
+Graph_setup(
+	Graph* self,
 	int screen_width,
 	int screen_height
 );
 
 
 extern void
-Animation_destroy(
-	Animation* self
+Graph_destroy(
+	Graph* self
 );
 
 
@@ -40,8 +40,8 @@ Animation_destroy(
  */
 
 extern Node*
-Animation_get_node_instance(
-	Animation* self,
+Graph_get_node_instance(
+	Graph* self,
 	const String* name
 );
 
@@ -56,30 +56,30 @@ Animation_get_node_instance(
  */
 
 extern bool
-Animation_add_node_instance(
-	Animation* self,
+Graph_add_node_instance(
+	Graph* self,
 	const String* name,
 	const NodeDelegate* delegate
 );
 
 
 extern void
-Animation_handle_event(
-	Animation* self,
+Graph_handle_event(
+	Graph* self,
 	const Event* event
 );
 
 
 extern SDL_Surface*
-Animation_output(
-	const Animation* self
+Graph_output(
+	const Graph* self
 );
 
 
 extern void
-Animation_update(
-	Animation* self
+Graph_update(
+	Graph* self
 );
 
 
-#endif /* PESTACLE_ANIMATION_H */ 
+#endif /* PESTACLE_GRAPH_H */ 

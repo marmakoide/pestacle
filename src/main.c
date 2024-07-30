@@ -4,7 +4,6 @@
 #include <SDL.h>
 #include "event.h"
 #include "parser/parser.h"
-#include "animation.h"
 
 
 const unsigned int DISPLAY_WIDTH  = 1000;
@@ -22,22 +21,22 @@ static SDL_Surface* window_surface = 0;
 static SDL_Renderer* renderer = 0;
 static SDL_Surface* framebuffer_native = 0;
 
-static SDL_mutex* animation_state_mutex = 0;
+static SDL_mutex* graph_state_mutex = 0;
 
-Animation animation;
+Graph graph;
 
 
 static Uint32
-animation_state_update_callback(Uint32 interval, void* param) {
+graph_update_callback(Uint32 interval, void* param) {
 	Uint32 ret = 0;
 
-	// Update the animation statex
-	SDL_LockMutex(animation_state_mutex);
+	// Update the graph state
+	SDL_LockMutex(graph_state_mutex);
 	if (!quit) {
-		Animation_update(&animation);
+		Graph_update(&graph);
 		ret = interval;
 	}
-	SDL_UnlockMutex(animation_state_mutex);
+	SDL_UnlockMutex(graph_state_mutex);
 
 	// Job done
 	return ret;
@@ -51,12 +50,12 @@ framebuffer_update_callback(Uint32 interval, void* param) {
 
 	// Generate the output
 	SDL_Surface* out = 0;
-	SDL_LockMutex(animation_state_mutex);
+	SDL_LockMutex(graph_state_mutex);
 	if (!quit) {
-		out = Animation_output(&animation);
+		out = Graph_output(&graph);
 		ret = interval;
 	}
-	SDL_UnlockMutex(animation_state_mutex);
+	SDL_UnlockMutex(graph_state_mutex);
 
 	// Update the display
 	if (out) {
@@ -71,19 +70,19 @@ framebuffer_update_callback(Uint32 interval, void* param) {
 
 
 static bool
-load_config() {
+load_graph() {
 	Lexer lexer;
 	Lexer_init(&lexer, stdin);
 
 	ParseContext context;
-	context.animation = &animation;
+	context.graph = &graph;
 	return ParseContext_parse(&context, &lexer);
 }
 
 
 int
 main(int argc, char* argv[]) {
-	SDL_TimerID animation_state_update_timer = 0;
+	SDL_TimerID graph_update_timer = 0;
 	SDL_TimerID framebuffer_update_timer = 0;
 	int exit_code = EXIT_SUCCESS;
 
@@ -97,14 +96,14 @@ main(int argc, char* argv[]) {
 		goto termination;
 	}
 
-	// Initialize animation
-	Animation_init(&animation);
+	// Initialize graph
+	Graph_init(&graph);
 
-	if (!load_config())
+	if (!load_graph())
 		goto termination;
 
-	if (!Animation_setup(
-		&animation,
+	if (!Graph_setup(
+		&graph,
 		EMULATED_DISPLAY_WIDTH,
 		EMULATED_DISPLAY_HEIGHT)
 	)
@@ -122,8 +121,8 @@ main(int argc, char* argv[]) {
 	);
 
 	// Initialize the animation state mutex
-	animation_state_mutex = SDL_CreateMutex();
-	if (!animation_state_mutex) {
+	graph_state_mutex = SDL_CreateMutex();
+	if (!graph_state_mutex) {
 		exit_code = EXIT_FAILURE;
 		SDL_LogError(SDL_LOG_CATEGORY_SYSTEM, "Unable to create state mutex: %s", SDL_GetError());
 		goto termination;
@@ -188,13 +187,13 @@ main(int argc, char* argv[]) {
 	}
 
 	// Setup a 20Hz for the animation logic update
-	animation_state_update_timer = SDL_AddTimer(
+	graph_update_timer = SDL_AddTimer(
 		50,
-		animation_state_update_callback,
+		graph_update_callback,
 		0
 	);
 	
-	if (!animation_state_update_timer) {
+	if (!graph_update_timer) {
 		exit_code = EXIT_FAILURE;
 		SDL_LogError(SDL_LOG_CATEGORY_SYSTEM, "Could not create SDL timer for state update : %s\n", SDL_GetError());
 		goto termination;
@@ -208,25 +207,25 @@ main(int argc, char* argv[]) {
 		if (SDL_WaitEvent(&src_event)) {
 			switch(src_event.type) {
 				case SDL_QUIT:
-					SDL_LockMutex(animation_state_mutex);
+					SDL_LockMutex(graph_state_mutex);
 					quit = true;
-					SDL_UnlockMutex(animation_state_mutex);
+					SDL_UnlockMutex(graph_state_mutex);
 					break;
 
 				case SDL_MOUSEBUTTONUP:
 				case SDL_MOUSEBUTTONDOWN:
 					if (cast_mouse_button_event(&display, &src_event, &dst_event)) {
-						SDL_LockMutex(animation_state_mutex);
-						Animation_handle_event(&animation, &dst_event);
-						SDL_UnlockMutex(animation_state_mutex);
+						SDL_LockMutex(graph_state_mutex);
+						Graph_handle_event(&graph, &dst_event);
+						SDL_UnlockMutex(graph_state_mutex);
 					}
 					break;
 
 				case SDL_MOUSEMOTION:
 					if (cast_mouse_motion_event(&display, &src_event, &dst_event)) {
-						SDL_LockMutex(animation_state_mutex);
-						Animation_handle_event(&animation, &dst_event);
-						SDL_UnlockMutex(animation_state_mutex);
+						SDL_LockMutex(graph_state_mutex);
+						Graph_handle_event(&graph, &dst_event);
+						SDL_UnlockMutex(graph_state_mutex);
 					}
 					break;
 
@@ -241,13 +240,13 @@ main(int argc, char* argv[]) {
 
 	// Free ressources
 termination:
-	if (animation_state_update_timer)
-		SDL_RemoveTimer(animation_state_update_timer);
+	if (graph_update_timer)
+		SDL_RemoveTimer(graph_update_timer);
 
 	if (framebuffer_update_timer)
 		SDL_RemoveTimer(framebuffer_update_timer);
 
-	Animation_destroy(&animation);
+	Graph_destroy(&graph);
 
 	if (framebuffer_native)
 		SDL_FreeSurface(framebuffer_native);
@@ -258,8 +257,8 @@ termination:
 	if (window)
 		SDL_DestroyWindow(window);
 
-	if (animation_state_mutex)
-		SDL_DestroyMutex(animation_state_mutex);
+	if (graph_state_mutex)
+		SDL_DestroyMutex(graph_state_mutex);
 	
 	SDL_Quit();
 

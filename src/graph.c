@@ -1,11 +1,11 @@
 #include <assert.h>
 #include "stack.h"
-#include "animation.h"
+#include "graph.h"
 #include "memory.h"
 
 
 static bool
-Animation_check_graph_is_complete(Animation* self) {
+Graph_check_graph_is_complete(Graph* self) {
 	assert(self != 0);
 	assert(self->sorted_nodes != 0);
 
@@ -35,7 +35,7 @@ push_node_inputs(Stack* stack, Node* node) {
 
 
 static bool
-Animation_topological_sort(Animation* self) {
+Graph_topological_sort(Graph* self) {
 	bool ret = true;
 
 	Stack stack;
@@ -46,7 +46,7 @@ Animation_topological_sort(Animation* self) {
 
 	// Get the root node
 	const String root_node_instance_name = { "main", 5 };
-	Node* root = Animation_get_node_instance(self, &root_node_instance_name);
+	Node* root = Graph_get_node_instance(self, &root_node_instance_name);
 	if (!root) {
 		SDL_LogError(
 			SDL_LOG_CATEGORY_SYSTEM,
@@ -101,8 +101,8 @@ termination:
 
 
 void
-Animation_init(
-	Animation* self
+Graph_init(
+	Graph* self
 ) {
 	assert(self != 0);
 
@@ -113,18 +113,18 @@ Animation_init(
 
 
 bool
-Animation_setup(
-	Animation* self,
+Graph_setup(
+	Graph* self,
 	int screen_width,
 	int screen_height
 ) {
 	assert(self != 0);
 
 	// Setup the graph
-	if (!Animation_topological_sort(self))
+	if (!Graph_topological_sort(self))
 		goto failure;
 
-	if (!Animation_check_graph_is_complete(self))
+	if (!Graph_check_graph_is_complete(self))
 		goto failure;
 
 	// Check that the root node have proper type
@@ -147,14 +147,14 @@ Animation_setup(
 
 	// Failure handling
 failure:
-	Animation_destroy(self);
+	Graph_destroy(self);
 	return false;
 }
 
 
 void
-Animation_destroy(
-	Animation* self
+Graph_destroy(
+	Graph* self
 ) {
 	// Deallocate sorted node dictionary
 	if (self->sorted_nodes) {
@@ -181,8 +181,8 @@ Animation_destroy(
 
 
 Node*
-Animation_get_node_instance(
-	Animation* self,
+Graph_get_node_instance(
+	Graph* self,
 	const String* name
 ) {
 	assert(self != 0);
@@ -201,8 +201,8 @@ Animation_get_node_instance(
 
 
 bool
-Animation_add_node_instance(
-	Animation* self,
+Graph_add_node_instance(
+	Graph* self,
 	const String* instance_name,
 	const NodeDelegate* delegate
 ) {
@@ -229,8 +229,8 @@ Animation_add_node_instance(
 
 
 void
-Animation_handle_event(
-	Animation* self,
+Graph_handle_event(
+	Graph* self,
 	const Event* event
 ) {
 	Node** node_ptr = self->sorted_nodes;
@@ -240,16 +240,16 @@ Animation_handle_event(
 
 
 SDL_Surface*
-Animation_output(
-	const Animation* self
+Graph_output(
+	const Graph* self
 ) {
 	return Node_output(self->sorted_nodes[0]).rgb_surface;
 }
 
 
 void
-Animation_update(
-	Animation* self
+Graph_update(
+	Graph* self
 ) {
 	Node** node_ptr = self->sorted_nodes;
 	for(size_t i = self->sorted_node_count; i != 0; --i, ++node_ptr)

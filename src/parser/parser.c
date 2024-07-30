@@ -14,8 +14,8 @@ parse_get_node_instance(
 	Lexer* lexer,
 	const String* instance_name_str
 ) {
-	Node* node = Animation_get_node_instance(
-		context->animation,
+	Node* node = Graph_get_node_instance(
+		context->graph,
 		instance_name_str
 	);
 
@@ -60,8 +60,8 @@ parse_instance_creation(
 	}
 
 	// Create the node instance
-	if (!Animation_add_node_instance(
-			context->animation,
+	if (!Graph_add_node_instance(
+			context->graph,
 			instance_name_str,
 			delegate
 		)) {
