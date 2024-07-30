@@ -133,7 +133,7 @@ Animation_setup(
 			SDL_LOG_CATEGORY_SYSTEM,
 			"'main' node output type is not rgb_surface\n"
 		);
-		return false;
+		goto failure;
 	}
 
 	// Setup the nodes
