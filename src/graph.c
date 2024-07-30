@@ -45,8 +45,8 @@ Graph_topological_sort(Graph* self) {
 	Dict_init(&visited);
 
 	// Get the root node
-	const String root_node_instance_name = { "main", 5 };
-	Node* root = Graph_get_node_instance(self, &root_node_instance_name);
+	const String root_node_name = { "main", 5 };
+	Node* root = Graph_get_node(self, &root_node_name);
 	if (!root) {
 		SDL_LogError(
 			SDL_LOG_CATEGORY_SYSTEM,
@@ -106,7 +106,7 @@ Graph_init(
 ) {
 	assert(self != 0);
 
-	Dict_init(&(self->node_instance_dict));
+	Dict_init(&(self->node_dict));
 	self->sorted_node_count = 0;
 	self->sorted_nodes = 0;
 }
@@ -168,7 +168,7 @@ Graph_destroy(
 
 	// Deallocate all nodes
 	DictIterator it;
-	DictIterator_init(&it, &(self->node_instance_dict));
+	DictIterator_init(&it, &(self->node_dict));
 	for( ; DictIterator_has_next(&it); DictIterator_next(&it)) {
 		Node* node = (Node*)it.entry->value;
 		Node_destroy(node);
@@ -176,12 +176,12 @@ Graph_destroy(
 	}
 
 	// Deallocate node dictionary
-	Dict_destroy(&(self->node_instance_dict)); 
+	Dict_destroy(&(self->node_dict)); 
 }
 
 
 Node*
-Graph_get_node_instance(
+Graph_get_node(
 	Graph* self,
 	const String* name
 ) {
@@ -189,9 +189,7 @@ Graph_get_node_instance(
 	assert(name != 0);
 	assert(name->data != 0);
 
-	DictEntry* entry =
-		Dict_find(&(self->node_instance_dict), name);
-
+	DictEntry* entry = Dict_find(&(self->node_dict), name);
 	if (!entry)
 		return 0;
 
@@ -201,30 +199,25 @@ Graph_get_node_instance(
 
 
 bool
-Graph_add_node_instance(
+Graph_add_node(
 	Graph* self,
-	const String* instance_name,
+	const String* name,
 	const NodeDelegate* delegate
 ) {
 	assert(self != 0);
-	assert(instance_name != 0);
-	assert(delegate_name != 0);
+	assert(name != 0);
+	assert(delegate != 0);
 
-	// Check that there is no instance with that name already
-	DictEntry* entry =
-		Dict_find(&(self->node_instance_dict), instance_name);
+	// Check that there is no node with that name already
+	if (!Dict_find(&(self->node_dict), name)) {
+		// Create and add a new node
+		Node* node = Node_new(name, delegate);
+		Dict_insert(&(self->node_dict), &(node->name))->value = node;
+		return true;
+	}
 
-	if (entry)
-		return false;
-
-	// Create the node instance
-	Node* node = Node_new(instance_name, delegate);
-
-	// Update the instance dictionary
-	Dict_insert(&(self->node_instance_dict), &(node->name))->value = node;
-	
 	// Job done
-	return true;
+	return false;
 }
 
 

@@ -9,22 +9,18 @@
 
 
 static Node*
-Parser_parse_get_node_instance(
+Parser_get_node(
 	ParseContext* context,
 	Lexer* lexer,
-	const String* instance_name_str
+	const String* name_str
 ) {
-	Node* node = Graph_get_node_instance(
-		context->graph,
-		instance_name_str
-	);
-
+	Node* node = Graph_get_node(context->graph, name_str);
 	if (!node)
 		SDL_LogError(
 			SDL_LOG_CATEGORY_SYSTEM,
-			"line %d : node instance '%s' have not been defined\n",
+			"line %d : node '%s' is not defined\n",
 			lexer->token.location.line + 1,
-			instance_name_str->data
+			name_str->data
 		);
 
 	return node;
@@ -32,10 +28,10 @@ Parser_parse_get_node_instance(
 
 
 static bool
-Parser_parse_instance_creation(
+Parser_parse_node_creation(
 	ParseContext* context,
 	Lexer* lexer,
-	const String* instance_name_str
+	const String* name_str
 ) {
 	// Parse an identifier
 	if (lexer->token.type != TokenType__identifier)
@@ -60,16 +56,12 @@ Parser_parse_instance_creation(
 	}
 
 	// Create the node instance
-	if (!Graph_add_node_instance(
-			context->graph,
-			instance_name_str,
-			delegate
-		)) {
+	if (!Graph_add_node(context->graph, name_str, delegate)) {
 		SDL_LogError(
 			SDL_LOG_CATEGORY_SYSTEM,
-			"line %d : node instance '%s' is already defined\n",
+			"line %d : node '%s' is already defined\n",
 			lexer->token.location.line + 1,
-			instance_name_str->data
+			name_str->data
 		);
 		return false;
 	}
@@ -83,7 +75,7 @@ static bool
 Parser_parse_parameter_assignment(
 	ParseContext* context,
 	Lexer* lexer,
-	const String* instance_name_str
+	const String* name_str
 ) {
 	bool ret = true;
 
@@ -107,8 +99,8 @@ Parser_parse_parameter_assignment(
 			lexer->token.text
 		);
 
-	// Fetch the node instance
-	Node* node = Parser_parse_get_node_instance(context, lexer, instance_name_str);
+	// Fetch the node
+	Node* node = Parser_get_node(context, lexer, name_str);
 	if (!node) {
 		ret = false;
 		Lexer_next_token(lexer);
@@ -122,16 +114,16 @@ Parser_parse_parameter_assignment(
 	if (!Node_get_parameter_by_name(node, &parameter_name_str, &param_def, &param_value)) {
 		SDL_LogError(
 			SDL_LOG_CATEGORY_SYSTEM,
-			"line %d : node instance '%s' does not have a '%s' parameter\n",
+			"line %d : node '%s' does not have a '%s' parameter\n",
 			lexer->token.location.line + 1,
-			instance_name_str->data,
+			name_str->data,
 			parameter_name_str.data
 		);
 		ret = false;
 		goto termination;
 	}
 
-	// Assign the parameter of the instance
+	// Assign the value to the node parameter
 	Lexer_next_token(lexer);
 	switch(param_def->type) {
 		case NodeParameterType__integer:
@@ -192,7 +184,7 @@ static bool
 Parser_parse_input_assignment(
 	ParseContext* context,
 	Lexer* lexer,
-	const String* src_instance_name_str
+	const String* src_name_str
 ) {
 	bool ret = true;
 
@@ -204,8 +196,8 @@ Parser_parse_input_assignment(
 			lexer->token.text
 		);
 
-	String dst_instance_name_str;
-	String_clone(&dst_instance_name_str, Lexer_token_text(lexer));
+	String dst_name_str;
+	String_clone(&dst_name_str, Lexer_token_text(lexer));
 
 	// Parse '.'
 	Lexer_next_token(lexer);
@@ -228,14 +220,14 @@ Parser_parse_input_assignment(
 	String input_name_str;
 	String_clone(&input_name_str, Lexer_token_text(lexer));
 
-	// Assign the input to the instance
-	Node* src_node = Parser_parse_get_node_instance(context, lexer, src_instance_name_str);
+	// Assign the input to the dst node
+	Node* src_node = Parser_get_node(context, lexer, src_name_str);
 	if (!src_node) {
 		ret = false;
 		goto termination;
 	}
 
-	Node* dst_node = Parser_parse_get_node_instance(context, lexer, &dst_instance_name_str);
+	Node* dst_node = Parser_get_node(context, lexer, &dst_name_str);
 	if (!dst_node) {
 		ret = false;
 		goto termination;
@@ -247,9 +239,9 @@ Parser_parse_input_assignment(
 		src_node)) {
 		SDL_LogError(
 			SDL_LOG_CATEGORY_SYSTEM,
-			"line %d : node instance '%s' does not have an input '%s' with matching type\n",
+			"line %d : node '%s' does not have an input '%s' with matching type\n",
 			lexer->token.location.line + 1,
-			dst_instance_name_str.data,
+			dst_name_str.data,
 			input_name_str.data
 		);
 		ret = false;
@@ -258,7 +250,7 @@ Parser_parse_input_assignment(
 
 termination:
 	// Free ressources
-	String_destroy(&dst_instance_name_str);
+	String_destroy(&dst_name_str);
 	String_destroy(&input_name_str);
 
 	// Job done
@@ -289,7 +281,7 @@ Parser_parse_declaration(
 	switch(lexer->token.type) {
 		case TokenType__colon:
 			Lexer_next_token(lexer);
-			if (!Parser_parse_instance_creation(context, lexer, &identifier_str))
+			if (!Parser_parse_node_creation(context, lexer, &identifier_str))
 				ret = false;
 			break;
 

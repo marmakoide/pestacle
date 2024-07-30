@@ -9,7 +9,7 @@
 
 
 typedef struct {
-	Dict node_instance_dict;
+	Dict node_dict;
 	size_t sorted_node_count;
 	Node** sorted_nodes;
 } Graph;
@@ -36,27 +36,27 @@ Graph_destroy(
 
 
 /*
- * Return the node instance with a given name, or 0 if no such instance exists
+ * Return the node with a given name, or 0 if no such node exists
  */
 
 extern Node*
-Graph_get_node_instance(
+Graph_get_node(
 	Graph* self,
 	const String* name
 );
 
 
 /*
- * Add a new node instance
- *   self : the graph to which we add a node instance
- *   name : name of the node instance
- *   delegate : delegate for the node instance
+ * Add a new node
+ *   self : the graph to which we add a node
+ *   name : name of the node
+ *   delegate : delegate for the node
  *
- * Returns false if a node instance with the same name already exists
+ * Returns false if a node with the same name already exists
  */
 
 extern bool
-Graph_add_node_instance(
+Graph_add_node(
 	Graph* self,
 	const String* name,
 	const NodeDelegate* delegate
