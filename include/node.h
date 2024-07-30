@@ -82,6 +82,7 @@ typedef struct {
 
 typedef struct {
 	String name;
+	enum NodeInputType type;
 	const NodeInputDefinition* input_defs;
 	const NodeParameterDefinition* parameter_defs;
 	NodeDelegateMethods methods;

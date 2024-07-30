@@ -59,6 +59,7 @@ mouse_motion_parameters[] = {
 const NodeDelegate
 mouse_motion_node_delegate = {
 	{ "mouse-motion", 13 },
+	NodeInputType__matrix,
 	mouse_motion_inputs,
 	mouse_motion_parameters,
 	{

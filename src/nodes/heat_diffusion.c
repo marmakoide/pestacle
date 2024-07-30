@@ -56,6 +56,7 @@ heat_diffusion_parameters[] = {
 const NodeDelegate
 heat_diffusion_node_delegate = {
 	{ "heat-diffusion", 15 },
+	NodeInputType__matrix,
 	heat_diffusion_inputs,
 	heat_diffusion_parameters,
 	{
