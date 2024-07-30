@@ -66,7 +66,7 @@ framebuffer_update_callback(Uint32 interval, void* param) {
 }
 
 
-static int
+static bool
 load_config() {
 	Lexer lexer;
 	Lexer_init(&lexer, stdin);

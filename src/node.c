@@ -76,12 +76,14 @@ NodeDelegate_parameter_count(const NodeDelegate* self) {
 
 // --- Node -------------------------------------------------------------------
 
-static Node*
+Node*
 Node_new(
 	const String* name,
 	const NodeDelegate* delegate
 ) {
 	assert(delegate != 0);
+	assert(delegate->type != NodeType__invalid);
+	assert(delegate->type != NodeType__last);
 
 	// Allocate
 	Node* ret = (Node*)checked_malloc(sizeof(Node));
@@ -188,24 +190,6 @@ Node_destroy(
 	self->name.data = 0;
 	self->inputs = 0;
 	#endif
-}
-
-
-Node*
-Node_create_by_name(
-	const String* name,
-	const String* delegate_name	
-) {
-	assert(name != 0);
-	assert(name->data != 0);
-	assert(delegate_name != 0);
-	assert(delegate_name->data != 0);
-
-	const NodeDelegate* delegate = get_node_delegate_by_name(delegate_name);
-	if (!delegate)
-		return 0;
-
-	return Node_new(name, delegate);
 }
 
 

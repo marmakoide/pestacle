@@ -35,18 +35,31 @@ Animation_destroy(
 );
 
 
+/*
+ * Return the node instance with a given name, or 0 if no such instance exists
+ */
+
 extern Node*
 Animation_get_node_instance(
 	Animation* self,
-	const String* instance_name
+	const String* name
 );
 
+
+/*
+ * Add a new node instance
+ *   self : the graph to which we add a node instance
+ *   name : name of the node instance
+ *   delegate : delegate for the node instance
+ *
+ * Returns false if a node instance with the same name already exists
+ */
 
 extern bool
 Animation_add_node_instance(
 	Animation* self,
-	const String* instance_name,
-	const String* delegate_name
+	const String* name,
+	const NodeDelegate* delegate
 );
 
 

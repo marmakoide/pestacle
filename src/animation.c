@@ -174,14 +174,14 @@ Animation_destroy(
 Node*
 Animation_get_node_instance(
 	Animation* self,
-	const String* instance_name
+	const String* name
 ) {
 	assert(self != 0);
-	assert(instance_name != 0);
-	assert(instance_name->data != 0);
+	assert(name != 0);
+	assert(name->data != 0);
 
 	DictEntry* entry =
-		Dict_find(&(self->node_instance_dict), instance_name);
+		Dict_find(&(self->node_instance_dict), name);
 
 	if (!entry)
 		return 0;
@@ -195,7 +195,7 @@ bool
 Animation_add_node_instance(
 	Animation* self,
 	const String* instance_name,
-	const String* delegate_name
+	const NodeDelegate* delegate
 ) {
 	assert(self != 0);
 	assert(instance_name != 0);
@@ -209,9 +209,7 @@ Animation_add_node_instance(
 		return false;
 
 	// Create the node instance
-	Node* node = Node_create_by_name(instance_name, delegate_name);
-	if (!node)
-		return false;
+	Node* node = Node_new(instance_name, delegate);
 
 	// Update the instance dictionary
 	Dict_insert(&(self->node_instance_dict), &(node->name))->value = node;

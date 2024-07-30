@@ -95,10 +95,6 @@ typedef struct {
 } NodeDelegate;
 
 
-extern const NodeDelegate*
-get_node_delegate_by_name(const String* name);
-
-
 struct s_Node {
 	void* data;
 	const NodeDelegate* delegate;
@@ -108,13 +104,40 @@ struct s_Node {
 }; // struct s_Node
 
 
+/*
+ * Returns the node delegate with the specified name
+ *   name : name of the node delegate to retrieve
+ *
+ * Return 0 if the operation is not valid
+ */
+
+extern const NodeDelegate*
+get_node_delegate_by_name(const String* name);
+
+
+/*
+ * Creates a new node instance
+ *   name : name of the instance, will make a copy of the string instance
+ *   delegate : delegate for this node
+ */
+
 extern Node*
-Node_create_by_name(
+Node_new(
 	const String* name,
-	const String* delegate_name
+	const NodeDelegate* delegate
 );
 
 
+/*
+ * Connect a node input to the output of an other node ie. other -> self.name
+ *   self : node to which an input will be connected
+ *   name : name of the input to be connected
+ *   other : node to which the output will be connected
+ *
+ * Return false if the operation is invalid : no input with the specified name 
+ * and compatible types
+ */
+ 
 extern bool
 Node_set_input_by_name(
 	Node* self,
@@ -122,6 +145,18 @@ Node_set_input_by_name(
 	Node* other
 );
 
+
+/*
+ * Returns a node's parameter definiton and value
+ *   self : the node
+ *   name : name of the parameter
+ *   node_def_ptr : node parameter definition parameter
+ *   node_value_ptr : node parameter
+ *
+ * Returns false if the operation is invalid : no parameter with the specified
+ * name. Outputs to values pointed by node_def_ptr and node_value_ptr, if not
+ * 0.
+ */
 
 bool
 Node_get_parameter_by_name(
