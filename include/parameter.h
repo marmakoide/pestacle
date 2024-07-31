@@ -1,7 +1,7 @@
 #ifndef PESTACLE_PARAMETER_H
 #define PESTACLE_PARAMETER_H
 
-#include "matrix.h"
+#include "real.h"
 #include "strings.h"
 
 

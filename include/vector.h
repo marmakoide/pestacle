@@ -3,6 +3,7 @@
 
 #include "array_ops.h"
 
+
 typedef struct {
 	size_t len;
 	real_t* data;

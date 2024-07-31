@@ -3,9 +3,7 @@
 
 #include <stddef.h>
 #include <stdio.h>
-
-
-typedef float real_t;
+#include "real.h"
 
 
 extern real_t*
