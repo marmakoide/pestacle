@@ -133,3 +133,14 @@ Stack_empty(
 
 	return self->logical_len == 0;
 }
+
+
+size_t
+Stack_length(
+	const Stack* self
+) {
+	assert(self != 0);
+	assert(self->data != 0);
+
+	return self->logical_len;
+}

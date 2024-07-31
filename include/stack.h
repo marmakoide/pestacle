@@ -60,4 +60,10 @@ Stack_empty(
 );
 
 
+extern size_t
+Stack_length(
+	const Stack* self
+);
+
+
 #endif /* PESTACLE_STACK_H */
