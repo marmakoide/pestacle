@@ -112,46 +112,6 @@ Graph_init(
 }
 
 
-bool
-Graph_setup(
-	Graph* self,
-	int screen_width,
-	int screen_height
-) {
-	assert(self != 0);
-
-	// Setup the graph
-	if (!Graph_topological_sort(self))
-		goto failure;
-
-	if (!Graph_check_graph_is_complete(self))
-		goto failure;
-
-	// Check that the root node have proper type
-	if (self->sorted_nodes[0]->delegate->type != NodeType__rgb_surface) {
-		SDL_LogError(
-			SDL_LOG_CATEGORY_SYSTEM,
-			"'main' node output type is not rgb_surface\n"
-		);
-		goto failure;
-	}
-
-	// Setup the nodes
-	Node** node_ptr = self->sorted_nodes;
-	for(size_t i = self->sorted_node_count; i != 0; --i, ++node_ptr)
-		if (!Node_setup(*node_ptr, screen_width, screen_height))
-			goto failure;
-
-	// Job done
-	return true;
-
-	// Failure handling
-failure:
-	Graph_destroy(self);
-	return false;
-}
-
-
 void
 Graph_destroy(
 	Graph* self
@@ -217,6 +177,44 @@ Graph_add_node(
 	}
 
 	// Job done
+	return false;
+}
+
+
+bool
+Graph_setup(
+	Graph* self
+) {
+	assert(self != 0);
+
+	// Setup the graph
+	if (!Graph_topological_sort(self))
+		goto failure;
+
+	if (!Graph_check_graph_is_complete(self))
+		goto failure;
+
+	// Check that the root node have proper type
+	if (self->sorted_nodes[0]->delegate->type != NodeType__rgb_surface) {
+		SDL_LogError(
+			SDL_LOG_CATEGORY_SYSTEM,
+			"'main' node output type is not rgb_surface\n"
+		);
+		goto failure;
+	}
+
+	// Setup the nodes
+	Node** node_ptr = self->sorted_nodes;
+	for(size_t i = self->sorted_node_count; i != 0; --i, ++node_ptr)
+		if (!Node_setup(*node_ptr))
+			goto failure;
+
+	// Job done
+	return true;
+
+	// Failure handling
+failure:
+	Graph_destroy(self);
 	return false;
 }
 

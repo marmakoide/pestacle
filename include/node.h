@@ -62,9 +62,7 @@ typedef struct s_Node Node;
 
 typedef struct {
 	bool (*setup)(             // setup method (optional, can be 0)
-		Node*,
-		int width,
-		int height
+		Node*
 	);
 
 	void (*destroy)(           // destroy method (optional, can be 0)
@@ -179,9 +177,7 @@ Node_is_complete(
 
 extern bool
 Node_setup(
-	Node* self,
-	int width,
-	int height
+	Node* self
 );
 
 

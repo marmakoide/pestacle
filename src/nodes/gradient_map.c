@@ -6,9 +6,7 @@
 
 static bool
 gradient_map_node_setup(
-	Node* self,
-	int width,
-	int height
+	Node* self
 );
 
 
@@ -43,8 +41,21 @@ gradient_map_inputs[] = {
 };
 
 
+#define WIDTH_PARAMETER  0
+#define HEIGHT_PARAMETER 1
+
 static const NodeParameterDefinition
 gradient_map_parameters[] = {
+	{
+		NodeParameterType__integer,
+		{ "width", 6 },
+		{ .int64_value = 32 }
+	},
+	{
+		NodeParameterType__integer,
+		{ "height", 7 },
+		{ .int64_value = 32 }
+	},
 	{ NodeParameterType__last }
 };
 
@@ -69,18 +80,21 @@ gradient_map_node_delegate = {
 
 static bool
 gradient_map_node_setup(
-	Node* self,
-	int width,
-	int height
+	Node* self
 ) {
+	// Retrieve the parameters
+	size_t width = (size_t)self->parameters[WIDTH_PARAMETER].int64_value;
+	size_t height = (size_t)self->parameters[HEIGHT_PARAMETER].int64_value;
+
+	// Allocate
 	SDL_Surface* rgb_surface =
 		SDL_CreateRGBSurfaceWithFormat(
-		0,
-		width,
-		height,
-		24,
-		SDL_PIXELFORMAT_RGB24
-	);
+			0,
+			width,
+			height,
+			24,
+			SDL_PIXELFORMAT_RGB24
+		);
 
 	if (!rgb_surface) {
 		SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Could not create SDL surface : %s\n", SDL_GetError());

@@ -6,9 +6,7 @@
 
 static bool
 picture_node_setup(
-	Node* self,
-	int width,
-	int height
+	Node* self
 );
 
 
@@ -63,9 +61,7 @@ picture_node_delegate = {
 
 static bool
 picture_node_setup(
-	Node* self,
-	int width,
-	int height
+	Node* self
 ) {
 	const String* path = &(self->parameters[PATH_PARAMETER].string_value);
 

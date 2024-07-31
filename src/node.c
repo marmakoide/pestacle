@@ -130,24 +130,6 @@ Node_new(
 }
 
 
-bool
-Node_setup(
-	Node* self,
-	int width,
-	int height
-) {
-	assert(self != 0);
-	assert(self->delegate != 0);
-	assert(width > 0);
-	assert(height > 0);
-
-	if (self->delegate->methods.setup)
-		return self->delegate->methods.setup(self, width, height);
-
-	return true;
-}
-
-
 void
 Node_destroy(
 	Node* self
@@ -259,6 +241,22 @@ Node_is_complete(
 	for( ; input_def->type != NodeType__last; ++input_ptr, ++input_def)
 		if (*input_ptr == 0)
 			return false;
+
+	return true;
+}
+
+
+bool
+Node_setup(
+	Node* self
+) {
+	assert(self != 0);
+	assert(self->delegate != 0);
+	assert(width > 0);
+	assert(height > 0);
+
+	if (self->delegate->methods.setup)
+		return self->delegate->methods.setup(self);
 
 	return true;
 }

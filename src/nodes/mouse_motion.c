@@ -6,9 +6,7 @@
 
 static bool
 mouse_motion_node_setup(
-	Node* self,
-	int width,
-	int height
+	Node* self
 );
 
 
@@ -43,10 +41,22 @@ mouse_motion_inputs[] = {
 };
 
 
-#define VALUE_PARAMETER 0
+#define WIDTH_PARAMETER  0
+#define HEIGHT_PARAMETER 1
+#define VALUE_PARAMETER  2
 
 static const NodeParameterDefinition
 mouse_motion_parameters[] = {
+	{
+		NodeParameterType__integer,
+		{ "width", 6 },
+		{ .int64_value = 32 }
+	},
+	{
+		NodeParameterType__integer,
+		{ "height", 7 },
+		{ .int64_value = 32 }
+	},
 	{
 		NodeParameterType__real,
 		{ "value", 6 },
@@ -82,10 +92,12 @@ typedef struct {
 
 static bool
 mouse_motion_node_setup(
-	Node* self,
-	int width,
-	int height
+	Node* self
 ) {
+	// Retrieve the parameters
+	size_t width = (size_t)self->parameters[WIDTH_PARAMETER].int64_value;
+	size_t height = (size_t)self->parameters[HEIGHT_PARAMETER].int64_value;
+
 	// Allocate
 	MouseMotionData* data =
 		(MouseMotionData*)checked_malloc(sizeof(MouseMotionData));

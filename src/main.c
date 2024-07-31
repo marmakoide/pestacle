@@ -93,20 +93,16 @@ main(int argc, char* argv[]) {
 		goto termination;
 	}
 
-	// Initialize graph
+	// Initialize and setup the graph
 	Graph_init(&graph);
 
 	if (!load_graph())
 		goto termination;
 
-	if (!Graph_setup(
-		&graph,
-		EMULATED_DISPLAY_WIDTH,
-		EMULATED_DISPLAY_HEIGHT)
-	)
+	if (!Graph_setup(&graph))
 		goto termination;
 
-	//
+	// Fluff
 	Display display;
 
 	Display_init(

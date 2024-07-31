@@ -6,9 +6,7 @@
 
 static bool
 heat_diffusion_node_setup(
-	Node* self,
-	int width,
-	int height
+	Node* self
 );
 
 
@@ -42,10 +40,22 @@ heat_diffusion_inputs[] = {
 };
 
 
-#define DECAY_PARAMETER 0
+#define WIDTH_PARAMETER  0
+#define HEIGHT_PARAMETER 1
+#define DECAY_PARAMETER  2
 
 static const NodeParameterDefinition
 heat_diffusion_parameters[] = {
+	{
+		NodeParameterType__integer,
+		{ "width", 6 },
+		{ .int64_value = 32 }
+	},
+	{
+		NodeParameterType__integer,
+		{ "height", 7 },
+		{ .int64_value = 32 }
+	},
 	{
 		NodeParameterType__real,
 		{ "decay", 6 },
@@ -83,10 +93,12 @@ typedef struct {
 
 static bool
 heat_diffusion_node_setup(
-	Node* self,
-	int width,
-	int height
+	Node* self
 ) {
+	// Retrieve the parameters
+	size_t width = (size_t)self->parameters[WIDTH_PARAMETER].int64_value;
+	size_t height = (size_t)self->parameters[HEIGHT_PARAMETER].int64_value;
+
 	// Allocate
 	HeatDiffusionData* data =
 		(HeatDiffusionData*)checked_malloc(sizeof(HeatDiffusionData));

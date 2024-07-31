@@ -21,14 +21,6 @@ Graph_init(
 );
 
 
-extern bool
-Graph_setup(
-	Graph* self,
-	int screen_width,
-	int screen_height
-);
-
-
 extern void
 Graph_destroy(
 	Graph* self
@@ -60,6 +52,12 @@ Graph_add_node(
 	Graph* self,
 	const String* name,
 	const NodeDelegate* delegate
+);
+
+
+extern bool
+Graph_setup(
+	Graph* self
 );
 
 
