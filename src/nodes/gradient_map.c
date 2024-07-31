@@ -44,19 +44,19 @@ gradient_map_inputs[] = {
 #define WIDTH_PARAMETER  0
 #define HEIGHT_PARAMETER 1
 
-static const NodeParameterDefinition
+static const ParameterDefinition
 gradient_map_parameters[] = {
 	{
-		NodeParameterType__integer,
+		ParameterType__integer,
 		{ "width", 6 },
 		{ .int64_value = 32 }
 	},
 	{
-		NodeParameterType__integer,
+		ParameterType__integer,
 		{ "height", 7 },
 		{ .int64_value = 32 }
 	},
-	{ NodeParameterType__last }
+	{ ParameterType__last }
 };
 
 

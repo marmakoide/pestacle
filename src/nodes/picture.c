@@ -30,14 +30,14 @@ picture_inputs[] = {
 
 #define PATH_PARAMETER 0
 
-static const NodeParameterDefinition
+static const ParameterDefinition
 picture_parameters[] = {
 	{
-		NodeParameterType__string,
+		ParameterType__string,
 		{ "path", 5 },
 		{ .string_value = { "", 1 } }
 	},
-	{ NodeParameterType__last }
+	{ ParameterType__last }
 };
 
 

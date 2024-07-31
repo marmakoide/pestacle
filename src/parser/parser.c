@@ -47,8 +47,8 @@ Parser_parse_parameter(
 	String_clone(&name_str, Lexer_token_text(lexer));
 
 	// Fetch the parameter 
-	NodeParameterValue* param_value = 0;
-	NodeParameterDefinition const* param_def = 0;
+	ParameterValue* param_value = 0;
+	ParameterDefinition const* param_def = 0;
 
 	if (!Node_get_parameter_by_name(node, &name_str, &param_def, &param_value)) {
 		SDL_LogError(
@@ -74,7 +74,7 @@ Parser_parse_parameter(
 	// Assign the value to the node parameter
 	Lexer_next_token(lexer);
 	switch(param_def->type) {
-		case NodeParameterType__integer:
+		case ParameterType__integer:
 			if (lexer->token.type != TokenType__integer) {
 				SDL_LogError(
 					SDL_LOG_CATEGORY_SYSTEM,
@@ -87,7 +87,7 @@ Parser_parse_parameter(
 			}		
 			param_value->int64_value = lexer->token.value.int64_value;
 			break;
-		case NodeParameterType__real:
+		case ParameterType__real:
 			if ((lexer->token.type != TokenType__integer) && (lexer->token.type != TokenType__real)) {
 				SDL_LogError(
 					SDL_LOG_CATEGORY_SYSTEM,
@@ -100,7 +100,7 @@ Parser_parse_parameter(
 			}
 			param_value->real_value = lexer->token.value.real_value;
 			break;
-		case NodeParameterType__string:
+		case ParameterType__string:
 			if (lexer->token.type != TokenType__string) {
 				SDL_LogError(
 					SDL_LOG_CATEGORY_SYSTEM,

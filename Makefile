@@ -21,6 +21,7 @@ $(BUILD_DIR)/matrix.o \
 $(BUILD_DIR)/event.o \
 $(BUILD_DIR)/spng.o \
 $(BUILD_DIR)/picture.o \
+$(BUILD_DIR)/parameter.o \
 $(BUILD_DIR)/node.o \
 $(BUILD_DIR)/graph.o \
 $(BUILD_DIR)/nodes_list.o \

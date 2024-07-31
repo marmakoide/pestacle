@@ -45,24 +45,24 @@ mouse_motion_inputs[] = {
 #define HEIGHT_PARAMETER 1
 #define VALUE_PARAMETER  2
 
-static const NodeParameterDefinition
+static const ParameterDefinition
 mouse_motion_parameters[] = {
 	{
-		NodeParameterType__integer,
+		ParameterType__integer,
 		{ "width", 6 },
 		{ .int64_value = 32 }
 	},
 	{
-		NodeParameterType__integer,
+		ParameterType__integer,
 		{ "height", 7 },
 		{ .int64_value = 32 }
 	},
 	{
-		NodeParameterType__real,
+		ParameterType__real,
 		{ "value", 6 },
 		{ .real_value = (real_t)1 }
 	},
-	{ NodeParameterType__last }
+	{ ParameterType__last }
 };
 
 

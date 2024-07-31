@@ -4,32 +4,7 @@
 #include <SDL.h>
 #include "event.h"
 #include "matrix.h"
-#include "strings.h"
-
-
-// --- Node parameter definitons ----------------------------------------------
-
-enum NodeParameterType {
-	NodeParameterType__invalid = 0, // Used as a debugging help
-	NodeParameterType__integer,
-	NodeParameterType__real,
-	NodeParameterType__string,
-	NodeParameterType__last         // Used to mark the end of an array of NodeParameterType
-}; // enum NodeParameterType
-
-
-typedef union {
-	int64_t int64_value;
-	real_t real_value;
-	String string_value;
-} NodeParameterValue;
-
-
-typedef struct {
-	enum NodeParameterType type;
-	String name;
-	NodeParameterValue default_value;
-} NodeParameterDefinition;
+#include "parameter.h"
 
 
 // --- Node I/O definitions ---------------------------------------------------
@@ -88,7 +63,7 @@ typedef struct {
 	String name;
 	enum NodeType type;
 	const NodeInputDefinition* input_defs;
-	const NodeParameterDefinition* parameter_defs;
+	const ParameterDefinition* parameter_defs;
 	NodeDelegateMethods methods;
 } NodeDelegate;
 
@@ -98,7 +73,7 @@ struct s_Node {
 	const NodeDelegate* delegate;
 	String name;
 	Node** inputs;
-	NodeParameterValue* parameters;
+	ParameterValue* parameters;
 }; // struct s_Node
 
 
@@ -145,7 +120,7 @@ Node_set_input_by_name(
 
 
 /*
- * Returns a node's parameter definiton and value
+ * Returns a node's parameter definition and value
  *   self : the node
  *   name : name of the parameter
  *   node_def_ptr : node parameter definition parameter
@@ -160,8 +135,8 @@ bool
 Node_get_parameter_by_name(
 	Node* self,
 	const String* name,
-	const NodeParameterDefinition** node_def_ptr,
-	NodeParameterValue** node_value_ptr
+	const ParameterDefinition** param_def_ptr,
+	ParameterValue** param_value_ptr
 );
 
 

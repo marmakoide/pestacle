@@ -3,39 +3,12 @@
 #include "memory.h"
 
 
-// --- NodeParameter ----------------------------------------------------------
-
-static void
-NodeParameterValue_copy(
-	NodeParameterValue* dst,
-	const NodeParameterValue* src,
-	enum NodeParameterType type
-) {
-	assert(dst != 0);
-	assert(src != 0);
-
-	switch(type) {
-		case NodeParameterType__invalid:
-		case NodeParameterType__last:
-			assert(0);
-			break;
-		case NodeParameterType__integer:
-			dst->int64_value = src->int64_value;
-			break;
-		case NodeParameterType__real:
-			dst->real_value = src->real_value;
-			break;
-		case NodeParameterType__string:
-			String_clone(&(dst->string_value), &(src->string_value));
-			break;
-	}
-}
-
-
 // --- NodeDelegate -----------------------------------------------------------
 
 static bool
-NodeDelegate_has_inputs(const NodeDelegate* self) {
+NodeDelegate_has_inputs(
+	const NodeDelegate* self
+) {
 	assert(self != 0);
 
 	return self->input_defs->type == NodeType__last;
@@ -43,7 +16,9 @@ NodeDelegate_has_inputs(const NodeDelegate* self) {
 
 
 static size_t
-NodeDelegate_input_count(const NodeDelegate* self) {
+NodeDelegate_input_count(
+	const NodeDelegate* self
+) {
 	assert(self != 0);
 
 	size_t count = 0;
@@ -55,20 +30,24 @@ NodeDelegate_input_count(const NodeDelegate* self) {
 
 
 static bool
-NodeDelegate_has_parameters(const NodeDelegate* self) {
+NodeDelegate_has_parameters(
+	const NodeDelegate* self
+) {
 	assert(self != 0);
 
-	return self->parameter_defs->type == NodeParameterType__last;
+	return self->parameter_defs->type == ParameterType__last;
 }
 
 
 static size_t
-NodeDelegate_parameter_count(const NodeDelegate* self) {
+NodeDelegate_parameter_count(
+	const NodeDelegate* self
+) {
 	assert(self != 0);
 
 	size_t count = 0;
-	const NodeParameterDefinition* param_def = self->parameter_defs;
-	for( ; param_def->type != NodeParameterType__last; ++param_def, ++count);
+	const ParameterDefinition* param_def = self->parameter_defs;
+	for( ; param_def->type != ParameterType__last; ++param_def, ++count);
 
 	return count;
 }
@@ -113,12 +92,12 @@ Node_new(
 		size_t parameter_count = NodeDelegate_parameter_count(delegate);
 		
 		ret->parameters =
-			(NodeParameterValue*)checked_malloc(parameter_count * sizeof(NodeParameterValue));
+			(ParameterValue*)checked_malloc(parameter_count * sizeof(ParameterValue));
 
-		NodeParameterValue* param = ret->parameters;
-		const NodeParameterDefinition* param_def = delegate->parameter_defs;
-		for( ; param_def->type != NodeParameterType__last; ++param, ++param_def)
-			NodeParameterValue_copy(
+		ParameterValue* param = ret->parameters;
+		const ParameterDefinition* param_def = delegate->parameter_defs;
+		for( ; param_def->type != ParameterType__last; ++param, ++param_def)
+			ParameterValue_copy(
 				param,
 				&(param_def->default_value),
 				param_def->type
@@ -155,10 +134,10 @@ Node_destroy(
 	}
 
 	// Deallocate parameters
-	NodeParameterValue* param = self->parameters;
-	const NodeParameterDefinition* param_def = self->delegate->parameter_defs;
-	for( ; param_def->type != NodeParameterType__last; ++param, ++param_def) {
-		if (param_def->type == NodeParameterType__string)
+	ParameterValue* param = self->parameters;
+	const ParameterDefinition* param_def = self->delegate->parameter_defs;
+	for( ; param_def->type != ParameterType__last; ++param, ++param_def) {
+		if (param_def->type == ParameterType__string)
 			String_destroy(&(param->string_value));
 	}
 
@@ -179,17 +158,17 @@ bool
 Node_get_parameter_by_name(
 	Node* self,
 	const String* name,
-	const NodeParameterDefinition** param_def_ptr,
-	NodeParameterValue** param_value_ptr
+	const ParameterDefinition** param_def_ptr,
+	ParameterValue** param_value_ptr
 ) {
 	assert(self != 0);
 	assert(name != 0);
 	assert(name->data != 0);
 
-	NodeParameterValue* param_value = self->parameters;
-	const NodeParameterDefinition* param_def = self->delegate->parameter_defs;
+	ParameterValue* param_value = self->parameters;
+	const ParameterDefinition* param_def = self->delegate->parameter_defs;
 	
-	for( ; param_def->type != NodeParameterType__last; ++param_value, ++param_def)
+	for( ; param_def->type != ParameterType__last; ++param_value, ++param_def)
 		if (String_equals(name, &(param_def->name))) {
 			if (param_def_ptr)
 				*param_def_ptr = param_def;
@@ -202,7 +181,6 @@ Node_get_parameter_by_name(
 		
 	return false;
 }
-
 
 
 bool
