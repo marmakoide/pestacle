@@ -27,55 +27,11 @@ Parser_get_node(
 }
 
 
-static bool
-Parser_parse_node_creation(
+bool
+Parser_parse_parameter(
 	ParseContext* context,
 	Lexer* lexer,
-	const String* name_str
-) {
-	// Parse an identifier
-	if (lexer->token.type != TokenType__identifier)
-		handle_processing_error(
-			&(lexer->token.location),
-			"expected an identifier, got '%s' instead",
-			lexer->token.text
-		);
-
-	const String* type_str = Lexer_token_text(lexer);
-
-	// Check that the node type exists
-	const NodeDelegate* delegate = get_node_delegate_by_name(type_str);
-	if (!delegate) {
-		SDL_LogError(
-			SDL_LOG_CATEGORY_SYSTEM,
-			"line %d : node type '%s' is not defined\n",
-			lexer->token.location.line + 1,
-			type_str->data
-		);
-		return false;
-	}
-
-	// Create the node instance
-	if (!Graph_add_node(context->graph, name_str, delegate)) {
-		SDL_LogError(
-			SDL_LOG_CATEGORY_SYSTEM,
-			"line %d : node '%s' is already defined\n",
-			lexer->token.location.line + 1,
-			name_str->data
-		);
-		return false;
-	}
-
-	// Job done
-	return true;
-}
-
-
-static bool
-Parser_parse_parameter_assignment(
-	ParseContext* context,
-	Lexer* lexer,
-	const String* name_str
+	Node* node
 ) {
 	bool ret = true;
 
@@ -87,8 +43,24 @@ Parser_parse_parameter_assignment(
 			lexer->token.text
 		);
 
-	String parameter_name_str;
-	String_clone(&parameter_name_str, Lexer_token_text(lexer));
+	String name_str;
+	String_clone(&name_str, Lexer_token_text(lexer));
+
+	// Fetch the parameter 
+	NodeParameterValue* param_value = 0;
+	NodeParameterDefinition const* param_def = 0;
+
+	if (!Node_get_parameter_by_name(node, &name_str, &param_def, &param_value)) {
+		SDL_LogError(
+			SDL_LOG_CATEGORY_SYSTEM,
+			"line %d : node '%s' does not have a '%s' parameter\n",
+			lexer->token.location.line + 1,
+			node->name.data,
+			name_str.data
+		);
+		ret = false;
+		goto termination;
+	}
 
 	// Parse '='
 	Lexer_next_token(lexer);
@@ -98,30 +70,6 @@ Parser_parse_parameter_assignment(
 			"expected '=', got '%s' instead",
 			lexer->token.text
 		);
-
-	// Fetch the node
-	Node* node = Parser_get_node(context, lexer, name_str);
-	if (!node) {
-		ret = false;
-		Lexer_next_token(lexer);
-		goto termination;
-	}
-
-	// Fetch the parameter 
-	NodeParameterValue* param_value = 0;
-	NodeParameterDefinition const* param_def = 0;
-
-	if (!Node_get_parameter_by_name(node, &parameter_name_str, &param_def, &param_value)) {
-		SDL_LogError(
-			SDL_LOG_CATEGORY_SYSTEM,
-			"line %d : node '%s' does not have a '%s' parameter\n",
-			lexer->token.location.line + 1,
-			name_str->data,
-			parameter_name_str.data
-		);
-		ret = false;
-		goto termination;
-	}
 
 	// Assign the value to the node parameter
 	Lexer_next_token(lexer);
@@ -173,10 +121,119 @@ Parser_parse_parameter_assignment(
 
 termination:
 	// Free ressources
-	String_destroy(&parameter_name_str);
+	String_destroy(&name_str);
 
 	// Job done
 	return ret;
+}
+
+
+bool
+Parser_parse_parameter_list(
+	ParseContext* context,
+	Lexer* lexer,
+	Node* node
+) {
+	bool ret = true;
+
+	// Parse '('
+	Lexer_next_token(lexer);
+	if (lexer->token.type != TokenType__pth_open)
+		handle_processing_error(
+			&(lexer->token.location),
+			"expected '(', got '%s' instead",
+			lexer->token.text
+		);
+
+	// Parse each parameter one by one
+	bool first = true;
+	for(bool done = false; !done; first = false) {
+		Lexer_next_token(lexer);
+		switch(lexer->token.type) {
+			case TokenType__pth_close:
+				done = true;
+				break;
+
+			case TokenType__eof:
+				done = true;
+				ret = false;
+				break;
+
+			default:
+				if (!first) {
+					if (lexer->token.type != TokenType__comma)
+						handle_processing_error(
+							&(lexer->token.location),
+							"expected ')', got '%s' instead",
+							lexer->token.text
+						);
+					Lexer_next_token(lexer);
+				}
+				
+				if (!Parser_parse_parameter(context, lexer, node))
+					ret = false;
+		}
+	}
+	
+	// Parse ')'
+	if (lexer->token.type != TokenType__pth_close)
+		handle_processing_error(
+			&(lexer->token.location),
+			"expected ')', got '%s' instead",
+			lexer->token.text
+		);
+
+	// Job done
+	return ret;
+}
+
+
+static bool
+Parser_parse_node_creation(
+	ParseContext* context,
+	Lexer* lexer,
+	const String* name_str
+) {
+	// Parse an identifier
+	if (lexer->token.type != TokenType__identifier)
+		handle_processing_error(
+			&(lexer->token.location),
+			"expected an identifier, got '%s' instead",
+			lexer->token.text
+		);
+
+	const String* type_str = Lexer_token_text(lexer);
+
+	// Check that the node type exists
+	const NodeDelegate* delegate = get_node_delegate_by_name(type_str);
+	if (!delegate) {
+		SDL_LogError(
+			SDL_LOG_CATEGORY_SYSTEM,
+			"line %d : node type '%s' is not defined\n",
+			lexer->token.location.line + 1,
+			type_str->data
+		);
+		return false;
+	}
+
+	// Create the node instance
+	Node* node = Graph_add_node(context->graph, name_str, delegate);
+	if (!node) {
+		SDL_LogError(
+			SDL_LOG_CATEGORY_SYSTEM,
+			"line %d : node '%s' is already defined\n",
+			lexer->token.location.line + 1,
+			name_str->data
+		);
+		return false;
+	}
+
+	// Parse parameters
+	if (!Parser_parse_parameter_list(context, lexer, node))
+		return false;
+
+	// Job done
+	return true;
 }
 
 
@@ -279,15 +336,9 @@ Parser_parse_declaration(
 	// Call the proper parsing routine
     Lexer_next_token(lexer);
 	switch(lexer->token.type) {
-		case TokenType__colon:
+		case TokenType__equal:
 			Lexer_next_token(lexer);
 			if (!Parser_parse_node_creation(context, lexer, &identifier_str))
-				ret = false;
-			break;
-
-		case TokenType__dot:
-			Lexer_next_token(lexer);
-			if (!Parser_parse_parameter_assignment(context, lexer, &identifier_str))
 				ret = false;
 			break;
 
@@ -300,7 +351,7 @@ Parser_parse_declaration(
 		default:
 			handle_processing_error(
 				&(lexer->token.location),
-				"expected '.', ':' or '->' got '%s' instead",
+				"expected '=' or '->' got '%s' instead",
 				lexer->token.text
 			);
 	}
@@ -321,7 +372,6 @@ Parser_parse_declaration_list(
 	int error_count = 0;
 	for(bool done = false; (!done) && (error_count < MAX_PARSING_ERROR_COUNT); ) {
 		Lexer_next_token(lexer);
-
 		switch(lexer->token.type) {
 			case TokenType__eof:
 			case TokenType__invalid:

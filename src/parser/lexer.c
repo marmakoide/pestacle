@@ -105,7 +105,7 @@ Lexer_parse_decimal_integer(Lexer* self) {
 		value *= 10;
 		value += *str - '0';
 	}
-    
+
 	self->token.value.int64_value = value;
 }
 
@@ -185,8 +185,16 @@ Lexer_next_token(Lexer* self) {
 						state = LexerParsingState__string;
 						Lexer_skip_char(self);
 						break;
-					case ':':
-						self->token.type = TokenType__colon;
+					case ',':
+						self->token.type = TokenType__comma;
+						Lexer_accept_and_next_char(self);
+						return;
+					case '(':
+						self->token.type = TokenType__pth_open;
+						Lexer_accept_and_next_char(self);
+						return;
+					case ')':
+						self->token.type = TokenType__pth_close;
 						Lexer_accept_and_next_char(self);
 						return;
 					case '.':

@@ -19,7 +19,9 @@ enum TokenType {
     TokenType__integer,     // integer constant
     TokenType__real,        // real constant
     TokenType__string,      // string constant
-    TokenType__colon,       // :
+    TokenType__comma,       // ,
+    TokenType__pth_open,    // (
+    TokenType__pth_close,   // )        
     TokenType__dot,         // .
     TokenType__equal,       // =
     TokenType__left_arrow,  // ->

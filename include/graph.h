@@ -44,10 +44,11 @@ Graph_get_node(
  *   name : name of the node
  *   delegate : delegate for the node
  *
- * Returns false if a node with the same name already exists
+ * Returns the newly created node, or 0 if a node with the same name already 
+ * exists
  */
 
-extern bool
+extern Node*
 Graph_add_node(
 	Graph* self,
 	const String* name,

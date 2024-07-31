@@ -158,7 +158,7 @@ Graph_get_node(
 
 
 
-bool
+Node*
 Graph_add_node(
 	Graph* self,
 	const String* name,
@@ -173,11 +173,11 @@ Graph_add_node(
 		// Create and add a new node
 		Node* node = Node_new(name, delegate);
 		Dict_insert(&(self->node_dict), &(node->name))->value = node;
-		return true;
+		return node;
 	}
 
 	// Job done
-	return false;
+	return 0;
 }
 
 
