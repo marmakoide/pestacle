@@ -3,6 +3,7 @@
 #include "nodes/mouse_motion.h"
 #include "nodes/picture.h"
 #include "nodes/surface_blend.h"
+#include "nodes/surface_scale.h"
 
 
 static const NodeDelegate*
@@ -12,6 +13,7 @@ node_delegate_list[] = {
 	&mouse_motion_node_delegate,
 	&picture_node_delegate,
 	&surface_blend_node_delegate,
+	&surface_scale_node_delegate,
 	0 // Last one should be always 0
 };
 
