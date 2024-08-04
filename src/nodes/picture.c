@@ -65,9 +65,14 @@ picture_node_setup(
 ) {
 	const String* path = &(self->parameters[PATH_PARAMETER].string_value);
 
+	// Load the picture
 	SDL_Surface* rgb_surface = load_png(path->data);
 	if (!rgb_surface)
 		return false;
+
+	// Setup node type metadata
+	self->metadata.rgb_surface.width = rgb_surface->w;
+	self->metadata.rgb_surface.height = rgb_surface->h;
 
 	// Job done
 	self->data = rgb_surface;

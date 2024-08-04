@@ -203,9 +203,9 @@ Graph_setup(
 		goto failure;
 	}
 
-	// Setup the nodes
-	Node** node_ptr = self->sorted_nodes;
-	for(size_t i = self->sorted_node_count; i != 0; --i, ++node_ptr)
+	// Setup the nodes in reverse topological order
+	Node** node_ptr = self->sorted_nodes + self->sorted_node_count - 1;
+	for(size_t i = self->sorted_node_count; i != 0; --i, --node_ptr)
 		if (!Node_setup(*node_ptr))
 			goto failure;
 
@@ -242,6 +242,7 @@ void
 Graph_update(
 	Graph* self
 ) {
+	// Update the nodes in topological order
 	Node** node_ptr = self->sorted_nodes;
 	for(size_t i = self->sorted_node_count; i != 0; --i, ++node_ptr)
 		Node_update(*node_ptr);

@@ -105,6 +105,10 @@ mouse_motion_node_setup(
 	if (!data)
 		return false;
 
+	// Setup node type metadata
+	self->metadata.matrix.width = width;
+	self->metadata.matrix.height = height;
+
 	// Setup the accumulator matrix
 	Matrix_init(&(data->accumulator), height, width);
 	Matrix_fill(&(data->accumulator), (real_t)0);

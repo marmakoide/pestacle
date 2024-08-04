@@ -101,6 +101,10 @@ gradient_map_node_setup(
 		return false;
 	}
 
+	// Setup node type metadata
+	self->metadata.rgb_surface.width = width;
+	self->metadata.rgb_surface.height = height;
+
 	// Job done
 	self->data = rgb_surface;
 	return true;

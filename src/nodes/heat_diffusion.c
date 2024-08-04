@@ -99,14 +99,18 @@ heat_diffusion_node_setup(
 	size_t width = (size_t)self->parameters[WIDTH_PARAMETER].int64_value;
 	size_t height = (size_t)self->parameters[HEIGHT_PARAMETER].int64_value;
 
-	// Allocate
+	// Allocate data
 	HeatDiffusionData* data =
 		(HeatDiffusionData*)checked_malloc(sizeof(HeatDiffusionData));
 
 	if (!data)
 		return false;
 
-	// Setup
+	// Setup node type metadata
+	self->metadata.matrix.width = width;
+	self->metadata.matrix.height = height;
+
+	// Setup data
 	Matrix_init(&(data->U), height, width);
 	Matrix_fill(&(data->U), (real_t)0);
 

@@ -11,6 +11,7 @@
 
 enum NodeType {
 	NodeType__invalid = 0, // Used as a debugging help
+	NodeType__void,
 	NodeType__matrix,
 	NodeType__rgb_surface,
 	NodeType__last         // Used to mark the end of an array of NodeInputType
@@ -21,6 +22,24 @@ typedef struct {
 	enum NodeType type;
 	String name;
 } NodeInputDefinition;
+
+
+typedef struct {
+	size_t width;
+	size_t height;
+} NodeTypeMatrixMetadata;
+
+
+typedef struct {
+	size_t width;
+	size_t height;
+} NodeTypeRGBSurfaceMetadata;
+
+
+typedef union {
+	NodeTypeMatrixMetadata matrix;
+	NodeTypeRGBSurfaceMetadata rgb_surface;
+} NodeTypeMetadata;
 
 
 typedef union {
@@ -50,10 +69,10 @@ typedef struct {
 
 	void (*handle_event)(      // handle_event output (optional, can be 0)
 		Node*,
-		const Event* event	
+		const Event* event
 	);
 
-	NodeOutput (*output)(      // output method
+	NodeOutput (*output)(      // output method (optional, can be 0)
 		const Node*
 	);
 } NodeDelegateMethods;
@@ -71,6 +90,7 @@ typedef struct {
 struct s_Node {
 	void* data;
 	const NodeDelegate* delegate;
+	NodeTypeMetadata metadata;
 	String name;
 	Node** inputs;
 	ParameterValue* parameters;
