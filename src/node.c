@@ -230,8 +230,6 @@ Node_setup(
 ) {
 	assert(self != 0);
 	assert(self->delegate != 0);
-	assert(width > 0);
-	assert(height > 0);
 
 	if (self->delegate->methods.setup)
 		return self->delegate->methods.setup(self);

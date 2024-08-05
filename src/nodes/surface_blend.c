@@ -102,8 +102,8 @@ surface_blend_node_setup(
 			0,
 			width,
 			height,
-			24,
-			SDL_PIXELFORMAT_RGB24
+			32,
+			SDL_PIXELFORMAT_RGBA32
 		);
 
 	if (!rgb_surface) {
@@ -159,11 +159,12 @@ surface_blend_node_update(
 		const uint8_t* src_a_pixel = src_a_pixel_row;
 		const uint8_t* src_b_pixel = src_b_pixel_row;
 
-		for(int j = dst->w; j != 0; --j, dst_pixel += 3, src_a_pixel += 4, src_b_pixel += 4, ++coeff) {
+		for(int j = dst->w; j != 0; --j, dst_pixel += 4, src_a_pixel += 4, src_b_pixel += 4, ++coeff) {
 			float level = fmaxf(fminf(*coeff, 1.f), 0.f);
 			
 			for(int k = 0; k < 3; ++k)
 				dst_pixel[k] = (uint8_t)(src_b_pixel[k] * level + src_a_pixel[k] * (1.f - level));
+			dst_pixel[3] = 0xff;
 		}
 	}
 }

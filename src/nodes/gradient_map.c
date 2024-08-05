@@ -92,8 +92,8 @@ gradient_map_node_setup(
 			0,
 			width,
 			height,
-			24,
-			SDL_PIXELFORMAT_RGB24
+			32,
+			SDL_PIXELFORMAT_RGBA32
 		);
 
 	if (!rgb_surface) {
@@ -137,11 +137,12 @@ gradient_map_node_update(
 	uint8_t* pixel_row = (uint8_t*)dst->pixels;
 	for(int i = dst->h; i != 0; --i, pixel_row += dst->pitch) {
 		uint8_t* pixel = pixel_row;
-		for(int j = dst->w; j != 0; --j, pixel += 3, ++coeff) {
+		for(int j = dst->w; j != 0; --j, pixel += 4, ++coeff) {
 			uint8_t level = (uint8_t)fmaxf(fminf(255.f * (*coeff), 255.f), 0.f);
 
 			for(int k = 0; k < 3; ++k)
-				pixel[k] = 0xff - level;
+				pixel[k] = level;
+			pixel[3] = 0xff;
 		}
 	}
 }

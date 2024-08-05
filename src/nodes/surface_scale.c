@@ -104,8 +104,8 @@ surface_scale_node_setup(
 			0,
 			output_width,
 			output_height,
-			24,
-			SDL_PIXELFORMAT_RGB24
+			32,
+			SDL_PIXELFORMAT_RGBA32
 		);
 
 	if (!rgb_surface) {
