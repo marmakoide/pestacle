@@ -99,6 +99,18 @@ array_ops_sum(
 
 
 real_t
+array_ops_square_sum(
+	const real_t* src,
+	size_t len
+) {
+	real_t sum = (*src) * (*src);
+	for(--len, ++src; len != 0; --len, ++src)
+		sum += (*src) * (*src);
+	return sum;
+}
+
+
+real_t
 array_ops_dot(
 	const real_t* src,
 	const real_t* other,

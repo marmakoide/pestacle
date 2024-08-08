@@ -71,6 +71,13 @@ array_ops_sum(
 
 
 extern real_t
+array_ops_square_sum(
+	const real_t* src,
+	size_t len
+);
+
+
+extern real_t
 array_ops_dot(
 	const real_t* src,
 	const real_t* other,
