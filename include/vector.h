@@ -75,6 +75,12 @@ Vector_sum(
 
 
 extern real_t
+Vector_square_sum(
+	const Vector* self
+);
+
+
+extern real_t
 Vector_dot(
 	const Vector* self,
 	const Vector* other

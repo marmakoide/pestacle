@@ -140,6 +140,20 @@ Vector_sum(
 
 
 real_t
+Vector_square_sum(
+	const Vector* self
+) {
+	assert(self != 0);
+	assert(self->data != 0);
+
+	return array_ops_square_sum(
+		self->data,
+		self->len
+	);
+}
+
+
+real_t
 Vector_dot(
 	const Vector* self,
 	const Vector* other
