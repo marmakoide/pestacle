@@ -112,7 +112,7 @@ Matrix_scaled_max(
 
 
 extern void
-Matrix_rowwise_correlation(
+Matrix_rowwise_convolution(
 	const Matrix* self,
 	const Vector* kernel,
 	Matrix* out
@@ -120,7 +120,7 @@ Matrix_rowwise_correlation(
 
 
 void
-Matrix_colwise_correlation(
+Matrix_colwise_convolution(
 	const Matrix* self,
 	const Vector* kernel,
 	Matrix* out

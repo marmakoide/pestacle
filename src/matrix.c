@@ -256,7 +256,7 @@ Matrix_scaled_max(
 
 
 void
-Matrix_rowwise_correlation(
+Matrix_rowwise_convolution(
 	const Matrix* self,
 	const Vector* kernel,
 	Matrix* out
@@ -273,7 +273,7 @@ Matrix_rowwise_correlation(
 	const real_t* src = self->data;
 	real_t* dst = out->data;
 	for(size_t i = self->row_count; i != 0; --i, src += self->col_count, dst += self->col_count)
-		array_ops_correlation(
+		array_ops_convolution(
 			dst,
 			src,
 			kernel->data,
@@ -284,7 +284,7 @@ Matrix_rowwise_correlation(
 
 
 void
-Matrix_colwise_correlation(
+Matrix_colwise_convolution(
 	const Matrix* self,
 	const Vector* kernel,
 	Matrix* out
@@ -301,7 +301,7 @@ Matrix_colwise_correlation(
 	const real_t* src = self->data;
 	real_t* dst = out->data;
 	for(size_t i = self->col_count; i != 0; --i, ++src, ++dst)
-		array_ops_strided_correlation(
+		array_ops_strided_convolution(
 			dst,
 			src,
 			kernel->data,

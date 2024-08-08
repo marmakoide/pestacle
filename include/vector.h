@@ -127,7 +127,7 @@ Vector_scaled_fmax(
 
 
 extern void
-Vector_correlation(
+Vector_convolution(
 	const Vector* self,
 	const Vector* kernel,
 	Vector* out

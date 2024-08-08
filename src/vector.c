@@ -279,7 +279,7 @@ Vector_scaled_max(
 
 
 void
-Vector_correlation(
+Vector_convolution(
 	const Vector* self,
 	const Vector* kernel,
 	Vector* out
@@ -292,7 +292,7 @@ Vector_correlation(
 	assert(out->data != 0);
 	assert(self->len == out->len);
 
-	array_ops_correlation(
+	array_ops_convolution(
 		out->data,
 		self->data,
 		kernel->data,

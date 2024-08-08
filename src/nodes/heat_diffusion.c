@@ -181,13 +181,13 @@ heat_diffusion_node_update(
 	);
 
 	// Diffusion operator on U
-	Matrix_rowwise_correlation(
+	Matrix_rowwise_convolution(
 		&(data->U),
 		&(data->diff_kernel),
 		&(data->U_tmp)
 	);
 
-	Matrix_colwise_correlation(
+	Matrix_colwise_convolution(
 		&(data->U_tmp),
 		&(data->diff_kernel),
 		&(data->U)

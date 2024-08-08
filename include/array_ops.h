@@ -130,7 +130,7 @@ array_ops_scaled_max(
 
 
 extern void
-array_ops_correlation(
+array_ops_convolution(
 	real_t* dst,
 	const real_t* src,
 	const real_t* kernel,
@@ -140,7 +140,7 @@ array_ops_correlation(
 
 
 extern void
-array_ops_strided_correlation(
+array_ops_strided_convolution(
 	real_t* dst,
 	const real_t* src,
 	const real_t* kernel,
