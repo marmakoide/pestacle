@@ -47,7 +47,7 @@ Lexer_clear_token_text(Lexer* self) {
 
 
 static void
-Lexer_accept(Lexer* self, char c) {
+Lexer_accept(Lexer* self, InputBuffer_char c) {
     if (Lexer_token_text_len(self) == LEXER_TOKEN_TEXT_MAX_SIZE)
 		handle_processing_error(
 			&(self->location),
@@ -57,7 +57,7 @@ Lexer_accept(Lexer* self, char c) {
 			LEXER_TOKEN_TEXT_MAX_SIZE - 1
 		);
     
-	*(self->token.text_end) = c;
+	*(self->token.text_end) = (char)c;
 	self->token.text_end += 1;
 	*(self->token.text_end) = '\0';
 }
@@ -163,7 +163,7 @@ Lexer_next_token(Lexer* self) {
 	self->token.type = TokenType__invalid;
     
 	while(self->token.type != TokenType__eof) {
-		char current_char = InputBuffer_get(&(self->input_buffer));
+		InputBuffer_char current_char = InputBuffer_get(&(self->input_buffer));
 		switch(state) {
 			case LexerParsingState__init:
 				self->token.location = self->location;
@@ -266,7 +266,7 @@ Lexer_next_token(Lexer* self) {
 						state = LexerParsingState__string_escape;
 						Lexer_skip_char(self);
 						break;
-					case -1:
+					case EOF:
 						handle_processing_error(
 							&(self->location),
 							"unterminated string constant"
@@ -331,7 +331,7 @@ Lexer_next_token(Lexer* self) {
 						self->location.line += 1;
 						Lexer_skip_char(self);
 						break;
-					case -1:
+					case EOF:
 						state = LexerParsingState__init;
 						break;
 					default:
@@ -345,7 +345,7 @@ Lexer_next_token(Lexer* self) {
 						state = LexerParsingState__multi_line_comment_end;
 						Lexer_skip_char(self);
 						break;
-					case -1:
+					case EOF:
 						handle_processing_error(
 							&(self->location),
 							"unterminated multi-line comment"

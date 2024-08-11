@@ -6,32 +6,49 @@
   the file is read page per page.
 
   After initialization, InputBuffer_get will returns the 1st byte of the file.
+
+  On x86 architecture, char type is signed, while it's unsigned on ARM 
+  architecture. The implementation allow to use InputBuffer without any
+  differences.
  *****************************************************************************/
 
 
 #include <stdio.h>
 
+typedef int InputBuffer_char;
+
 #define INPUT_BUFFER_SIZE 4096 // Ideally, the size of a memory page
 
+typedef union {
+	char c[INPUT_BUFFER_SIZE];
+	InputBuffer_char value[INPUT_BUFFER_SIZE];
+} InputBufferData;
+
 typedef struct {
-    FILE* file;
-    char* head;
-    char* end;
-    char buffer[INPUT_BUFFER_SIZE];
+	FILE* file;
+	InputBuffer_char* head;
+	InputBuffer_char* end;
+	InputBufferData buffer;
 } InputBuffer;
 
 
 extern void
-InputBuffer_init(InputBuffer* self,
-                 FILE* file);
+InputBuffer_init(
+	InputBuffer* self,
+	FILE* file
+);
 
 
 extern void
-InputBuffer_next(InputBuffer* self);
+InputBuffer_next(
+	InputBuffer* self
+);
 
 
-extern char
-InputBuffer_get(const InputBuffer* self);
+extern InputBuffer_char
+InputBuffer_get(
+	const InputBuffer* self
+);
 
 
 #endif /* PESTACLE_INPUT_BUFFER_H */
