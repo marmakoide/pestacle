@@ -16,10 +16,6 @@ const unsigned int EMULATED_DISPLAY_HEIGHT = 100;
 // --- Main entry point -------------------------------------------------------
 
 bool quit = false;
-static SDL_Window* window = 0;
-static SDL_Surface* window_surface = 0;
-static SDL_Renderer* renderer = 0;
-static SDL_Surface* framebuffer_native = 0;
 
 static SDL_mutex* graph_state_mutex = 0;
 
@@ -53,6 +49,11 @@ load_graph() {
 
 int
 main(int argc, char* argv[]) {
+	SDL_Window* window = 0;
+	SDL_Surface* window_surface = 0;
+	SDL_Renderer* renderer = 0;
+	SDL_Surface* framebuffer_native = 0;
+
 	SDL_TimerID graph_update_timer = 0;
 	int exit_code = EXIT_SUCCESS;
 
