@@ -153,6 +153,8 @@ main(int argc, char* argv[]) {
 	}
 
 	// Main processing loop
+	Uint64 performance_screen_refresh_period = SDL_GetPerformanceFrequency() / 60;
+
 	for(quit = false; !quit; ) {
 		Uint64 start_time = SDL_GetPerformanceCounter();
 
@@ -201,10 +203,9 @@ main(int argc, char* argv[]) {
 
 		// Sleep
 		Uint64 end_time = SDL_GetPerformanceCounter();
-		float time_delta = 1000 * ((float)(end_time - start_time) / (float)(SDL_GetPerformanceFrequency()));
-
-		if (time_delta < 16.f)
-			SDL_Delay((Uint32)16.f - time_delta);
+		Uint64 time_delta = end_time - start_time;
+		if (time_delta < performance_screen_refresh_period)
+			SDL_Delay((performance_screen_refresh_period - time_delta) / (1e-3f * SDL_GetPerformanceFrequency()));
 	}
 
 	// Wait for the timers to stop
