@@ -43,32 +43,6 @@ graph_update_callback(Uint32 interval, void* param) {
 }
 
 
-static Uint32
-framebuffer_update_callback(Uint32 interval, void* param) {
-	Uint32 ret = 0;
-	Display* display = (Display*)param;
-
-	// Generate the output
-	SDL_Surface* out = 0;
-	SDL_LockMutex(graph_state_mutex);
-	if (!quit) {
-		out = Graph_output(&graph);
-		ret = interval;
-	}
-	SDL_UnlockMutex(graph_state_mutex);
-
-	// Update the display
-	if (out) {
-		SDL_BlitSurface(out, 0, framebuffer_native, 0);
-		SDL_BlitScaled(framebuffer_native, 0, window_surface, &(display->visible_area));
-		SDL_UpdateWindowSurface(window);
-	}
-
-	// Job done
-	return ret;
-}
-
-
 static bool
 load_graph() {
 	Lexer lexer;
@@ -80,14 +54,13 @@ load_graph() {
 int
 main(int argc, char* argv[]) {
 	SDL_TimerID graph_update_timer = 0;
-	SDL_TimerID framebuffer_update_timer = 0;
 	int exit_code = EXIT_SUCCESS;
 
 	// SDL logging settings
 	 SDL_LogSetAllPriority(SDL_LOG_PRIORITY_INFO);
 	 
 	// SDL initialization
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER)) {
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_EVENTS)) {
 		exit_code = EXIT_FAILURE;
 		SDL_LogError(SDL_LOG_CATEGORY_SYSTEM, "Unable to initialize SDL: %s", SDL_GetError());
 		goto termination;
@@ -165,20 +138,6 @@ main(int argc, char* argv[]) {
 		goto termination;
 	}
 
-	// Setup a 60Hz timer for the framebuffer update
-	framebuffer_update_timer = 
-		SDL_AddTimer(
-			15,
-			framebuffer_update_callback,
-			&display
-		);
-	
-	if (!framebuffer_update_timer) {
-		exit_code = EXIT_FAILURE;
-		SDL_LogError(SDL_LOG_CATEGORY_SYSTEM, "Could not create SDL timer for framebuffer update : %s\n", SDL_GetError());
-		goto termination;
-	}
-
 	// Setup a 20Hz for the animation logic update
 	graph_update_timer = SDL_AddTimer(
 		50,
@@ -192,12 +151,15 @@ main(int argc, char* argv[]) {
 		goto termination;
 	}
 
-	// Event processing loop
+	// Main processing loop
 	for(quit = false; !quit; ) {
+		Uint64 start_time = SDL_GetPerformanceCounter();
+
+		// Event processing
 		SDL_Event src_event;
 		Event dst_event;
 
-		if (SDL_WaitEvent(&src_event)) {
+		while (SDL_PollEvent(&src_event)) {
 			switch(src_event.type) {
 				case SDL_QUIT:
 					SDL_LockMutex(graph_state_mutex);
@@ -226,6 +188,22 @@ main(int argc, char* argv[]) {
 					break;
 			}
 		}
+
+		// Display update
+		SDL_LockMutex(graph_state_mutex);
+		SDL_Surface* out = Graph_output(&graph);
+		SDL_UnlockMutex(graph_state_mutex);
+
+		SDL_BlitSurface(out, 0, framebuffer_native, 0);
+		SDL_BlitScaled(framebuffer_native, 0, window_surface, &(display.visible_area));
+		SDL_UpdateWindowSurface(window);
+
+		// Sleep
+		Uint64 end_time = SDL_GetPerformanceCounter();
+		float time_delta = 1000 * ((float)(end_time - start_time) / (float)(SDL_GetPerformanceFrequency()));
+
+		if (time_delta < 16.f)
+			SDL_Delay((Uint32)16.f - time_delta);
 	}
 
 	// Wait for the timers to stop
@@ -235,9 +213,6 @@ main(int argc, char* argv[]) {
 termination:
 	if (graph_update_timer)
 		SDL_RemoveTimer(graph_update_timer);
-
-	if (framebuffer_update_timer)
-		SDL_RemoveTimer(framebuffer_update_timer);
 
 	Graph_destroy(&graph);
 
