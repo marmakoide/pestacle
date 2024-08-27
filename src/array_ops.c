@@ -130,7 +130,7 @@ array_ops_square_sum(
 ) {
 	real_t sum = (*src) * (*src);
 	for(--len, ++src; len != 0; --len, ++src)
-		sum += (*src) * (*src);
+		sum = fmaf(*src, *src, sum);
 	return sum;
 }
 
@@ -143,7 +143,7 @@ array_ops_dot(
 ) {
 	real_t sum = (*src) * (*other);
 	for(--len, ++src, ++other; len != 0; --len, ++src, ++other)
-		sum += (*src) * (*other);
+		sum = fmaf(*src, *other, sum);
 	return sum;
 }
 
@@ -167,7 +167,7 @@ array_ops_scaled_add(
 	real_t factor
 ) {
 	for( ; len != 0; --len, ++dst, ++src)
-		*dst += factor * (*src);
+		*dst = fmaf(factor, *src, *dst);
 }
 
 
@@ -234,7 +234,7 @@ array_ops_convolution(
 		_src += 1;
 		_kernel += 1;
 		for(size_t j = kernel_len - 1 - i; j != 0; --j, ++_src, ++_kernel)
-			sum += (*_kernel) * (*_src);
+			sum = fmaf(*_kernel, *_src, sum);
 
 		*dst = sum;
 	}
@@ -248,7 +248,7 @@ array_ops_convolution(
 		_src += 1;
 		_kernel += 1;
 		for(size_t j = kernel_len - 1; j != 0; --j, ++_src, ++_kernel)
-			sum += (*_kernel) * (*_src);
+			sum = fmaf(*_kernel, *_src, sum);
 
 		*dst = sum;
 	}
@@ -262,7 +262,7 @@ array_ops_convolution(
 		_src += 1;
 		_kernel += 1;
 		for(size_t j = kernel_len - 2 - i; j != 0; --j, ++_src, ++_kernel)
-			sum += (*_kernel) * (*_src);
+			sum = fmaf(*_kernel, *_src, sum);
 
 		*dst = sum;
 	}
@@ -288,7 +288,7 @@ array_ops_strided_convolution(
 		_src += src_stride;
 		_kernel += 1;
 		for(size_t j = kernel_len - 1 - i; j != 0; --j, _src += src_stride, ++_kernel)
-			sum += (*_kernel) * (*_src);
+			sum = fmaf(*_kernel, *_src, sum);
 
 		*dst = sum;
 	}
@@ -302,7 +302,7 @@ array_ops_strided_convolution(
 		_src += src_stride;
 		_kernel += 1;
 		for(size_t j = kernel_len - 1; j != 0; --j, _src += src_stride, ++_kernel)
-			sum += (*_kernel) * (*_src);
+			sum = fmaf(*_kernel, *_src, sum);
 
 		*dst = sum;
 	}
@@ -316,7 +316,7 @@ array_ops_strided_convolution(
 		_src += src_stride;
 		_kernel += 1;
 		for(size_t j = kernel_len - 2 - i; j != 0; --j, _src += src_stride, ++_kernel)
-			sum += (*_kernel) * (*_src);
+			sum = fmaf(*_kernel, *_src, sum);
 
 		*dst = sum;
 	}
