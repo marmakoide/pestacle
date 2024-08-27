@@ -32,6 +32,13 @@ Vector_print(
 
 
 extern void
+Vector_set_gaussian_kernel(
+	Vector* self,
+	real_t sigma
+);
+
+
+extern void
 Vector_set_coeff(
 	Vector* self,
 	size_t pos,

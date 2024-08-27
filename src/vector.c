@@ -49,6 +49,17 @@ Vector_print(
 
 
 void
+Vector_set_gaussian_kernel(
+	Vector* self,
+	real_t sigma
+) {
+	assert(self != 0);
+
+	array_ops_set_gaussian_kernel(self->data, self->len, sigma);
+}
+
+
+void
 Vector_set_coeff(
 	Vector* self,
 	size_t pos,

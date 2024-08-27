@@ -47,6 +47,14 @@ array_ops_copy(
 
 
 extern void
+array_ops_set_gaussian_kernel(
+	real_t* dst,
+	size_t len,
+	real_t sigma
+);
+
+
+extern void
 array_ops_scale(
 	real_t* dst,
 	size_t len,
