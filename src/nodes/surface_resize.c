@@ -1,28 +1,28 @@
-#include "nodes/surface_scale.h"
+#include "nodes/surface_resize.h"
 
 
 // --- Interface --------------------------------------------------------------
 
 static bool
-surface_scale_node_setup(
+surface_resize_node_setup(
 	Node* self
 );
 
 
 static void
-surface_scale_node_destroy(
+surface_resize_node_destroy(
 	Node* self
 );
 
 
 static void
-surface_scale_node_update(
+surface_resize_node_update(
 	Node* self
 );
 
 
 static NodeOutput
-surface_scale_node_output(
+surface_resize_node_output(
 	const Node* self
 );
 
@@ -30,7 +30,7 @@ surface_scale_node_output(
 #define SOURCE_INPUT 0
 
 static const NodeInputDefinition
-surface_scale_inputs[] = {
+surface_resize_inputs[] = {
 	{
 		NodeType__rgb_surface,
 		{ "source", 7 }
@@ -45,7 +45,7 @@ surface_scale_inputs[] = {
 #define OUTPUT_HEIGHT_PARAMETER 3
 
 static const ParameterDefinition
-surface_scale_parameters[] = {
+surface_resize_parameters[] = {
 	{
 		ParameterType__integer,
 		{ "input-width", 12 },
@@ -71,17 +71,17 @@ surface_scale_parameters[] = {
 
 
 const NodeDelegate
-surface_scale_node_delegate = {
-	{ "surface-scale", 14 },
+surface_resize_node_delegate = {
+	{ "surface-resize", 15 },
 	NodeType__rgb_surface,
-	surface_scale_inputs,
-	surface_scale_parameters,
+	surface_resize_inputs,
+	surface_resize_parameters,
 	{
-		surface_scale_node_setup,
-		surface_scale_node_destroy,
-		surface_scale_node_update,
+		surface_resize_node_setup,
+		surface_resize_node_destroy,
+		surface_resize_node_update,
 		0,
-		surface_scale_node_output
+		surface_resize_node_output
 	},
 };
 
@@ -89,7 +89,7 @@ surface_scale_node_delegate = {
 // --- Implementation ---------------------------------------------------------
 
 static bool
-surface_scale_node_setup(
+surface_resize_node_setup(
 	Node* self
 ) {
 	// Retrieve the parameters
@@ -124,7 +124,7 @@ surface_scale_node_setup(
 
 
 static void
-surface_scale_node_destroy(
+surface_resize_node_destroy(
 	Node* self
 ) {
 	SDL_Surface* rgb_surface = (SDL_Surface*)self->data;
@@ -134,7 +134,7 @@ surface_scale_node_destroy(
 
 
 static void
-surface_scale_node_update(
+surface_resize_node_update(
 	Node* self
 ) {
 	SDL_Surface* src =
@@ -147,7 +147,7 @@ surface_scale_node_update(
 
 
 static NodeOutput
-surface_scale_node_output(
+surface_resize_node_output(
 	const Node* self
 ) {
 	NodeOutput ret = { .rgb_surface = (SDL_Surface*)self->data };

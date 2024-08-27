@@ -31,7 +31,7 @@ $(BUILD_DIR)/nodes/lightness.o \
 $(BUILD_DIR)/nodes/mouse_motion.o \
 $(BUILD_DIR)/nodes/picture.o \
 $(BUILD_DIR)/nodes/surface_blend.o \
-$(BUILD_DIR)/nodes/surface_scale.o \
+$(BUILD_DIR)/nodes/surface_resize.o \
 $(BUILD_DIR)/main.o
 	$(CC) -o $@ $^ $(LIBS)
 
