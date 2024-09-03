@@ -1,6 +1,7 @@
 #include "nodes/gradient_map.h"
 #include "nodes/heat_diffusion.h"
 #include "nodes/lightness.h"
+#include "nodes/matrix_resize.h"
 #include "nodes/mouse_motion.h"
 #include "nodes/picture.h"
 #include "nodes/surface_blend.h"
@@ -15,6 +16,7 @@ node_delegate_list[] = {
 	&gradient_map_node_delegate,
 	&heat_diffusion_node_delegate,
 	&lightness_node_delegate,
+	&matrix_resize_node_delegate,
 	&mouse_motion_node_delegate,
 	&picture_node_delegate,
 	&surface_blend_node_delegate,

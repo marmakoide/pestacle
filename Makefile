@@ -28,6 +28,7 @@ $(BUILD_DIR)/nodes_list.o \
 $(BUILD_DIR)/nodes/gradient_map.o \
 $(BUILD_DIR)/nodes/heat_diffusion.o \
 $(BUILD_DIR)/nodes/lightness.o \
+$(BUILD_DIR)/nodes/matrix_resize.o \
 $(BUILD_DIR)/nodes/mouse_motion.o \
 $(BUILD_DIR)/nodes/picture.o \
 $(BUILD_DIR)/nodes/surface_blend.o \

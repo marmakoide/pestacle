@@ -1,3 +1,4 @@
+#include <math.h>
 #include <stdlib.h>
 #include <assert.h>
 #include "matrix.h"
@@ -252,6 +253,34 @@ Matrix_scaled_max(
 		self->data_len,
 		value
 	);
+}
+
+
+void
+Matrix_resample_nearest(
+	Matrix* self,
+	const Matrix* in
+) {
+	assert(self != 0);
+	assert(self->data != 0);
+	assert(in != 0);
+	assert(in->data != 0);
+
+	real_t row_scaling_factor = ((real_t)in->row_count) / ((real_t)self->row_count);
+	real_t col_scaling_factor = ((real_t)in->col_count) / ((real_t)self->col_count);
+
+	real_t* dst_row = self->data;
+	
+	for(size_t i = 0; i < self->row_count; ++i, dst_row += self->col_count) {
+		size_t u = (size_t)floorf(row_scaling_factor * (i + ((real_t).5)));
+		const real_t* src_row = in->data + u * in->col_count;
+		
+		for(size_t j = 0; j < self->col_count; ++j) {
+			size_t v = (size_t)floorf(col_scaling_factor * (j + ((real_t).5)));
+
+			dst_row[j] = src_row[v];
+		}
+	}
 }
 
 
