@@ -4,23 +4,22 @@
 #include <SDL.h>
 #include "event.h"
 #include "parser/parser.h"
+#include "window_manager.h"
 
 
-/*
 const unsigned int DISPLAY_WIDTH  = 1000;
 const unsigned int DISPLAY_HEIGHT = 500;
 
 const unsigned int EMULATED_DISPLAY_WIDTH  = 200;
 const unsigned int EMULATED_DISPLAY_HEIGHT = 100;
-*/
 
-
+/*
 const unsigned int DISPLAY_WIDTH  = 1000;
 const unsigned int DISPLAY_HEIGHT = 750;
 
 const unsigned int EMULATED_DISPLAY_WIDTH  = 200;
 const unsigned int EMULATED_DISPLAY_HEIGHT = 150;
-
+*/
 
 // --- Main entry point -------------------------------------------------------
 
@@ -58,9 +57,7 @@ load_graph() {
 
 int
 main(int argc, char* argv[]) {
-	SDL_Window* window = 0;
-	SDL_Surface* window_surface = 0;
-	SDL_Renderer* renderer = 0;
+	WindowManager window_manager;
 	SDL_Surface* framebuffer_native = 0;
 
 	SDL_TimerID graph_update_timer = 0;
@@ -104,31 +101,19 @@ main(int argc, char* argv[]) {
 		goto termination;
 	}
 
+	// Initialize the window manager
+	WindowManager_init(&window_manager);
+
 	// Create a window
-	window = SDL_CreateWindow(
+	Window* window = WindowManager_add_window(
+		&window_manager,
 		"pestacle",
-		SDL_WINDOWPOS_CENTERED,
-		SDL_WINDOWPOS_CENTERED,
 		DISPLAY_WIDTH,
-		DISPLAY_HEIGHT,
-		0
+		DISPLAY_HEIGHT
 	);
-	
+
 	if (!window) {
 		exit_code = EXIT_FAILURE;
-		SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Could not create window: %s\n", SDL_GetError());
-		goto termination;
-	}
-
-	// Disable mouse cursor
-	//SDL_ShowCursor(SDL_DISABLE);
-
-	// Create a renderer
-	window_surface = SDL_GetWindowSurface(window);
-	renderer = SDL_CreateSoftwareRenderer(window_surface);
-	if (!renderer) {
-		exit_code = EXIT_FAILURE;
-		SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Could not create SDL renderer : %s\n", SDL_GetError());
 		goto termination;
 	}
 
@@ -138,10 +123,10 @@ main(int argc, char* argv[]) {
 			0,
 			EMULATED_DISPLAY_WIDTH,
 			EMULATED_DISPLAY_HEIGHT,
-			window_surface->format->BitsPerPixel,
-			window_surface->format->format
+			window->surface->format->BitsPerPixel,
+			window->surface->format->format
 		);
-
+	
 	if (!framebuffer_native) {
 		exit_code = EXIT_FAILURE;
 		SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Could not create SDL surface : %s\n", SDL_GetError());
@@ -207,8 +192,8 @@ main(int argc, char* argv[]) {
 		SDL_UnlockMutex(graph_state_mutex);
 
 		SDL_BlitSurface(out, 0, framebuffer_native, 0);
-		SDL_BlitScaled(framebuffer_native, 0, window_surface, &(display.visible_area));
-		SDL_UpdateWindowSurface(window);
+		SDL_BlitScaled(framebuffer_native, 0, window->surface, &(display.visible_area));
+		SDL_UpdateWindowSurface(window->window);
 
 		// Sleep
 		Uint64 end_time = SDL_GetPerformanceCounter();
@@ -230,12 +215,8 @@ termination:
 	if (framebuffer_native)
 		SDL_FreeSurface(framebuffer_native);
 
-	if (renderer)
-		SDL_DestroyRenderer(renderer);
-
-	if (window)
-		SDL_DestroyWindow(window);
-
+	WindowManager_destroy(&window_manager);
+	
 	if (graph_state_mutex)
 		SDL_DestroyMutex(graph_state_mutex);
 	
@@ -244,4 +225,3 @@ termination:
 	// Job done
 	return exit_code;
 }
-

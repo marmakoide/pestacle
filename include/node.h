@@ -55,24 +55,24 @@ typedef struct s_Node Node;
 
 
 typedef struct {
-	bool (*setup)(             // setup method (optional, can be 0)
+	bool (*setup)(        // setup method (optional, can be 0)
 		Node*
 	);
 
-	void (*destroy)(           // destroy method (optional, can be 0)
+	void (*destroy)(      // destroy method (optional, can be 0)
 		Node*
 	);
 
-	void (*update)(            // update method (optional, can be 0)
+	void (*update)(       // update method (optional, can be 0)
 		Node*
 	);
 
-	void (*handle_event)(      // handle_event output (optional, can be 0)
+	void (*handle_event)( // handle_event output (optional, can be 0)
 		Node*,
 		const Event* event
 	);
 
-	NodeOutput (*output)(      // output method (optional, can be 0)
+	NodeOutput (*output)( // output method (optional, can be 0)
 		const Node*
 	);
 } NodeDelegateMethods;

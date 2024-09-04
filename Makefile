@@ -24,6 +24,7 @@ $(BUILD_DIR)/picture.o \
 $(BUILD_DIR)/parameter.o \
 $(BUILD_DIR)/node.o \
 $(BUILD_DIR)/graph.o \
+$(BUILD_DIR)/window_manager.o \
 $(BUILD_DIR)/nodes_list.o \
 $(BUILD_DIR)/nodes/gradient_map.o \
 $(BUILD_DIR)/nodes/heat_diffusion.o \
