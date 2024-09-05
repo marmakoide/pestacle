@@ -98,17 +98,6 @@ struct s_Node {
 
 
 /*
- * Returns the node delegate with the specified name
- *   name : name of the node delegate to retrieve
- *
- * Return 0 if the operation is not valid
- */
-
-extern const NodeDelegate*
-get_node_delegate_by_name(const String* name);
-
-
-/*
  * Creates a new node instance
  *   name : name of the instance, will make a copy of the string instance
  *   delegate : delegate for this node

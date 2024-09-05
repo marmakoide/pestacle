@@ -2,10 +2,12 @@
 #define PESTACLE_PARSER_PARSER_H
 
 #include "graph.h"
+#include "domain.h"
 #include "parser/lexer.h"
 
 
 typedef struct {
+	Domain* domain;
 	Graph* graph;
 } ParseContext;
 
@@ -13,6 +15,7 @@ typedef struct {
 extern bool
 Parser_parse(
 	Lexer* lexer,
+	Domain* domain,
 	Graph* graph
 );
 

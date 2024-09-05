@@ -204,17 +204,31 @@ Parser_parse_node_creation(
 
 	const String* type_str = Lexer_token_text(lexer);
 
-	// Check that the node type exists
-	const NodeDelegate* delegate = get_node_delegate_by_name(type_str);
-	if (!delegate) {
+	// Check that the node delegate exists
+	const DomainMember* member = 
+		Domain_get_member_by_name(context->domain, type_str);
+
+	if (!member) {
 		SDL_LogError(
 			SDL_LOG_CATEGORY_SYSTEM,
-			"line %d : node type '%s' is not defined\n",
+			"line %d : node delegate '%s' is not defined\n",
 			lexer->token.location.line + 1,
 			type_str->data
 		);
 		return false;
 	}
+
+	if (member->type != DomainMemberType__node_delegate) {
+		SDL_LogError(
+			SDL_LOG_CATEGORY_SYSTEM,
+			"line %d : '%s' is defined but not as a node delegate\n",
+			lexer->token.location.line + 1,
+			type_str->data
+		);
+		return false;
+	}
+
+	const NodeDelegate* delegate = member->node_delegate;
 
 	// Create the node instance
 	Node* node = Graph_add_node(context->graph, name_str, delegate);
@@ -401,9 +415,11 @@ Parser_parse_declaration_list(
 bool
 Parser_parse(
 	Lexer* lexer,
+	Domain* domain,
 	Graph* graph
 ) {
 	ParseContext context;
+	context.domain = domain;
 	context.graph = graph;
 	return Parser_parse_declaration_list(&context, lexer);
 }

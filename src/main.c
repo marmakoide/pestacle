@@ -3,6 +3,8 @@
 #include <stdbool.h>
 #include <SDL.h>
 #include "event.h"
+#include "domain.h"
+#include "root_domain.h"
 #include "parser/parser.h"
 #include "window_manager.h"
 
@@ -28,6 +30,7 @@ bool quit = false;
 static SDL_mutex* graph_state_mutex = 0;
 
 Graph graph;
+Domain* root_domain = 0;
 
 
 static Uint32
@@ -51,7 +54,7 @@ static bool
 load_graph() {
 	Lexer lexer;
 	Lexer_init(&lexer, stdin);
-	return Parser_parse(&lexer, &graph);
+	return Parser_parse(&lexer, root_domain, &graph);
 }
 
 
@@ -72,6 +75,15 @@ main(int argc, char* argv[]) {
 		SDL_LogError(SDL_LOG_CATEGORY_SYSTEM, "Unable to initialize SDL: %s", SDL_GetError());
 		goto termination;
 	}
+
+	// Initialize root domain
+	root_domain = Domain_new(
+		&(root_domain_delegate.name),
+		&root_domain_delegate
+	);
+
+	if (!Domain_setup(root_domain))
+		goto termination;
 
 	// Initialize and setup the graph
 	Graph_init(&graph);
@@ -209,6 +221,8 @@ main(int argc, char* argv[]) {
 termination:
 	if (graph_update_timer)
 		SDL_RemoveTimer(graph_update_timer);
+
+	Domain_destroy(root_domain);
 
 	Graph_destroy(&graph);
 

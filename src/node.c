@@ -150,6 +150,7 @@ Node_destroy(
 	self->delegate = 0;
 	self->name.data = 0;
 	self->inputs = 0;
+	self->parameters = 0;
 	#endif
 }
 

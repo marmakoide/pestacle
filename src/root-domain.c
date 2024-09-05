@@ -1,3 +1,5 @@
+#include "domain.h"
+
 #include "nodes/gradient_map.h"
 #include "nodes/heat_diffusion.h"
 #include "nodes/lightness.h"
@@ -6,6 +8,14 @@
 #include "nodes/picture.h"
 #include "nodes/surface_blend.h"
 #include "nodes/surface_resize.h"
+
+
+// --- Interface --------------------------------------------------------------
+
+static bool
+root_domain_setup(
+	Domain* self
+);
 
 
 #define NODE_DELEGATE_LIST_END 0
@@ -22,15 +32,35 @@ node_delegate_list[] = {
 	&surface_blend_node_delegate,
 	&surface_resize_node_delegate,
 	NODE_DELEGATE_LIST_END
+}; // node_delegate_list
+
+
+static const ParameterDefinition
+root_domain_parameters[] = {
+	{ ParameterType__last }
 };
 
 
-const NodeDelegate*
-get_node_delegate_by_name(const String* name) {
+const DomainDelegate root_domain_delegate = {
+	{ "root", 5 },
+	root_domain_parameters,
+	{
+		root_domain_setup,
+		0
+	}
+};
+
+
+// --- Implementation ---------------------------------------------------------
+
+bool
+root_domain_setup(
+	Domain* self
+) {
 	const NodeDelegate** delegate_ptr = node_delegate_list;
 	for( ; *delegate_ptr != NODE_DELEGATE_LIST_END; ++delegate_ptr)
-		if (String_equals(name, &((*delegate_ptr)->name)))
-			return *delegate_ptr;
+		if (!Domain_add_node_delegate(self, *delegate_ptr))
+			return false;
 
-	return 0;
+	return true;	
 }
