@@ -107,7 +107,11 @@ surface_blend_node_setup(
 		);
 
 	if (!rgb_surface) {
-		SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Could not create SDL surface : %s\n", SDL_GetError());
+		SDL_LogError(
+			SDL_LOG_CATEGORY_VIDEO,
+			"Could not create SDL surface : %s\n",
+			SDL_GetError()
+		);
 		return false;
 	}
 

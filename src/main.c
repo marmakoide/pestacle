@@ -8,12 +8,19 @@
 #include "parser/parser.h"
 #include "window_manager.h"
 
-
+/*
 const unsigned int DISPLAY_WIDTH  = 1000;
 const unsigned int DISPLAY_HEIGHT = 500;
 
 const unsigned int EMULATED_DISPLAY_WIDTH  = 200;
 const unsigned int EMULATED_DISPLAY_HEIGHT = 100;
+*/
+
+const unsigned int DISPLAY_WIDTH  = 640;
+const unsigned int DISPLAY_HEIGHT = 360;
+
+const unsigned int EMULATED_DISPLAY_WIDTH  = 640;
+const unsigned int EMULATED_DISPLAY_HEIGHT = 360;
 
 /*
 const unsigned int DISPLAY_WIDTH  = 1000;

@@ -8,6 +8,7 @@
 #include "nodes/picture.h"
 #include "nodes/surface_blend.h"
 #include "nodes/surface_resize.h"
+#include "nodes/video.h"
 
 
 // --- Interface --------------------------------------------------------------
@@ -31,6 +32,7 @@ node_delegate_list[] = {
 	&picture_node_delegate,
 	&surface_blend_node_delegate,
 	&surface_resize_node_delegate,
+	&video_node_delegate,
 	NODE_DELEGATE_LIST_END
 }; // node_delegate_list
 

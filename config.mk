@@ -3,7 +3,13 @@ MODE=rls
 
 # paths
 INCLUDES=-I./include
-LIBS=$(shell sdl2-config --libs) $(shell pkg-config --libs zlib) -lm
+LIBS=\
+$(shell pkg-config --libs libavcodec) \
+$(shell pkg-config --libs libavformat) \
+$(shell pkg-config --libs libavutil) \
+$(shell sdl2-config --libs) \
+$(shell pkg-config --libs zlib) \
+-lm
 
 # flags setup
 CFLAGS += -std=c11 -Wall -Wno-deprecated-declarations
@@ -19,4 +25,8 @@ CFLAGS += -DDEBUG -O0 -g -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer
 endif
 
 CFLAGS += $(INCLUDES)
-CFLAGS += $(shell sdl2-config --cflags) $(shell pkg-config --cflags zlib)
+CFLAGS += $(shell pkg-config --cflags libavcodec)
+CFLAGS += $(shell pkg-config --cflags libavformat)
+CFLAGS += $(shell pkg-config --cflags libavutil)
+CFLAGS += $(shell sdl2-config --cflags)
+CFLAGS += $(shell pkg-config --cflags zlib)
