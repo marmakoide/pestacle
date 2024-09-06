@@ -244,8 +244,8 @@ VideoData_destroy(
 		avcodec_free_context(&(self->codec_ctx));
 
 	if (self->format_ctx) {
-	avformat_close_input(&(self->format_ctx));
-	avformat_free_context(self->format_ctx);
+		avformat_close_input(&(self->format_ctx));
+		avformat_free_context(self->format_ctx);
     }
 
 	if (self->texture)
@@ -263,11 +263,23 @@ static void
 VideoData_update(
 	VideoData* self
 ) {
-	if (av_read_frame(self->format_ctx, self->packet) >= 0) {
-		if (self->packet->stream_index == self->video_id) {
-			int ret = 0;
+	// Attempt to read one frame
+	int ret = av_read_frame(self->format_ctx, self->packet);
 
-			if (avcodec_send_packet(self->codec_ctx, self->packet) < 0) {
+	// If the end of the video is reached, rewind
+	if (ret < 0) {
+		if (av_seek_frame(self->format_ctx, self->video_id, self->format_ctx->start_time, AVSEEK_FLAG_BACKWARD) < 0)
+			return;
+
+		avcodec_flush_buffers(self->codec_ctx);
+	}
+
+	// Decode the frame
+	if (ret >= 0) {
+		if (self->packet->stream_index == self->video_id) {
+			ret = avcodec_send_packet(self->codec_ctx, self->packet);
+			
+			if (ret < 0) {
 				SDL_LogError(
 					SDL_LOG_CATEGORY_VIDEO,
 					"avcodec_send_packet error\n"
