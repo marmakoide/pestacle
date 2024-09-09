@@ -8,19 +8,21 @@
 #include "parser/parser.h"
 #include "window_manager.h"
 
-/*
+
 const unsigned int DISPLAY_WIDTH  = 1000;
 const unsigned int DISPLAY_HEIGHT = 500;
 
 const unsigned int EMULATED_DISPLAY_WIDTH  = 200;
 const unsigned int EMULATED_DISPLAY_HEIGHT = 100;
-*/
 
+
+/*
 const unsigned int DISPLAY_WIDTH  = 640;
 const unsigned int DISPLAY_HEIGHT = 360;
 
 const unsigned int EMULATED_DISPLAY_WIDTH  = 640;
 const unsigned int EMULATED_DISPLAY_HEIGHT = 360;
+*/
 
 /*
 const unsigned int DISPLAY_WIDTH  = 1000;
@@ -67,7 +69,6 @@ load_graph() {
 
 int
 main(int argc, char* argv[]) {
-	WindowManager window_manager;
 	SDL_Surface* framebuffer_native = 0;
 
 	SDL_TimerID graph_update_timer = 0;
@@ -83,13 +84,17 @@ main(int argc, char* argv[]) {
 		goto termination;
 	}
 
+	// Initialize the window manager
+	WindowManager window_manager;
+	WindowManager_init(&window_manager);
+
 	// Initialize root domain
 	root_domain = Domain_new(
 		&(root_domain_delegate.name),
 		&root_domain_delegate
 	);
 
-	if (!Domain_setup(root_domain))
+	if (!Domain_setup(root_domain, &window_manager))
 		goto termination;
 
 	// Initialize and setup the graph
@@ -119,9 +124,6 @@ main(int argc, char* argv[]) {
 		SDL_LogError(SDL_LOG_CATEGORY_SYSTEM, "Unable to create state mutex: %s", SDL_GetError());
 		goto termination;
 	}
-
-	// Initialize the window manager
-	WindowManager_init(&window_manager);
 
 	// Create a window
 	Window* window = WindowManager_add_window(

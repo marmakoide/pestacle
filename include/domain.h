@@ -3,6 +3,7 @@
 
 #include "dict.h"
 #include "node.h"
+#include "window_manager.h"
 
 
 struct s_Domain;
@@ -15,6 +16,7 @@ typedef struct s_DomainDelegate DomainDelegate;
 
 enum DomainMemberType {
 	DomainMemberType__invalid = 0, // Used as a debugging help
+	DomainMemberType__node,
 	DomainMemberType__node_delegate,
 	DomainMemberType__domain_delegate,
 	DomainMemberType__last
@@ -24,6 +26,7 @@ enum DomainMemberType {
 typedef struct {
 	enum DomainMemberType type;
 	union {
+		Node* node;
 		const NodeDelegate* node_delegate;
 		const DomainDelegate* domain_delegate;
 	};
@@ -32,7 +35,8 @@ typedef struct {
 
 typedef struct {
 	bool (*setup)(   // setup method (optional, can be 0)
-		Domain*
+		Domain*,
+		WindowManager*
 	);
 
 	void (*destroy)( // destroy method (optional, can be 0)
@@ -66,7 +70,8 @@ Domain_new(
 
 extern bool
 Domain_setup(
-	Domain* self
+	Domain* self,
+	WindowManager* window_manager
 );
 
 
@@ -84,9 +89,23 @@ Domain_get_member_by_name(
 
 
 extern bool
+Domain_add_node(
+	Domain* self,
+	Node* node
+);
+
+
+extern bool
 Domain_add_node_delegate(
 	Domain* self,
 	const NodeDelegate* node_delegate
+);
+
+
+extern bool
+Domain_add_domain_delegate(
+	Domain* self,
+	const DomainDelegate* domain_delegate
 );
 
 

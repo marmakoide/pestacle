@@ -42,8 +42,15 @@ extern Window*
 WindowManager_add_window(
 	WindowManager* self,
 	const char* title,
-	int w,
-	int h
+	int width,
+	int height
+);
+
+
+extern bool
+WindowManager_remove_window(
+	WindowManager* self,
+	Window* window
 );
 
 

@@ -118,13 +118,14 @@ Domain_destroy(
 
 bool
 Domain_setup(
-	Domain* self
+	Domain* self,
+	WindowManager* window_manager
 ) {
 	assert(self != 0);
 	assert(self->delegate != 0);
 
 	if (self->delegate->methods.setup)
-		return self->delegate->methods.setup(self);
+		return self->delegate->methods.setup(self, window_manager);
 
 	return true;
 }
@@ -157,6 +158,10 @@ Domain_add_member(
 	// Get the entry name
 	const String* entry_name;
 	switch(member->type) {
+		case DomainMemberType__node:
+			entry_name = &(member->node->name);
+			break;
+
 		case DomainMemberType__node_delegate:
 			entry_name = &(member->node_delegate->name);
 			break;
@@ -193,6 +198,22 @@ Domain_add_member(
 
 
 bool
+Domain_add_node(
+	Domain* self,
+	Node* node
+) {
+	assert(self != 0);
+
+	DomainMember member = {
+		DomainMemberType__node,
+		{ .node = node }
+	};
+
+	return Domain_add_member(self, &member);
+}
+
+
+bool
 Domain_add_node_delegate(
 	Domain* self,
 	const NodeDelegate* node_delegate
@@ -202,6 +223,22 @@ Domain_add_node_delegate(
 	DomainMember member = {
 		DomainMemberType__node_delegate,
 		{ .node_delegate = node_delegate }
+	};
+
+	return Domain_add_member(self, &member);
+}
+
+
+bool
+Domain_add_domain_delegate(
+	Domain* self,
+	const DomainDelegate* domain_delegate
+) {
+	assert(self != 0);
+
+	DomainMember member = {
+		DomainMemberType__domain_delegate,
+		{ .domain_delegate = domain_delegate }
 	};
 
 	return Domain_add_member(self, &member);

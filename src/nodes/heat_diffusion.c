@@ -90,7 +90,6 @@ typedef struct {
 } HeatDiffusionData;
 
 
-
 static bool
 heat_diffusion_node_setup(
 	Node* self
