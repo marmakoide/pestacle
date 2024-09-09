@@ -7,6 +7,12 @@
 
 // --- ParserContext implementation ------------------------------------------
 
+typedef struct {
+	Domain* domain;
+	Graph* graph;
+} ParseContext;
+
+
 static void
 ParseContext_init(
 	ParseContext* self,

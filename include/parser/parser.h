@@ -6,12 +6,6 @@
 #include "parser/lexer.h"
 
 
-typedef struct {
-	Domain* domain;
-	Graph* graph;
-} ParseContext;
-
-
 extern bool
 Parser_parse(
 	Lexer* lexer,
