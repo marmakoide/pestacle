@@ -13,6 +13,7 @@ $(BUILD_DIR)/strings.o \
 $(BUILD_DIR)/input_buffer.o \
 $(BUILD_DIR)/parser/lexer.o \
 $(BUILD_DIR)/parser/parser.o \
+$(BUILD_DIR)/parser/string_list.o \
 $(BUILD_DIR)/dict.o \
 $(BUILD_DIR)/stack.o \
 $(BUILD_DIR)/array_ops.o \

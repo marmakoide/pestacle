@@ -5,6 +5,33 @@
 #include "parser/parser.h"
 
 
+// --- ParserContext implementation ------------------------------------------
+
+static void
+ParseContext_init(
+	ParseContext* self,
+	Domain* domain,
+	Graph* graph
+) {
+	assert(self != 0);
+	assert(domain != 0);
+	assert(graph != 0);
+
+	self->domain = domain;
+	self->graph = graph;
+}
+
+
+static void
+ParseContext_destroy(
+	ParseContext* self
+) {
+	assert(self != 0);
+}
+
+
+// --- Parser implementation -------------------------------------------------
+
 #define MAX_PARSING_ERROR_COUNT 16
 
 
@@ -419,7 +446,10 @@ Parser_parse(
 	Graph* graph
 ) {
 	ParseContext context;
-	context.domain = domain;
-	context.graph = graph;
-	return Parser_parse_declaration_list(&context, lexer);
+	ParseContext_init(&context, domain, graph);
+
+	bool ret = Parser_parse_declaration_list(&context, lexer);
+
+	ParseContext_destroy(&context);
+	return ret;
 }
