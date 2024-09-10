@@ -140,7 +140,6 @@ Lexer_parse_hexadecimal_integer(Lexer* self) {
 enum LexerParsingState {
 	LexerParsingState__init,
 	LexerParsingState__identifier,
-	LexerParsingState__minus,
 	LexerParsingState__slash,
 	LexerParsingState__dot,
 	LexerParsingState__string,
@@ -209,10 +208,6 @@ Lexer_next_token(Lexer* self) {
 						self->token.type = TokenType__equal;
 						Lexer_accept_and_next_char(self);
 						return;
-					case '-':
-						state = LexerParsingState__minus;
-						Lexer_accept_and_next_char(self);
-						break;
 					case 'A': case 'B': case 'C': case 'D': case 'E': case 'F':
 					case 'G': case 'H': case 'I': case 'J': case 'K': case 'L':
 					case 'M': case 'N': case 'O': case 'P': case 'Q': case 'R':
@@ -241,17 +236,6 @@ Lexer_next_token(Lexer* self) {
 				}
 				break;
 				// case LexerParsingState__init
-			case LexerParsingState__minus:
-				switch(current_char) {
-					case '>':
-						self->token.type = TokenType__left_arrow;
-						Lexer_accept_and_next_char(self);
-						return;
-					default:
-						return;
-				}
-				break;
-				// case LexerParsingState__minus
 			case LexerParsingState__string:
 				switch(current_char) {
 					case '"':

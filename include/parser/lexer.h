@@ -14,18 +14,17 @@
 
 
 enum TokenType {
-    TokenType__invalid = 0, // debugging help
-    TokenType__identifier,  // identifier
-    TokenType__integer,     // integer constant
-    TokenType__real,        // real constant
-    TokenType__string,      // string constant
-    TokenType__comma,       // ,
-    TokenType__pth_open,    // (
-    TokenType__pth_close,   // )        
-    TokenType__dot,         // .
-    TokenType__equal,       // =
-    TokenType__left_arrow,  // ->
-    TokenType__eof          // end of file
+	TokenType__invalid = 0, // debugging help
+	TokenType__identifier,  // identifier
+	TokenType__integer,     // integer constant
+	TokenType__real,        // real constant
+	TokenType__string,      // string constant
+	TokenType__comma,       // ,
+	TokenType__pth_open,    // (
+	TokenType__pth_close,   // )
+	TokenType__dot,         // .
+	TokenType__equal,       // =
+	TokenType__eof          // end of file
 }; // enum TokenType
 
 

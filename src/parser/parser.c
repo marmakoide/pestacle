@@ -2,6 +2,7 @@
 #include <assert.h>
 #include "errors.h"
 #include "memory.h"
+#include "parser/string_list.h"
 #include "parser/parser.h"
 
 
@@ -222,6 +223,43 @@ Parser_parse_parameter_list(
 
 
 static bool
+Parser_parse_identifier_path(
+	ParseContext* context,
+	Lexer* lexer,
+	StringList* str_list
+) {
+	bool ret = true;
+
+	// Parse first identifier
+	if (lexer->token.type != TokenType__identifier) {
+		handle_processing_error(
+			&(lexer->token.location),
+			"expected an identifier, got '%s' instead",
+			lexer->token.text
+		);	
+	}
+	StringList_append(str_list, Lexer_token_text(lexer));
+	Lexer_next_token(lexer);
+
+	// Parse the following identifiers
+	while(lexer->token.type == TokenType__dot) {
+		Lexer_next_token(lexer);
+		if (lexer->token.type != TokenType__identifier) {
+			handle_processing_error(
+				&(lexer->token.location),
+				"expected an identifier, got '%s' instead",
+				lexer->token.text
+			);
+		}
+		StringList_append(str_list, Lexer_token_text(lexer));
+		Lexer_next_token(lexer);
+	}
+	
+	return ret;
+}
+
+
+static bool
 Parser_parse_node_creation(
 	ParseContext* context,
 	Lexer* lexer,
@@ -288,65 +326,46 @@ static bool
 Parser_parse_input_assignment(
 	ParseContext* context,
 	Lexer* lexer,
-	const String* src_name_str
+	const StringList* left_identifier_list
 ) {
 	bool ret = true;
 
-	// Parse an identifier
-	if (lexer->token.type != TokenType__identifier)
-		handle_processing_error(
-			&(lexer->token.location),
-			"expected an identifier, got '%s' instead",
-			lexer->token.text
-		);
+	// Parse an identifier path
+	StringList right_identifier_list;
+	StringList_init(&right_identifier_list);
 
-	String dst_name_str;
-	String_clone(&dst_name_str, Lexer_token_text(lexer));
-
-	// Parse '.'
-	Lexer_next_token(lexer);
-	if (lexer->token.type != TokenType__dot)
-		handle_processing_error(
-			&(lexer->token.location),
-			"expected '.', got '%s' instead",
-			lexer->token.text
-		);
-
-	// Parse an identifier
-	Lexer_next_token(lexer);
-	if (lexer->token.type != TokenType__identifier)
-		handle_processing_error(
-			&(lexer->token.location),
-			"expected an identifier, got '%s' instead",
-			lexer->token.text
-		);
-
-	String input_name_str;
-	String_clone(&input_name_str, Lexer_token_text(lexer));
+	if (!Parser_parse_identifier_path(context, lexer, &right_identifier_list)) {
+		ret = false;
+		goto termination;
+	}
 
 	// Assign the input to the dst node
-	Node* src_node = Parser_get_node(context, lexer, src_name_str);
+	const String* src_name = StringList_at(&right_identifier_list, 0);
+	Node* src_node = Parser_get_node(context, lexer, src_name);
 	if (!src_node) {
 		ret = false;
 		goto termination;
 	}
 
-	Node* dst_node = Parser_get_node(context, lexer, &dst_name_str);
+	const String* dst_name = StringList_at(left_identifier_list, 0);
+	Node* dst_node = Parser_get_node(context, lexer, dst_name);
 	if (!dst_node) {
 		ret = false;
 		goto termination;
 	}
 
+	const String* dst_input_name = StringList_at(left_identifier_list, 1);
+
 	if (!Node_set_input_by_name(
 		dst_node,
-		&input_name_str,
+		dst_input_name,
 		src_node)) {
 		SDL_LogError(
 			SDL_LOG_CATEGORY_SYSTEM,
 			"line %d : node '%s' does not have an input '%s' with matching type\n",
 			lexer->token.location.line + 1,
-			dst_name_str.data,
-			input_name_str.data
+			dst_name->data,
+			dst_input_name->data
 		);
 		ret = false;
 		goto termination;
@@ -354,8 +373,7 @@ Parser_parse_input_assignment(
 
 termination:
 	// Free ressources
-	String_destroy(&dst_name_str);
-	String_destroy(&input_name_str);
+	StringList_destroy(&right_identifier_list);
 
 	// Job done
 	return ret;
@@ -363,48 +381,45 @@ termination:
 
 
 static bool
-Parser_parse_declaration(
+Parser_parse_statement(
 	ParseContext* context, 
 	Lexer* lexer
 ) {
 	int ret = true;
 
-	// Parse an identifier
-	if (lexer->token.type != TokenType__identifier)
-		handle_processing_error(
-			&(lexer->token.location),
-			"expected an identifier, got '%s' instead",
-			lexer->token.text
-		);
+	// Parse an identifier path
+	StringList left_identifier_list;
+	StringList_init(&left_identifier_list);
 
-	String identifier_str;
-	String_clone(&identifier_str, Lexer_token_text(lexer));
-
-	// Call the proper parsing routine
-    Lexer_next_token(lexer);
-	switch(lexer->token.type) {
-		case TokenType__equal:
-			Lexer_next_token(lexer);
-			if (!Parser_parse_node_creation(context, lexer, &identifier_str))
-				ret = false;
-			break;
-
-		case TokenType__left_arrow:
-			Lexer_next_token(lexer);
-			if (!Parser_parse_input_assignment(context, lexer, &identifier_str))
-				ret = false;
-			break;
-
-		default:
-			handle_processing_error(
-				&(lexer->token.location),
-				"expected '=' or '->' got '%s' instead",
-				lexer->token.text
-			);
+	if (!Parser_parse_identifier_path(context, lexer, &left_identifier_list)) {
+		ret = false;
+		goto termination;
 	}
 
+	// Parse '='
+	if (lexer->token.type != TokenType__equal)
+		handle_processing_error(
+			&(lexer->token.location),
+			"expected '=', got '%s' instead",
+			lexer->token.text
+		);
+	 Lexer_next_token(lexer);
+
+	// Deduce which kind of statement it is
+	if (StringList_length(&left_identifier_list) == 1) {
+		if (!Parser_parse_node_creation(context, lexer, StringList_at(&left_identifier_list, 0)))
+			ret = false;
+
+		Lexer_next_token(lexer);
+	}
+	else {
+		if (!Parser_parse_input_assignment(context, lexer, &left_identifier_list))
+			ret = false;
+	}
+
+termination:
 	// Free ressources
-	String_destroy(&identifier_str);
+	StringList_destroy(&left_identifier_list);
 
 	// Job done
 	return ret;
@@ -412,13 +427,14 @@ Parser_parse_declaration(
 
 
 static bool
-Parser_parse_declaration_list(
+Parser_parse_statement_list(
 	ParseContext* context,
 	Lexer* lexer
 ) {
+	Lexer_next_token(lexer);
+
 	int error_count = 0;
 	for(bool done = false; (!done) && (error_count < MAX_PARSING_ERROR_COUNT); ) {
-		Lexer_next_token(lexer);
 		switch(lexer->token.type) {
 			case TokenType__eof:
 			case TokenType__invalid:
@@ -426,7 +442,7 @@ Parser_parse_declaration_list(
 				continue;
 
 			default:
-				if (!Parser_parse_declaration(context, lexer))
+				if (!Parser_parse_statement(context, lexer))
 					error_count += 1;
 		}
 	}
@@ -454,7 +470,7 @@ Parser_parse(
 	ParseContext context;
 	ParseContext_init(&context, domain, graph);
 
-	bool ret = Parser_parse_declaration_list(&context, lexer);
+	bool ret = Parser_parse_statement_list(&context, lexer);
 
 	ParseContext_destroy(&context);
 	return ret;
