@@ -9,23 +9,30 @@
 // --- ParserContext implementation ------------------------------------------
 
 typedef struct {
+	Lexer* lexer;
 	Domain* domain;
 	Graph* graph;
+	Dict entity_dict;
 } ParseContext;
 
 
 static void
 ParseContext_init(
 	ParseContext* self,
+	Lexer* lexer,
 	Domain* domain,
 	Graph* graph
 ) {
 	assert(self != 0);
+	assert(lexer != 0);
 	assert(domain != 0);
 	assert(graph != 0);
 
+	self->lexer = lexer;
 	self->domain = domain;
 	self->graph = graph;
+
+	Dict_init(&(self->entity_dict));
 }
 
 
@@ -34,18 +41,36 @@ ParseContext_destroy(
 	ParseContext* self
 ) {
 	assert(self != 0);
+
+	#ifdef DEBUG
+	self->lexer = 0;
+	self->domain = 0;
+	self->graph = 0;
+	#endif
+
+	Dict_destroy(&(self->entity_dict));
 }
 
+/*
+static void
+ParseContext_add_entity(
+	ParseContext* self,
+	const String* name,
+	const StringList* entity_path
+) {
+	assert(self != 0);
+	assert(name != 0);
+	assert(entity_path != 0);
 
-// --- Parser implementation -------------------------------------------------
+	
+}
+*/
 
-#define MAX_PARSING_ERROR_COUNT 16
-
+// --- Parser utilities -------------------------------------------------------
 
 static Node*
 Parser_get_node(
 	ParseContext* context,
-	Lexer* lexer,
 	const String* name_str
 ) {
 	Node* node = Graph_get_node(context->graph, name_str);
@@ -53,7 +78,7 @@ Parser_get_node(
 		SDL_LogError(
 			SDL_LOG_CATEGORY_SYSTEM,
 			"line %d : node '%s' is not defined\n",
-			lexer->token.location.line + 1,
+			context->lexer->token.location.line + 1,
 			name_str->data
 		);
 
@@ -61,24 +86,28 @@ Parser_get_node(
 }
 
 
+// --- Parser recursive descent implementation --------------------------------
+
+#define MAX_PARSING_ERROR_COUNT 16
+
+
 bool
 Parser_parse_parameter(
 	ParseContext* context,
-	Lexer* lexer,
 	Node* node
 ) {
 	bool ret = true;
 
 	// Parse an identifier
-	if (lexer->token.type != TokenType__identifier)
+	if (context->lexer->token.type != TokenType__identifier)
 		handle_processing_error(
-			&(lexer->token.location),
+			&(context->lexer->token.location),
 			"expected an identifier, got '%s' instead",
-			lexer->token.text
+			context->lexer->token.text
 		);
 
 	String name_str;
-	String_clone(&name_str, Lexer_token_text(lexer));
+	String_clone(&name_str, Lexer_token_text(context->lexer));
 
 	// Fetch the parameter 
 	ParameterValue* param_value = 0;
@@ -88,7 +117,7 @@ Parser_parse_parameter(
 		SDL_LogError(
 			SDL_LOG_CATEGORY_SYSTEM,
 			"line %d : node '%s' does not have a '%s' parameter\n",
-			lexer->token.location.line + 1,
+			context->lexer->token.location.line + 1,
 			node->name.data,
 			name_str.data
 		);
@@ -97,57 +126,57 @@ Parser_parse_parameter(
 	}
 
 	// Parse '='
-	Lexer_next_token(lexer);
-	if (lexer->token.type != TokenType__equal)
+	Lexer_next_token(context->lexer);
+	if (context->lexer->token.type != TokenType__equal)
 		handle_processing_error(
-			&(lexer->token.location),
+			&(context->lexer->token.location),
 			"expected '=', got '%s' instead",
-			lexer->token.text
+			context->lexer->token.text
 		);
 
 	// Assign the value to the node parameter
-	Lexer_next_token(lexer);
+	Lexer_next_token(context->lexer);
 	switch(param_def->type) {
 		case ParameterType__integer:
-			if (lexer->token.type != TokenType__integer) {
+			if (context->lexer->token.type != TokenType__integer) {
 				SDL_LogError(
 					SDL_LOG_CATEGORY_SYSTEM,
 					"line %d : expected an integer value, got '%s' instead\n",
-					lexer->token.location.line + 1,
-					lexer->token.text_data
+					context->lexer->token.location.line + 1,
+					context->lexer->token.text_data
 				);
 				ret = false;
 				goto termination;
 			}		
-			param_value->int64_value = lexer->token.value.int64_value;
+			param_value->int64_value = context->lexer->token.value.int64_value;
 			break;
 		case ParameterType__real:
-			if ((lexer->token.type != TokenType__integer) && (lexer->token.type != TokenType__real)) {
+			if ((context->lexer->token.type != TokenType__integer) && (context->lexer->token.type != TokenType__real)) {
 				SDL_LogError(
 					SDL_LOG_CATEGORY_SYSTEM,
 					"line %d : expected a numeric value, got '%s' instead",
-					lexer->token.location.line + 1,
-					lexer->token.text_data
+					context->lexer->token.location.line + 1,
+					context->lexer->token.text_data
 				);
 				ret = false;
 				goto termination;
 			}
-			param_value->real_value = lexer->token.value.real_value;
+			param_value->real_value = context->lexer->token.value.real_value;
 			break;
 		case ParameterType__string:
-			if (lexer->token.type != TokenType__string) {
+			if (context->lexer->token.type != TokenType__string) {
 				SDL_LogError(
 					SDL_LOG_CATEGORY_SYSTEM,
 					"line %d : expected a string constant, got '%s' instead",
-					lexer->token.location.line + 1,
-					lexer->token.text_data
+					context->lexer->token.location.line + 1,
+					context->lexer->token.text_data
 				);
 				ret = false;
 				goto termination;
 			}
 			
 			String_destroy(&(param_value->string_value));
-			String_clone(&(param_value->string_value), Lexer_token_text(lexer));
+			String_clone(&(param_value->string_value), Lexer_token_text(context->lexer));
 			break;
 		default:
 			assert(0);
@@ -165,25 +194,24 @@ termination:
 bool
 Parser_parse_parameter_list(
 	ParseContext* context,
-	Lexer* lexer,
 	Node* node
 ) {
 	bool ret = true;
 
 	// Parse '('
-	Lexer_next_token(lexer);
-	if (lexer->token.type != TokenType__pth_open)
+	Lexer_next_token(context->lexer);
+	if (context->lexer->token.type != TokenType__pth_open)
 		handle_processing_error(
-			&(lexer->token.location),
+			&(context->lexer->token.location),
 			"expected '(', got '%s' instead",
-			lexer->token.text
+			context->lexer->token.text
 		);
 
 	// Parse each parameter one by one
 	bool first = true;
 	for(bool done = false; !done; first = false) {
-		Lexer_next_token(lexer);
-		switch(lexer->token.type) {
+		Lexer_next_token(context->lexer);
+		switch(context->lexer->token.type) {
 			case TokenType__pth_close:
 				done = true;
 				break;
@@ -195,26 +223,26 @@ Parser_parse_parameter_list(
 
 			default:
 				if (!first) {
-					if (lexer->token.type != TokenType__comma)
+					if (context->lexer->token.type != TokenType__comma)
 						handle_processing_error(
-							&(lexer->token.location),
+							&(context->lexer->token.location),
 							"expected ')', got '%s' instead",
-							lexer->token.text
+							context->lexer->token.text
 						);
-					Lexer_next_token(lexer);
+					Lexer_next_token(context->lexer);
 				}
 				
-				if (!Parser_parse_parameter(context, lexer, node))
+				if (!Parser_parse_parameter(context, node))
 					ret = false;
 		}
 	}
 	
 	// Parse ')'
-	if (lexer->token.type != TokenType__pth_close)
+	if (context->lexer->token.type != TokenType__pth_close)
 		handle_processing_error(
-			&(lexer->token.location),
+			&(context->lexer->token.location),
 			"expected ')', got '%s' instead",
-			lexer->token.text
+			context->lexer->token.text
 		);
 
 	// Job done
@@ -225,34 +253,33 @@ Parser_parse_parameter_list(
 static bool
 Parser_parse_identifier_path(
 	ParseContext* context,
-	Lexer* lexer,
 	StringList* str_list
 ) {
 	bool ret = true;
 
 	// Parse first identifier
-	if (lexer->token.type != TokenType__identifier) {
+	if (context->lexer->token.type != TokenType__identifier) {
 		handle_processing_error(
-			&(lexer->token.location),
+			&(context->lexer->token.location),
 			"expected an identifier, got '%s' instead",
-			lexer->token.text
+			context->lexer->token.text
 		);	
 	}
-	StringList_append(str_list, Lexer_token_text(lexer));
-	Lexer_next_token(lexer);
+	StringList_append(str_list, Lexer_token_text(context->lexer));
+	Lexer_next_token(context->lexer);
 
 	// Parse the following identifiers
-	while(lexer->token.type == TokenType__dot) {
-		Lexer_next_token(lexer);
-		if (lexer->token.type != TokenType__identifier) {
+	while(context->lexer->token.type == TokenType__dot) {
+		Lexer_next_token(context->lexer);
+		if (context->lexer->token.type != TokenType__identifier) {
 			handle_processing_error(
-				&(lexer->token.location),
+				&(context->lexer->token.location),
 				"expected an identifier, got '%s' instead",
-				lexer->token.text
+				context->lexer->token.text
 			);
 		}
-		StringList_append(str_list, Lexer_token_text(lexer));
-		Lexer_next_token(lexer);
+		StringList_append(str_list, Lexer_token_text(context->lexer));
+		Lexer_next_token(context->lexer);
 	}
 	
 	return ret;
@@ -262,18 +289,17 @@ Parser_parse_identifier_path(
 static bool
 Parser_parse_node_creation(
 	ParseContext* context,
-	Lexer* lexer,
 	const String* name_str
 ) {
 	// Parse an identifier
-	if (lexer->token.type != TokenType__identifier)
+	if (context->lexer->token.type != TokenType__identifier)
 		handle_processing_error(
-			&(lexer->token.location),
+			&(context->lexer->token.location),
 			"expected an identifier, got '%s' instead",
-			lexer->token.text
+			context->lexer->token.text
 		);
 
-	const String* type_str = Lexer_token_text(lexer);
+	const String* type_str = Lexer_token_text(context->lexer);
 
 	// Check that the node delegate exists
 	const DomainMember* member = 
@@ -283,7 +309,7 @@ Parser_parse_node_creation(
 		SDL_LogError(
 			SDL_LOG_CATEGORY_SYSTEM,
 			"line %d : node delegate '%s' is not defined\n",
-			lexer->token.location.line + 1,
+			context->lexer->token.location.line + 1,
 			type_str->data
 		);
 		return false;
@@ -292,8 +318,8 @@ Parser_parse_node_creation(
 	if (member->type != DomainMemberType__node_delegate) {
 		SDL_LogError(
 			SDL_LOG_CATEGORY_SYSTEM,
-			"line %d : '%s' is defined but not as a node delegate\n",
-			lexer->token.location.line + 1,
+			"line %d : '%s' is not defined as a node delegate\n",
+			context->lexer->token.location.line + 1,
 			type_str->data
 		);
 		return false;
@@ -307,14 +333,14 @@ Parser_parse_node_creation(
 		SDL_LogError(
 			SDL_LOG_CATEGORY_SYSTEM,
 			"line %d : node '%s' is already defined\n",
-			lexer->token.location.line + 1,
+			context->lexer->token.location.line + 1,
 			name_str->data
 		);
 		return false;
 	}
 
 	// Parse parameters
-	if (!Parser_parse_parameter_list(context, lexer, node))
+	if (!Parser_parse_parameter_list(context, node))
 		return false;
 
 	// Job done
@@ -325,7 +351,6 @@ Parser_parse_node_creation(
 static bool
 Parser_parse_input_assignment(
 	ParseContext* context,
-	Lexer* lexer,
 	const StringList* left_identifier_list
 ) {
 	bool ret = true;
@@ -334,21 +359,21 @@ Parser_parse_input_assignment(
 	StringList right_identifier_list;
 	StringList_init(&right_identifier_list);
 
-	if (!Parser_parse_identifier_path(context, lexer, &right_identifier_list)) {
+	if (!Parser_parse_identifier_path(context, &right_identifier_list)) {
 		ret = false;
 		goto termination;
 	}
 
 	// Assign the input to the dst node
 	const String* src_name = StringList_at(&right_identifier_list, 0);
-	Node* src_node = Parser_get_node(context, lexer, src_name);
+	Node* src_node = Parser_get_node(context, src_name);
 	if (!src_node) {
 		ret = false;
 		goto termination;
 	}
 
 	const String* dst_name = StringList_at(left_identifier_list, 0);
-	Node* dst_node = Parser_get_node(context, lexer, dst_name);
+	Node* dst_node = Parser_get_node(context, dst_name);
 	if (!dst_node) {
 		ret = false;
 		goto termination;
@@ -363,7 +388,7 @@ Parser_parse_input_assignment(
 		SDL_LogError(
 			SDL_LOG_CATEGORY_SYSTEM,
 			"line %d : node '%s' does not have an input '%s' with matching type\n",
-			lexer->token.location.line + 1,
+			context->lexer->token.location.line + 1,
 			dst_name->data,
 			dst_input_name->data
 		);
@@ -382,8 +407,7 @@ termination:
 
 static bool
 Parser_parse_statement(
-	ParseContext* context, 
-	Lexer* lexer
+	ParseContext* context
 ) {
 	int ret = true;
 
@@ -391,29 +415,30 @@ Parser_parse_statement(
 	StringList left_identifier_list;
 	StringList_init(&left_identifier_list);
 
-	if (!Parser_parse_identifier_path(context, lexer, &left_identifier_list)) {
+	if (!Parser_parse_identifier_path(context, &left_identifier_list)) {
 		ret = false;
 		goto termination;
 	}
 
 	// Parse '='
-	if (lexer->token.type != TokenType__equal)
+	if (context->lexer->token.type != TokenType__equal)
 		handle_processing_error(
-			&(lexer->token.location),
+			&(context->lexer->token.location),
 			"expected '=', got '%s' instead",
-			lexer->token.text
+			context->lexer->token.text
 		);
-	 Lexer_next_token(lexer);
+	 Lexer_next_token(context->lexer);
 
-	// Deduce which kind of statement it is
+	// Node creation statement
 	if (StringList_length(&left_identifier_list) == 1) {
-		if (!Parser_parse_node_creation(context, lexer, StringList_at(&left_identifier_list, 0)))
+		if (!Parser_parse_node_creation(context, StringList_at(&left_identifier_list, 0)))
 			ret = false;
 
-		Lexer_next_token(lexer);
+		Lexer_next_token(context->lexer);
 	}
+	// Node input assignment
 	else {
-		if (!Parser_parse_input_assignment(context, lexer, &left_identifier_list))
+		if (!Parser_parse_input_assignment(context, &left_identifier_list))
 			ret = false;
 	}
 
@@ -428,30 +453,29 @@ termination:
 
 static bool
 Parser_parse_statement_list(
-	ParseContext* context,
-	Lexer* lexer
+	ParseContext* context
 ) {
-	Lexer_next_token(lexer);
+	Lexer_next_token(context->lexer);
 
 	int error_count = 0;
 	for(bool done = false; (!done) && (error_count < MAX_PARSING_ERROR_COUNT); ) {
-		switch(lexer->token.type) {
+		switch(context->lexer->token.type) {
 			case TokenType__eof:
 			case TokenType__invalid:
 				done = true;
 				continue;
 
 			default:
-				if (!Parser_parse_statement(context, lexer))
+				if (!Parser_parse_statement(context))
 					error_count += 1;
 		}
 	}
 
-	if (lexer->token.type == TokenType__invalid)
+	if (context->lexer->token.type == TokenType__invalid)
 		handle_processing_error(
-			&(lexer->token.location),
+			&(context->lexer->token.location),
 			"invalid token '%s'",
-			lexer->token.text
+			context->lexer->token.text
 		);
 
 	// Job done
@@ -468,9 +492,9 @@ Parser_parse(
 	Graph* graph
 ) {
 	ParseContext context;
-	ParseContext_init(&context, domain, graph);
+	ParseContext_init(&context, lexer, domain, graph);
 
-	bool ret = Parser_parse_statement_list(&context, lexer);
+	bool ret = Parser_parse_statement_list(&context);
 
 	ParseContext_destroy(&context);
 	return ret;
