@@ -131,19 +131,30 @@ Domain_setup(
 }
 
 
-const DomainMember*
-Domain_get_member_by_name(
+extern DomainMember*
+Domain_get_member(
 	Domain* self,
-	const String* name
+	const StringList* path
 ) {
 	assert(self != 0);
-	assert(name != 0);
+	assert(path != 0);
 
-	DictEntry* entry = Dict_find(&(self->members), name);
-	if (!entry)
-		return 0;
+	Domain* current = self;
+	DomainMember* member = 0;
+	const String* name = path->items;
+	for(size_t i = StringList_length(path); i != 0; --i, ++name) {
+		DictEntry* entry = Dict_find(&(current->members), name);
+		if (!entry)
+			return 0;
+			
+		member = (DomainMember*)entry->value;
+		if ((i > 1) && (member->type != DomainMemberType__domain))
+			return 0;
 
-	return (const DomainMember*)entry->value;
+		current = member->domain;
+	}
+
+	return member;
 }
 
 

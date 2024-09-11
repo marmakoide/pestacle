@@ -4,6 +4,7 @@
 #include "dict.h"
 #include "node.h"
 #include "window_manager.h"
+#include "string_list.h"
 
 
 struct s_Domain;
@@ -17,6 +18,7 @@ typedef struct s_DomainDelegate DomainDelegate;
 enum DomainMemberType {
 	DomainMemberType__invalid = 0, // Used as a debugging help
 	DomainMemberType__node,
+	DomainMemberType__domain,
 	DomainMemberType__node_delegate,
 	DomainMemberType__domain_delegate,
 	DomainMemberType__last
@@ -27,6 +29,7 @@ typedef struct {
 	enum DomainMemberType type;
 	union {
 		Node* node;
+		Domain* domain;
 		const NodeDelegate* node_delegate;
 		const DomainDelegate* domain_delegate;
 	};
@@ -81,10 +84,10 @@ Domain_destroy(
 );
 
 
-extern const DomainMember*
-Domain_get_member_by_name(
+extern DomainMember*
+Domain_get_member(
 	Domain* self,
-	const String* name
+	const StringList* path
 );
 
 

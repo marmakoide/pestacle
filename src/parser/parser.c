@@ -199,7 +199,6 @@ Parser_parse_parameter_list(
 	bool ret = true;
 
 	// Parse '('
-	Lexer_next_token(context->lexer);
 	if (context->lexer->token.type != TokenType__pth_open)
 		handle_processing_error(
 			&(context->lexer->token.location),
@@ -291,38 +290,40 @@ Parser_parse_node_creation(
 	ParseContext* context,
 	const String* name_str
 ) {
-	// Parse an identifier
-	if (context->lexer->token.type != TokenType__identifier)
-		handle_processing_error(
-			&(context->lexer->token.location),
-			"expected an identifier, got '%s' instead",
-			context->lexer->token.text
-		);
+	bool ret = true;
 
-	const String* type_str = Lexer_token_text(context->lexer);
+	// Parse an identifier path
+	StringList right_identifier_list;
+	StringList_init(&right_identifier_list);
 
-	// Check that the node delegate exists
-	const DomainMember* member = 
-		Domain_get_member_by_name(context->domain, type_str);
-
-	if (!member) {
-		SDL_LogError(
-			SDL_LOG_CATEGORY_SYSTEM,
-			"line %d : node delegate '%s' is not defined\n",
-			context->lexer->token.location.line + 1,
-			type_str->data
-		);
-		return false;
+	if (!Parser_parse_identifier_path(context, &right_identifier_list)) {
+		ret = false;
+		goto termination;
 	}
 
-	if (member->type != DomainMemberType__node_delegate) {
+	// Evaluate the path
+	DomainMember* member = 
+		Domain_get_member(context->domain, &right_identifier_list);
+
+	if (!member) { // TODO : invalid path should be printed
 		SDL_LogError(
 			SDL_LOG_CATEGORY_SYSTEM,
-			"line %d : '%s' is not defined as a node delegate\n",
-			context->lexer->token.location.line + 1,
-			type_str->data
+			"line %d : invalid path\n",
+			context->lexer->token.location.line + 1
 		);
-		return false;
+		ret = false;
+		goto termination;
+	}
+
+	// Check that the path leads to a node
+	if (member->type != DomainMemberType__node_delegate) {  // TODO : invalid path should be printed
+		SDL_LogError(
+			SDL_LOG_CATEGORY_SYSTEM,
+			"line %d :path is not a node delegate\n",
+			context->lexer->token.location.line + 1
+		);
+		ret = false;
+		goto termination;
 	}
 
 	const NodeDelegate* delegate = member->node_delegate;
@@ -336,15 +337,22 @@ Parser_parse_node_creation(
 			context->lexer->token.location.line + 1,
 			name_str->data
 		);
-		return false;
+		ret = false;
+		goto termination;
 	}
 
 	// Parse parameters
-	if (!Parser_parse_parameter_list(context, node))
-		return false;
+	if (!Parser_parse_parameter_list(context, node)) {
+		ret = false;
+		goto termination;
+	}
+
+termination:
+	// Free ressources
+	StringList_destroy(&right_identifier_list);
 
 	// Job done
-	return true;
+	return ret;
 }
 
 
