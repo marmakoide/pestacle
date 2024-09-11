@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "memory.h"
-#include "parser/string_list.h"
+#include "string_list.h"
 
 #define INITIAL_PHYSICAL_LEN 8
 

@@ -2,7 +2,7 @@
 #include <assert.h>
 #include "errors.h"
 #include "memory.h"
-#include "parser/string_list.h"
+#include "string_list.h"
 #include "parser/parser.h"
 
 
@@ -51,6 +51,7 @@ ParseContext_destroy(
 	Dict_destroy(&(self->entity_dict));
 }
 
+
 /*
 static void
 ParseContext_add_entity(
@@ -61,10 +62,9 @@ ParseContext_add_entity(
 	assert(self != 0);
 	assert(name != 0);
 	assert(entity_path != 0);
-
-	
 }
 */
+
 
 // --- Parser utilities -------------------------------------------------------
 
