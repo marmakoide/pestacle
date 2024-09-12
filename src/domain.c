@@ -131,6 +131,35 @@ Domain_setup(
 }
 
 
+bool
+Domain_get_parameter_by_name(
+	Domain* self,
+	const String* name,
+	const ParameterDefinition** param_def_ptr,
+	ParameterValue** param_value_ptr
+) {
+	assert(self != 0);
+	assert(name != 0);
+	assert(name->data != 0);
+
+	ParameterValue* param_value = self->parameters;
+	const ParameterDefinition* param_def = self->delegate->parameter_defs;
+	
+	for( ; param_def->type != ParameterType__last; ++param_value, ++param_def)
+		if (String_equals(name, &(param_def->name))) {
+			if (param_def_ptr)
+				*param_def_ptr = param_def;
+
+			if (param_value_ptr)
+				*param_value_ptr = param_value;
+
+			return true;
+		}
+		
+	return false;
+}
+
+
 extern DomainMember*
 Domain_get_member(
 	Domain* self,
@@ -171,6 +200,10 @@ Domain_add_member(
 	switch(member->type) {
 		case DomainMemberType__node:
 			entry_name = &(member->node->name);
+			break;
+
+		case DomainMemberType__domain:
+			entry_name = &(member->domain->name);
 			break;
 
 		case DomainMemberType__node_delegate:
@@ -218,6 +251,22 @@ Domain_add_node(
 	DomainMember member = {
 		DomainMemberType__node,
 		{ .node = node }
+	};
+
+	return Domain_add_member(self, &member);
+}
+
+
+bool
+Domain_add_domain(
+	Domain* self,
+	Domain* domain
+) {
+	assert(self != 0);
+
+	DomainMember member = {
+		DomainMemberType__domain,
+		{ .domain = domain }
 	};
 
 	return Domain_add_member(self, &member);

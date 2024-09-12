@@ -40,6 +40,7 @@ static SDL_mutex* graph_state_mutex = 0;
 
 Graph graph;
 Domain* root_domain = 0;
+WindowManager window_manager;
 
 
 static Uint32
@@ -63,7 +64,7 @@ static bool
 load_graph() {
 	Lexer lexer;
 	Lexer_init(&lexer, stdin);
-	return Parser_parse(&lexer, root_domain, &graph);
+	return Parser_parse(&lexer, root_domain, &graph, &window_manager);
 }
 
 
@@ -85,7 +86,6 @@ main(int argc, char* argv[]) {
 	}
 
 	// Initialize the window manager
-	WindowManager window_manager;
 	WindowManager_init(&window_manager);
 
 	// Initialize root domain

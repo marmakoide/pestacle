@@ -84,6 +84,15 @@ Domain_destroy(
 );
 
 
+extern bool
+Domain_get_parameter_by_name(
+	Domain* self,
+	const String* name,
+	const ParameterDefinition** param_def_ptr,
+	ParameterValue** param_value_ptr
+);
+
+
 extern DomainMember*
 Domain_get_member(
 	Domain* self,
@@ -95,6 +104,13 @@ extern bool
 Domain_add_node(
 	Domain* self,
 	Node* node
+);
+
+
+extern bool
+Domain_add_domain(
+	Domain* self,
+	Domain* domain
 );
 
 
