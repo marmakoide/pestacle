@@ -66,7 +66,7 @@ StringList_clear(
 	StringList* self
 ) {
 	assert(self != 0);
-	assert(self->data != 0);
+	assert(self->items != 0);
 
 	StringList_destroy_items(self);
 	self->logical_len = 0;
@@ -78,7 +78,7 @@ StringList_empty(
 	const StringList* self
 ) {
 	assert(self != 0);
-	assert(self->data != 0);
+	assert(self->items != 0);
 
 	return self->logical_len == 0;
 }
@@ -89,7 +89,7 @@ StringList_length(
 	const StringList* self
 ) {
 	assert(self != 0);
-	assert(self->data != 0);
+	assert(self->items != 0);
 
 	return self->logical_len;
 }
