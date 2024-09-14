@@ -11,7 +11,6 @@
 typedef struct {
 	Lexer* lexer;
 	Domain* domain;
-	Graph* graph;
 	WindowManager* window_manager;
 } ParseContext;
 
@@ -21,18 +20,15 @@ ParseContext_init(
 	ParseContext* self,
 	Lexer* lexer,
 	Domain* domain,
-	Graph* graph,
 	WindowManager* window_manager
 ) {
 	assert(self != 0);
 	assert(lexer != 0);
 	assert(domain != 0);
-	assert(graph != 0);
 	assert(window_manager != 0);
 
 	self->lexer = lexer;
 	self->domain = domain;
-	self->graph = graph;
 	self->window_manager = window_manager;
 }
 
@@ -46,7 +42,6 @@ ParseContext_destroy(
 	#ifdef DEBUG
 	self->lexer = 0;
 	self->domain = 0;
-	self->graph = 0;
 	self->window_manager = 0;
 	#endif
 }
@@ -57,18 +52,31 @@ ParseContext_destroy(
 static Node*
 Parser_get_node(
 	ParseContext* context,
-	const String* name_str
+	const String* path,
+	size_t path_len
 ) {
-	Node* node = Graph_get_node(context->graph, name_str);
-	if (!node)
+	DomainMember* member =
+		Domain_get_member(context->domain, path, path_len);
+
+	if (!member) {
 		SDL_LogError(
 			SDL_LOG_CATEGORY_SYSTEM,
-			"line %d : node '%s' is not defined\n",
-			context->lexer->token.location.line + 1,
-			name_str->data
+			"line %d : invalid path\n",
+			context->lexer->token.location.line + 1
 		);
+		return 0;
+	}
 
-	return node;
+	if (member->type != DomainMemberType__node) {
+		SDL_LogError(
+			SDL_LOG_CATEGORY_SYSTEM,
+			"line %d : path is not a node\n",
+			context->lexer->token.location.line + 1
+		);
+		return 0;
+	}
+
+	return member->node;
 }
 
 
@@ -296,22 +304,42 @@ Parser_parse_identifier_path(
 static bool
 Parser_parse_instanciation(
 	ParseContext* context,
-	const String* name_str
+	const StringList* left_path
 ) {
 	bool ret = true;
 
 	// Parse an identifier path
-	StringList right_identifier_list;
-	StringList_init(&right_identifier_list);
+	StringList right_path;
+	StringList_init(&right_path);
 
-	if (!Parser_parse_identifier_path(context, &right_identifier_list)) {
+	// Check that the identifier is not taken already
+	if (!Parser_parse_identifier_path(context, &right_path)) {
 		ret = false;
 		goto termination;
 	}
 
+	// Check that the name is not taken already
+	if (Domain_get_member(
+		context->domain,
+		StringList_items(left_path),
+		StringList_length(left_path)
+	)) {
+		SDL_LogError(
+			SDL_LOG_CATEGORY_SYSTEM,
+			"line %d : path to an already defined item\n",
+			context->lexer->token.location.line + 1
+		);
+		ret = false;
+		goto termination;
+	}
+	
 	// Evaluate the path
 	DomainMember* builder = 
-		Domain_get_member(context->domain, &right_identifier_list);
+		Domain_get_member(
+			context->domain,
+			StringList_items(&right_path),
+			StringList_length(&right_path)
+		);
 
 	if (!builder) { // TODO : invalid path should be printed
 		SDL_LogError(
@@ -338,18 +366,8 @@ Parser_parse_instanciation(
 	// Call the constructor
 	if (builder->type == DomainMemberType__node_delegate) {
 		// Build the node
-		const NodeDelegate* delegate = builder->node_delegate;
-		Node* node = Graph_add_node(context->graph, name_str, delegate);
-		if (!node) {
-			SDL_LogError(
-				SDL_LOG_CATEGORY_SYSTEM,
-				"line %d : node '%s' is already defined\n",
-				context->lexer->token.location.line + 1,
-				name_str->data
-			);
-			ret = false;
-			goto termination;
-		}
+		Node* node = 
+			Node_new(StringList_at(left_path, 0), builder->node_delegate);
 
 		// Parse parameters
 		DomainMember constructor_output = {
@@ -361,11 +379,19 @@ Parser_parse_instanciation(
 			ret = false;
 			goto termination;
 		}
+
+		// Add the node to the root domain
+		Domain_add_node(context->domain, node);
+		
 	}
 	else if (builder->type == DomainMemberType__domain_delegate) {
-		// Build the node
-		const DomainDelegate* delegate = builder->domain_delegate;
-		Domain* domain = Domain_new(name_str, delegate);
+		// Build the domain
+		Domain* domain =
+			Domain_new(
+				StringList_at(left_path, 0),
+				builder->domain_delegate
+			);
+
 		if (!domain) {
 			ret = false;
 			goto termination;
@@ -382,26 +408,16 @@ Parser_parse_instanciation(
 			goto termination;
 		}
 
-		//
+		// Add the newly build domain
 		if (!Domain_setup(domain, context->window_manager))
 			goto termination;
 
-		if (!Domain_add_domain(context->domain, domain)) {
-			SDL_LogError(
-				SDL_LOG_CATEGORY_SYSTEM,
-				"line %d : domain '%s' is already defined\n",
-				context->lexer->token.location.line + 1,
-				name_str->data
-			);
-			ret = false;
-			// TODO destroy the domain
-			goto termination;
-		}
+		Domain_add_domain(context->domain, domain);
 
 	}
 termination:
 	// Free ressources
-	StringList_destroy(&right_identifier_list);
+	StringList_destroy(&right_path);
 
 	// Job done
 	return ret;
@@ -411,46 +427,62 @@ termination:
 static bool
 Parser_parse_input_assignment(
 	ParseContext* context,
-	const StringList* left_identifier_list
+	const StringList* left_path
 ) {
 	bool ret = true;
 
 	// Parse an identifier path
-	StringList right_identifier_list;
-	StringList_init(&right_identifier_list);
+	StringList right_path;
+	StringList_init(&right_path);
 
-	if (!Parser_parse_identifier_path(context, &right_identifier_list)) {
+	if (!Parser_parse_identifier_path(context, &right_path)) {
 		ret = false;
 		goto termination;
 	}
 
-	// Assign the input to the dst node
-	const String* src_name = StringList_at(&right_identifier_list, 0);
-	Node* src_node = Parser_get_node(context, src_name);
-	if (!src_node) {
-		ret = false;
-		goto termination;
-	}
+	// Retrieve destination node
+	Node* dst_node = 
+		Parser_get_node(
+			context,
+			StringList_items(left_path),
+			StringList_length(left_path) - 1
+		);
 
-	const String* dst_name = StringList_at(left_identifier_list, 0);
-	Node* dst_node = Parser_get_node(context, dst_name);
 	if (!dst_node) {
 		ret = false;
 		goto termination;
 	}
 
-	const String* dst_input_name = StringList_at(left_identifier_list, 1);
+	// Retrieve source node
+	Node* src_node = 
+		Parser_get_node(
+			context,
+			StringList_items(&right_path),
+			StringList_length(&right_path)
+		);
+
+	if (!src_node) {
+		ret = false;
+		goto termination;
+	}
+
+	// Assign the input to the dst node
+	const String* dst_param_name =
+		StringList_at(
+			left_path,
+			StringList_length(left_path) - 1
+		);
 
 	if (!Node_set_input_by_name(
 		dst_node,
-		dst_input_name,
+		dst_param_name,
 		src_node)) {
 		SDL_LogError(
 			SDL_LOG_CATEGORY_SYSTEM,
 			"line %d : node '%s' does not have an input '%s' with matching type\n",
 			context->lexer->token.location.line + 1,
-			dst_name->data,
-			dst_input_name->data
+			dst_node->name.data,
+			dst_param_name->data
 		);
 		ret = false;
 		goto termination;
@@ -458,7 +490,7 @@ Parser_parse_input_assignment(
 
 termination:
 	// Free ressources
-	StringList_destroy(&right_identifier_list);
+	StringList_destroy(&right_path);
 
 	// Job done
 	return ret;
@@ -472,10 +504,10 @@ Parser_parse_statement(
 	int ret = true;
 
 	// Parse an identifier path
-	StringList left_identifier_list;
-	StringList_init(&left_identifier_list);
+	StringList left_path;
+	StringList_init(&left_path);
 
-	if (!Parser_parse_identifier_path(context, &left_identifier_list)) {
+	if (!Parser_parse_identifier_path(context, &left_path)) {
 		ret = false;
 		goto termination;
 	}
@@ -490,21 +522,21 @@ Parser_parse_statement(
 	 Lexer_next_token(context->lexer);
 
 	// Node creation statement
-	if (StringList_length(&left_identifier_list) == 1) {
-		if (!Parser_parse_instanciation(context, StringList_at(&left_identifier_list, 0)))
+	if (StringList_length(&left_path) == 1) {
+		if (!Parser_parse_instanciation(context, &left_path))
 			ret = false;
 
 		Lexer_next_token(context->lexer);
 	}
 	// Node input assignment
 	else {
-		if (!Parser_parse_input_assignment(context, &left_identifier_list))
+		if (!Parser_parse_input_assignment(context, &left_path))
 			ret = false;
 	}
 
 termination:
 	// Free ressources
-	StringList_destroy(&left_identifier_list);
+	StringList_destroy(&left_path);
 
 	// Job done
 	return ret;
@@ -549,11 +581,10 @@ bool
 Parser_parse(
 	Lexer* lexer,
 	Domain* domain,
-	Graph* graph,
 	WindowManager* window_manager
 ) {
 	ParseContext context;
-	ParseContext_init(&context, lexer, domain, graph, window_manager);
+	ParseContext_init(&context, lexer, domain, window_manager);
 
 	bool ret = Parser_parse_statement_list(&context);
 

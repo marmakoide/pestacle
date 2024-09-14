@@ -1,6 +1,7 @@
 #ifndef PESTACLE_STRING_LIST_H
 #define PESTACLE_STRING_LIST_H
 
+#include <stdio.h>
 #include "strings.h"
 
 
@@ -9,6 +10,13 @@ typedef struct {
 	size_t physical_len;
 	String* items;
 } StringList;
+
+
+extern void
+StringList_print(
+	StringList* self,
+	FILE* out
+);
 
 
 extern void
@@ -37,6 +45,12 @@ StringList_empty(
 
 extern size_t
 StringList_length(
+	const StringList* self
+);
+
+
+extern const String*
+StringList_items(
 	const StringList* self
 );
 

@@ -95,6 +95,17 @@ StringList_length(
 }
 
 
+extern const String*
+StringList_items(
+	const StringList* self
+) {
+	assert(self != 0);
+	assert(self->items != 0);
+
+	return self->items;
+}
+
+
 const String*
 StringList_at(
 	const StringList* self,
@@ -127,4 +138,21 @@ StringList_append(
 	// Append the new item
 	String_clone(self->items + self->logical_len, str);
 	self->logical_len += 1;
+}
+
+
+void
+StringList_print(
+	StringList* self,
+	FILE* out
+) {
+	assert(self != 0);
+	assert(out != 0);
+
+	const String* str = self->items;
+	for(size_t i = self->logical_len; i != 0; --i, ++str) {
+		fputs(str->data, out);
+		if (i > 1)
+			fputc('.', out);
+	}
 }

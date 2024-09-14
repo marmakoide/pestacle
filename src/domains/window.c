@@ -4,9 +4,9 @@
 
 // --- display Node interface -------------------------------------------------
 
-static NodeOutput
-display_node_output(
-	const Node* self
+static void
+display_node_update(
+	Node* self
 );
 
 
@@ -38,21 +38,27 @@ display_node_delegate = {
 	{
 		0,
 		0,
+		display_node_update,
 		0,
-		0,
-		display_node_output
+		0
 	},
 }; // display_node_delegate
 
 
 // --- display Node implementation --------------------------------------------
 
-static NodeOutput
-display_node_output(
-	const Node* self
+static void
+display_node_update(
+	Node* self
 ) {
-	NodeOutput ret = { .rgb_surface = (SDL_Surface*)self->data };
-	return ret;
+	Window* window = (Window*)self->data;
+
+	// Retrieve the input
+	SDL_Surface* src =
+		Node_output(self->inputs[SOURCE_INPUT]).rgb_surface;
+
+	// Blit to the window surface
+	SDL_BlitSurface(src, 0, window->surface, 0);
 }
 
 
@@ -132,13 +138,12 @@ window_domain_setup(
 	if (!window)
 		goto failure;
 
-	self->data = window;
-
 	// Add the display node
 	Node* display_node = Node_new(
 		&(display_node_delegate.name),
-		& display_node_delegate
+		&display_node_delegate
 	);
+	display_node->data = window;
 
 	if (!display_node)
 		goto failure;

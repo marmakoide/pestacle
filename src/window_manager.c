@@ -80,6 +80,18 @@ failure:
 }
 
 
+static void
+Window_update(
+	Window* self
+) {
+	assert(self != 0);
+	assert(self->window != 0);
+
+	SDL_UpdateWindowSurface(self->window);
+}
+
+
+
 // --- WindowManager implementation -------------------------------------------
 
 void
@@ -190,4 +202,15 @@ WindowManager_remove_window(
 
 	// Job done
 	return true;
+}
+
+
+void
+WindowManager_update_windows(
+	WindowManager* self
+) {
+	assert(self != 0);
+
+	for(Window* window = self->head; window != 0; window = window->next)
+		Window_update(window);
 }

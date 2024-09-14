@@ -16,7 +16,7 @@ struct s_Window {
 	SDL_Window* window;
 	SDL_Surface* surface;
 	SDL_Renderer* renderer;
-};
+}; // struct s_Window
 
 
 // --- Window manager definitions ---------------------------------------------
@@ -51,6 +51,12 @@ extern bool
 WindowManager_remove_window(
 	WindowManager* self,
 	Window* window
+);
+
+
+extern void
+WindowManager_update_windows(
+	WindowManager* self
 );
 
 

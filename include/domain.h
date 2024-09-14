@@ -3,8 +3,8 @@
 
 #include "dict.h"
 #include "node.h"
+#include "stack.h"
 #include "window_manager.h"
-#include "string_list.h"
 
 
 struct s_Domain;
@@ -64,6 +64,13 @@ struct s_Domain {
 }; // struct s_Domain
 
 
+extern void
+Domain_print(
+	Domain* self,
+	FILE* out
+);
+
+
 extern Domain*
 Domain_new(
 	const String* name,
@@ -96,7 +103,8 @@ Domain_get_parameter_by_name(
 extern DomainMember*
 Domain_get_member(
 	Domain* self,
-	const StringList* path
+	const String* path,
+	size_t path_len
 );
 
 

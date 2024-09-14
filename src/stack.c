@@ -56,6 +56,34 @@ Stack_destroy(
 
 
 void
+Stack_copy(
+	Stack* self,
+	Stack* other
+) {
+	assert(self != 0);
+	assert(self->data != 0);
+	assert(other != 0);
+	assert(other->data != 0);
+
+	// Extend the stack storage if required
+	if (self->physical_len < other->logical_len) {
+		size_t new_physical_len = 2 * self->physical_len;
+		while(new_physical_len < other->logical_len)
+			new_physical_len *= 2;
+
+		void** new_data = (void**)checked_malloc(new_physical_len * sizeof(void*));
+		self->physical_len = new_physical_len;
+		free(self->data);
+		self->data = new_data;
+	}
+
+	// Copy the data
+	memcpy(self->data, other->data, other->logical_len * sizeof(void*));
+	self->logical_len = other->logical_len;
+}
+
+
+void
 Stack_clear(
 	Stack* self
 ) {

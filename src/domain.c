@@ -3,6 +3,128 @@
 #include "domain.h"
 
 
+// --- DomainMember -----------------------------------------------------------
+
+static void
+DomainMember_print_node_delegate(
+	DomainMember* self,
+	FILE* out,
+	size_t i
+) {
+	const NodeDelegate* node_delegate = self->node_delegate;
+
+	fprintf(
+		out,
+		": node-delegate %s",
+		node_delegate->name.data
+	);
+}
+
+
+static void
+DomainMember_print_domain_delegate(
+	DomainMember* self,
+	FILE* out,
+	size_t i
+) {
+	const DomainDelegate* domain_delegate = self->domain_delegate;
+
+	fprintf(
+		out,
+		": domain-delegate %s",
+		domain_delegate->name.data
+	);
+}
+
+
+static void
+DomainMember_print_node(
+	DomainMember* self,
+	FILE* out,
+	size_t i
+) {
+	Node* node = self->node;
+
+	fprintf(
+		out,
+		": node %s (node-delegate %s)",
+		node->name.data,
+		node->delegate->name.data
+	);
+}
+
+
+static void
+DomainMember_print(
+	DomainMember* self,
+	FILE* out,
+	size_t i
+);
+
+
+static void
+DomainMember_print_domain(
+	DomainMember* self,
+	FILE* out,
+	size_t i
+) {
+	Domain* domain = self->domain;
+
+	DictIterator it;
+	DictIterator_init(&it, &(domain->members));
+	for( ; DictIterator_has_next(&it); DictIterator_next(&it)) {
+		for(size_t j = 4 * i; j != 0; --j)
+			fputc(' ', out);
+
+		DomainMember* member = (DomainMember*)it.entry->value;
+		fprintf(
+			out,
+			"- %s",
+			it.entry->key->data
+		);
+
+		if (member->type == DomainMemberType__domain)
+			fputc('\n', out);
+
+		DomainMember_print(member, out, i + 1);
+
+		if (member->type != DomainMemberType__domain)
+			fputc('\n', out);
+	}
+}
+
+
+static void
+DomainMember_print(
+	DomainMember* self,
+	FILE* out,
+	size_t i
+) {
+	assert(self != 0);
+
+	switch(self->type) {
+		case DomainMemberType__node:
+			DomainMember_print_node(self, out, i);
+			break;
+
+		case DomainMemberType__domain:
+			DomainMember_print_domain(self, out, i);
+			break;
+
+		case DomainMemberType__node_delegate:
+			DomainMember_print_node_delegate(self, out, i);
+			break;
+
+		case DomainMemberType__domain_delegate:
+			DomainMember_print_domain_delegate(self, out, i);
+			break;
+
+		default:
+			assert(0);
+	}
+}
+
+
 // --- DomainDelegate ---------------------------------------------------------
 
 static bool
@@ -163,16 +285,17 @@ Domain_get_parameter_by_name(
 extern DomainMember*
 Domain_get_member(
 	Domain* self,
-	const StringList* path
+	const String* path,
+	size_t path_len
 ) {
 	assert(self != 0);
 	assert(path != 0);
 
 	Domain* current = self;
 	DomainMember* member = 0;
-	const String* name = path->items;
-	for(size_t i = StringList_length(path); i != 0; --i, ++name) {
-		DictEntry* entry = Dict_find(&(current->members), name);
+	const String* name_ptr = path;
+	for(size_t i = path_len; i != 0; --i, ++name_ptr) {
+		DictEntry* entry = Dict_find(&(current->members), name_ptr);
 		if (!entry)
 			return 0;
 			
@@ -187,45 +310,25 @@ Domain_get_member(
 }
 
 
+
 static bool
 Domain_add_member(
 	Domain* self,
+	const String* name,
 	const DomainMember* member
 ) {
 	assert(self != 0);
+	assert(name != 0);
 	assert(member != 0);
 
-	// Get the entry name
-	const String* entry_name;
-	switch(member->type) {
-		case DomainMemberType__node:
-			entry_name = &(member->node->name);
-			break;
-
-		case DomainMemberType__domain:
-			entry_name = &(member->domain->name);
-			break;
-
-		case DomainMemberType__node_delegate:
-			entry_name = &(member->node_delegate->name);
-			break;
-
-		case DomainMemberType__domain_delegate:
-			entry_name = &(member->domain_delegate->name);
-			break;
-
-		default:
-			assert(0);
-	}
-
 	// Insert the new entry
-	DictEntry* entry = Dict_insert(&(self->members), entry_name);
+	DictEntry* entry = Dict_insert(&(self->members), name);
 	if (!entry) {
 		SDL_LogError(
 			SDL_LOG_CATEGORY_SYSTEM,
 			"domain '%s' already have a member named '%s'",
 			self->name.data,
-			entry_name->data
+			name->data
 		);
 		return false;
 	}
@@ -247,13 +350,15 @@ Domain_add_node(
 	Node* node
 ) {
 	assert(self != 0);
+	assert(node != 0);
 
 	DomainMember member = {
 		DomainMemberType__node,
 		{ .node = node }
 	};
 
-	return Domain_add_member(self, &member);
+	return
+		Domain_add_member(self, &(node->name), &member);
 }
 
 
@@ -263,13 +368,15 @@ Domain_add_domain(
 	Domain* domain
 ) {
 	assert(self != 0);
+	assert(domain != 0);
 
 	DomainMember member = {
 		DomainMemberType__domain,
 		{ .domain = domain }
 	};
 
-	return Domain_add_member(self, &member);
+	return
+		Domain_add_member(self, &(domain->name), &member);
 }
 
 
@@ -285,7 +392,8 @@ Domain_add_node_delegate(
 		{ .node_delegate = node_delegate }
 	};
 
-	return Domain_add_member(self, &member);
+	return
+		Domain_add_member(self, &(node_delegate->name), &member);
 }
 
 
@@ -301,5 +409,22 @@ Domain_add_domain_delegate(
 		{ .domain_delegate = domain_delegate }
 	};
 
-	return Domain_add_member(self, &member);
+	return
+		Domain_add_member(self, &(domain_delegate->name), &member);
+}
+
+
+void
+Domain_print(
+	Domain* self,
+	FILE* out
+) {
+	assert(self != 0);
+
+	DomainMember root = {
+		DomainMemberType__domain,
+		{ .domain = self }
+	};
+
+	DomainMember_print(&root, out, 0);
 }

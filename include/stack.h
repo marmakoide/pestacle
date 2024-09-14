@@ -30,6 +30,13 @@ Stack_destroy(
 
 
 extern void
+Stack_copy(
+	Stack* self,
+	Stack* other
+);
+
+
+extern void
 Stack_clear(
 	Stack* self
 );

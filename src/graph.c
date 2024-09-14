@@ -34,8 +34,51 @@ push_node_inputs(Stack* stack, Node* node) {
 }
 
 
+static void
+Domain_gather_node_with_type(
+	Domain* self,
+	Stack* out,
+	enum NodeType node_type
+) {
+	DictIterator it;
+
+	DomainMember root = {
+		DomainMemberType__domain,
+		{ .domain = self }
+	};
+
+	Stack stack;
+	Stack_init(&stack);
+	
+	Stack_push(&stack, &root);
+	while(!Stack_empty(&stack)) {
+		DomainMember* member = (DomainMember*)Stack_pop(&stack);
+		switch(member->type) {
+			case DomainMemberType__node:
+				if (member->node->delegate->type == node_type)
+					Stack_push(out, member->node);
+				break;
+
+			case DomainMemberType__domain:
+				DictIterator_init(&it, &(member->domain->members));
+				for( ; DictIterator_has_next(&it); DictIterator_next(&it))
+					Stack_push(&stack, it.entry->value);
+				break;
+
+			default:
+				break;
+		}
+	}
+
+	Stack_destroy(&stack);
+}
+
+
 static bool
-Graph_topological_sort(Graph* self) {
+Graph_topological_sort(
+	Graph* self,
+	Stack* root_nodes
+) {
 	bool ret = true;
 
 	Stack stack;
@@ -44,22 +87,10 @@ Graph_topological_sort(Graph* self) {
 	Dict visited;
 	Dict_init(&visited);
 
-	// Get the root node
-	const String root_node_name = { "main", 5 };
-	Node* root = Graph_get_node(self, &root_node_name);
-	if (!root) {
-		SDL_LogError(
-			SDL_LOG_CATEGORY_SYSTEM,
-			"no 'main' node defined\n"
-		);
-		ret = false;
-		goto termination;
-	}
-
 	// Count the size of the component corresponding to the root node
 	size_t component_size = 0;
 
-	Stack_push(&stack, root);
+	Stack_copy(&stack, root_nodes);
 	while(!Stack_empty(&stack)) {
 		Node* node = (Node*)Stack_pop(&stack);
 
@@ -79,7 +110,7 @@ Graph_topological_sort(Graph* self) {
 	self->sorted_nodes = (Node**)checked_malloc(component_size * sizeof(Node*));
 	Node** sorted_node_ptr = self->sorted_nodes;
 
-	Stack_push(&stack, root);
+	Stack_copy(&stack, root_nodes);
 	while(!Stack_empty(&stack)) {
 		Node* node = (Node*)Stack_pop(&stack);
 
@@ -93,22 +124,44 @@ Graph_topological_sort(Graph* self) {
 	}
 
 	// Job done
-termination:
 	Dict_destroy(&visited);
 	Stack_destroy(&stack);
 	return ret;
 }
 
 
-void
+bool
 Graph_init(
-	Graph* self
+	Graph* self,
+	Domain* domain
 ) {
 	assert(self != 0);
 
-	Dict_init(&(self->node_dict));
+	// Initialize members
 	self->sorted_node_count = 0;
 	self->sorted_nodes = 0;
+
+	// Gather root nodes
+	Stack root_nodes;
+	Stack_init(&root_nodes);
+	Domain_gather_node_with_type(domain, &root_nodes, NodeType__void);
+
+	// Sort the nodes
+	if (!Graph_topological_sort(self, &root_nodes))
+		goto failure;
+
+	// Check validity
+	if (!Graph_check_graph_is_complete(self))
+		goto failure;
+
+	// Job done
+	Stack_destroy(&root_nodes);
+	return true;
+
+failure:
+	Stack_destroy(&root_nodes);
+	Graph_destroy(self);
+	return false;
 }
 
 
@@ -116,7 +169,6 @@ void
 Graph_destroy(
 	Graph* self
 ) {
-	// Deallocate sorted node dictionary
 	if (self->sorted_nodes) {
 		free(self->sorted_nodes);
 
@@ -125,59 +177,6 @@ Graph_destroy(
 		self->sorted_nodes = 0;
 		#endif
 	}
-
-	// Deallocate all nodes
-	DictIterator it;
-	DictIterator_init(&it, &(self->node_dict));
-	for( ; DictIterator_has_next(&it); DictIterator_next(&it)) {
-		Node* node = (Node*)it.entry->value;
-		Node_destroy(node);
-		free(node);
-	}
-
-	// Deallocate node dictionary
-	Dict_destroy(&(self->node_dict)); 
-}
-
-
-Node*
-Graph_get_node(
-	Graph* self,
-	const String* name
-) {
-	assert(self != 0);
-	assert(name != 0);
-	assert(name->data != 0);
-
-	DictEntry* entry = Dict_find(&(self->node_dict), name);
-	if (!entry)
-		return 0;
-
-	return (Node*)entry->value;
-}
-
-
-
-Node*
-Graph_add_node(
-	Graph* self,
-	const String* name,
-	const NodeDelegate* delegate
-) {
-	assert(self != 0);
-	assert(name != 0);
-	assert(delegate != 0);
-
-	// Check that there is no node with that name already
-	if (!Dict_find(&(self->node_dict), name)) {
-		// Create and add a new node
-		Node* node = Node_new(name, delegate);
-		Dict_insert(&(self->node_dict), &(node->name))->value = node;
-		return node;
-	}
-
-	// Job done
-	return 0;
 }
 
 
@@ -185,37 +184,12 @@ bool
 Graph_setup(
 	Graph* self
 ) {
-	assert(self != 0);
-
-	// Setup the graph
-	if (!Graph_topological_sort(self))
-		goto failure;
-
-	if (!Graph_check_graph_is_complete(self))
-		goto failure;
-
-	// Check that the root node have proper type
-	if (self->sorted_nodes[0]->delegate->type != NodeType__rgb_surface) {
-		SDL_LogError(
-			SDL_LOG_CATEGORY_SYSTEM,
-			"'main' node output type is not rgb_surface\n"
-		);
-		goto failure;
-	}
-
-	// Setup the nodes in reverse topological order
 	Node** node_ptr = self->sorted_nodes + self->sorted_node_count - 1;
 	for(size_t i = self->sorted_node_count; i != 0; --i, --node_ptr)
 		if (!Node_setup(*node_ptr))
-			goto failure;
+			return false;
 
-	// Job done
 	return true;
-
-	// Failure handling
-failure:
-	Graph_destroy(self);
-	return false;
 }
 
 
@@ -227,14 +201,6 @@ Graph_handle_event(
 	Node** node_ptr = self->sorted_nodes;
 	for(size_t i = self->sorted_node_count; i != 0; --i, ++node_ptr)
 		Node_handle_event(*node_ptr, event);
-}
-
-
-SDL_Surface*
-Graph_output(
-	const Graph* self
-) {
-	return Node_output(self->sorted_nodes[0]).rgb_surface;
 }
 
 
