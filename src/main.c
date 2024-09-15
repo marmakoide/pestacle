@@ -4,8 +4,8 @@
 #include <SDL.h>
 #include "graph.h"
 #include "event.h"
-#include "domain.h"
-#include "root_domain.h"
+#include "scope.h"
+#include "root_scope.h"
 #include "parser/parser.h"
 #include "window_manager.h"
 
@@ -17,7 +17,7 @@ bool quit = false;
 //static SDL_mutex* graph_state_mutex = 0;
 
 Graph graph;
-Domain* root_domain = 0;
+Scope* root_scope = 0;
 WindowManager window_manager;
 
 /*
@@ -43,7 +43,7 @@ static bool
 load_config() {
 	Lexer lexer;
 	Lexer_init(&lexer, stdin);
-	return Parser_parse(&lexer, root_domain, &window_manager);
+	return Parser_parse(&lexer, root_scope, &window_manager);
 }
 
 
@@ -67,13 +67,13 @@ main(int argc, char* argv[]) {
 	// Initialize the window manager
 	WindowManager_init(&window_manager);
 
-	// Initialize root domain
-	root_domain = Domain_new(
-		&(root_domain_delegate.name),
-		&root_domain_delegate
+	// Initialize root scope
+	root_scope = Scope_new(
+		&(root_scope_delegate.name),
+		&root_scope_delegate
 	);
 
-	if (!Domain_setup(root_domain, &window_manager))
+	if (!Scope_setup(root_scope, &window_manager))
 		goto termination;
 
 	// Load configuraiton
@@ -81,7 +81,7 @@ main(int argc, char* argv[]) {
 		goto termination;
 
 	// Initialize the graph
-	if (!Graph_init(&graph, root_domain))
+	if (!Graph_init(&graph, root_scope))
 		goto termination;
 
 	if (!Graph_setup(&graph))
@@ -173,7 +173,7 @@ termination:
 	//if (graph_update_timer)
 	//	SDL_RemoveTimer(graph_update_timer);
 
-	Domain_destroy(root_domain);
+	Scope_destroy(root_scope);
 
 	Graph_destroy(&graph);
 

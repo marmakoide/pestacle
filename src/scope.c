@@ -1,13 +1,13 @@
 #include <assert.h>
 #include "memory.h"
-#include "domain.h"
+#include "scope.h"
 
 
-// --- DomainMember -----------------------------------------------------------
+// --- ScopeMember ------------------------------------------------------------
 
 static void
-DomainMember_print_node_delegate(
-	DomainMember* self,
+ScopeMember_print_node_delegate(
+	ScopeMember* self,
 	FILE* out,
 	size_t i
 ) {
@@ -22,24 +22,24 @@ DomainMember_print_node_delegate(
 
 
 static void
-DomainMember_print_domain_delegate(
-	DomainMember* self,
+ScopeMember_print_scope_delegate(
+	ScopeMember* self,
 	FILE* out,
 	size_t i
 ) {
-	const DomainDelegate* domain_delegate = self->domain_delegate;
+	const ScopeDelegate* scope_delegate = self->scope_delegate;
 
 	fprintf(
 		out,
-		": domain-delegate %s",
-		domain_delegate->name.data
+		": scope-delegate %s",
+		scope_delegate->name.data
 	);
 }
 
 
 static void
-DomainMember_print_node(
-	DomainMember* self,
+ScopeMember_print_node(
+	ScopeMember* self,
 	FILE* out,
 	size_t i
 ) {
@@ -55,68 +55,68 @@ DomainMember_print_node(
 
 
 static void
-DomainMember_print(
-	DomainMember* self,
+ScopeMember_print(
+	ScopeMember* self,
 	FILE* out,
 	size_t i
 );
 
 
 static void
-DomainMember_print_domain(
-	DomainMember* self,
+ScopeMember_print_scope(
+	ScopeMember* self,
 	FILE* out,
 	size_t i
 ) {
-	Domain* domain = self->domain;
+	Scope* scope = self->scope;
 
 	DictIterator it;
-	DictIterator_init(&it, &(domain->members));
+	DictIterator_init(&it, &(scope->members));
 	for( ; DictIterator_has_next(&it); DictIterator_next(&it)) {
 		for(size_t j = 4 * i; j != 0; --j)
 			fputc(' ', out);
 
-		DomainMember* member = (DomainMember*)it.entry->value;
+		ScopeMember* member = (ScopeMember*)it.entry->value;
 		fprintf(
 			out,
 			"- %s",
 			it.entry->key->data
 		);
 
-		if (member->type == DomainMemberType__domain)
+		if (member->type == ScopeMemberType__scope)
 			fputc('\n', out);
 
-		DomainMember_print(member, out, i + 1);
+		ScopeMember_print(member, out, i + 1);
 
-		if (member->type != DomainMemberType__domain)
+		if (member->type != ScopeMemberType__scope)
 			fputc('\n', out);
 	}
 }
 
 
 static void
-DomainMember_print(
-	DomainMember* self,
+ScopeMember_print(
+	ScopeMember* self,
 	FILE* out,
 	size_t i
 ) {
 	assert(self != 0);
 
 	switch(self->type) {
-		case DomainMemberType__node:
-			DomainMember_print_node(self, out, i);
+		case ScopeMemberType__node:
+			ScopeMember_print_node(self, out, i);
 			break;
 
-		case DomainMemberType__domain:
-			DomainMember_print_domain(self, out, i);
+		case ScopeMemberType__scope:
+			ScopeMember_print_scope(self, out, i);
 			break;
 
-		case DomainMemberType__node_delegate:
-			DomainMember_print_node_delegate(self, out, i);
+		case ScopeMemberType__node_delegate:
+			ScopeMember_print_node_delegate(self, out, i);
 			break;
 
-		case DomainMemberType__domain_delegate:
-			DomainMember_print_domain_delegate(self, out, i);
+		case ScopeMemberType__scope_delegate:
+			ScopeMember_print_scope_delegate(self, out, i);
 			break;
 
 		default:
@@ -125,11 +125,11 @@ DomainMember_print(
 }
 
 
-// --- DomainDelegate ---------------------------------------------------------
+// --- ScopeDelegate ----------------------------------------------------------
 
 static bool
-DomainDelegate_has_parameters(
-	const DomainDelegate* self
+ScopeDelegate_has_parameters(
+	const ScopeDelegate* self
 ) {
 	assert(self != 0);
 
@@ -138,8 +138,8 @@ DomainDelegate_has_parameters(
 
 
 static size_t
-DomainDelegate_parameter_count(
-	const DomainDelegate* self
+ScopeDelegate_parameter_count(
+	const ScopeDelegate* self
 ) {
 	assert(self != 0);
 
@@ -151,17 +151,17 @@ DomainDelegate_parameter_count(
 }
 
 
-// --- Domain -----------------------------------------------------------------
+// --- Scope ------------------------------------------------------------------
 
-Domain*
-Domain_new(
+Scope*
+Scope_new(
 	const String* name,
-	const DomainDelegate* delegate
+	const ScopeDelegate* delegate
 ) {
 	assert(delegate != 0);
 
 	// Allocate
-	Domain* ret = (Domain*)checked_malloc(sizeof(Domain));
+	Scope* ret = (Scope*)checked_malloc(sizeof(Scope));
 
 	// Setup
 	ret->data = 0;
@@ -172,10 +172,10 @@ Domain_new(
 	Dict_init(&(ret->members));
 
 	// Setup parameters array
-	if (DomainDelegate_has_parameters(delegate))
+	if (ScopeDelegate_has_parameters(delegate))
 		ret->parameters = 0;
 	else {
-		size_t parameter_count = DomainDelegate_parameter_count(delegate);
+		size_t parameter_count = ScopeDelegate_parameter_count(delegate);
 		
 		ret->parameters =
 			(ParameterValue*)checked_malloc(parameter_count * sizeof(ParameterValue));
@@ -196,8 +196,8 @@ Domain_new(
 
 
 void
-Domain_destroy(
-	Domain* self
+Scope_destroy(
+	Scope* self
 ) {
 	assert(self != 0);
 	assert(self->delegate != 0);
@@ -211,7 +211,7 @@ Domain_destroy(
 	DictIterator it;
 	DictIterator_init(&it, &(self->members));
 	for( ; DictIterator_has_next(&it); DictIterator_next(&it)) {
-		DomainMember* member = (DomainMember*)it.entry->value;
+		ScopeMember* member = (ScopeMember*)it.entry->value;
 		free(member);
 	}
 
@@ -226,7 +226,7 @@ Domain_destroy(
 			String_destroy(&(param->string_value));
 	}
 
-	if (DomainDelegate_has_parameters(self->delegate))
+	if (ScopeDelegate_has_parameters(self->delegate))
 		free(self->parameters);
 
 	#ifdef DEBUG
@@ -239,8 +239,8 @@ Domain_destroy(
 
 
 bool
-Domain_setup(
-	Domain* self,
+Scope_setup(
+	Scope* self,
 	WindowManager* window_manager
 ) {
 	assert(self != 0);
@@ -254,8 +254,8 @@ Domain_setup(
 
 
 bool
-Domain_get_parameter_by_name(
-	Domain* self,
+Scope_get_parameter_by_name(
+	Scope* self,
 	const String* name,
 	const ParameterDefinition** param_def_ptr,
 	ParameterValue** param_value_ptr
@@ -282,28 +282,28 @@ Domain_get_parameter_by_name(
 }
 
 
-extern DomainMember*
-Domain_get_member(
-	Domain* self,
+extern ScopeMember*
+Scope_get_member(
+	Scope* self,
 	const String* path,
 	size_t path_len
 ) {
 	assert(self != 0);
 	assert(path != 0);
 
-	Domain* current = self;
-	DomainMember* member = 0;
+	Scope* current = self;
+	ScopeMember* member = 0;
 	const String* name_ptr = path;
 	for(size_t i = path_len; i != 0; --i, ++name_ptr) {
 		DictEntry* entry = Dict_find(&(current->members), name_ptr);
 		if (!entry)
 			return 0;
 			
-		member = (DomainMember*)entry->value;
-		if ((i > 1) && (member->type != DomainMemberType__domain))
+		member = (ScopeMember*)entry->value;
+		if ((i > 1) && (member->type != ScopeMemberType__scope))
 			return 0;
 
-		current = member->domain;
+		current = member->scope;
 	}
 
 	return member;
@@ -312,10 +312,10 @@ Domain_get_member(
 
 
 static bool
-Domain_add_member(
-	Domain* self,
+Scope_add_member(
+	Scope* self,
 	const String* name,
-	const DomainMember* member
+	const ScopeMember* member
 ) {
 	assert(self != 0);
 	assert(name != 0);
@@ -326,15 +326,15 @@ Domain_add_member(
 	if (!entry) {
 		SDL_LogError(
 			SDL_LOG_CATEGORY_SYSTEM,
-			"domain '%s' already have a member named '%s'",
+			"scope '%s' already have a member named '%s'",
 			self->name.data,
 			name->data
 		);
 		return false;
 	}
 
-	DomainMember* member_copy =
-		(DomainMember*)checked_malloc(sizeof(DomainMember));
+	ScopeMember* member_copy =
+		(ScopeMember*)checked_malloc(sizeof(ScopeMember));
 	*member_copy = *member;
 
 	entry->value = member_copy;
@@ -345,86 +345,86 @@ Domain_add_member(
 
 
 bool
-Domain_add_node(
-	Domain* self,
+Scope_add_node(
+	Scope* self,
 	Node* node
 ) {
 	assert(self != 0);
 	assert(node != 0);
 
-	DomainMember member = {
-		DomainMemberType__node,
+	ScopeMember member = {
+		ScopeMemberType__node,
 		{ .node = node }
 	};
 
 	return
-		Domain_add_member(self, &(node->name), &member);
+		Scope_add_member(self, &(node->name), &member);
 }
 
 
 bool
-Domain_add_domain(
-	Domain* self,
-	Domain* domain
+Scope_add_scope(
+	Scope* self,
+	Scope* scope
 ) {
 	assert(self != 0);
-	assert(domain != 0);
+	assert(scope != 0);
 
-	DomainMember member = {
-		DomainMemberType__domain,
-		{ .domain = domain }
+	ScopeMember member = {
+		ScopeMemberType__scope,
+		{ .scope = scope }
 	};
 
 	return
-		Domain_add_member(self, &(domain->name), &member);
+		Scope_add_member(self, &(scope->name), &member);
 }
 
 
 bool
-Domain_add_node_delegate(
-	Domain* self,
+Scope_add_node_delegate(
+	Scope* self,
 	const NodeDelegate* node_delegate
 ) {
 	assert(self != 0);
 
-	DomainMember member = {
-		DomainMemberType__node_delegate,
+	ScopeMember member = {
+		ScopeMemberType__node_delegate,
 		{ .node_delegate = node_delegate }
 	};
 
 	return
-		Domain_add_member(self, &(node_delegate->name), &member);
+		Scope_add_member(self, &(node_delegate->name), &member);
 }
 
 
 bool
-Domain_add_domain_delegate(
-	Domain* self,
-	const DomainDelegate* domain_delegate
+Scope_add_scope_delegate(
+	Scope* self,
+	const ScopeDelegate* scope_delegate
 ) {
 	assert(self != 0);
 
-	DomainMember member = {
-		DomainMemberType__domain_delegate,
-		{ .domain_delegate = domain_delegate }
+	ScopeMember member = {
+		ScopeMemberType__scope_delegate,
+		{ .scope_delegate = scope_delegate }
 	};
 
 	return
-		Domain_add_member(self, &(domain_delegate->name), &member);
+		Scope_add_member(self, &(scope_delegate->name), &member);
 }
 
 
 void
-Domain_print(
-	Domain* self,
+Scope_print(
+	Scope* self,
 	FILE* out
 ) {
 	assert(self != 0);
 
-	DomainMember root = {
-		DomainMemberType__domain,
-		{ .domain = self }
+	ScopeMember root = {
+		ScopeMemberType__scope,
+		{ .scope = self }
 	};
 
-	DomainMember_print(&root, out, 0);
+	ScopeMember_print(&root, out, 0);
 }

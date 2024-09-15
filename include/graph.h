@@ -4,7 +4,7 @@
 #include <SDL.h>
 #include "vector.h"
 #include "matrix.h"
-#include "domain.h"
+#include "scope.h"
 
 typedef struct {
 	size_t sorted_node_count;
@@ -15,7 +15,7 @@ typedef struct {
 extern bool
 Graph_init(
 	Graph* self,
-	Domain* domain
+	Scope* scope
 );
 
 

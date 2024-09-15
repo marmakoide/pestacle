@@ -1,4 +1,4 @@
-#include "domains/window.h"
+#include "scopes/window.h"
 #include "memory.h"
 
 
@@ -62,22 +62,22 @@ display_node_update(
 }
 
 
-// --- window Domain interface ------------------------------------------------
+// --- window Scope interface ------------------------------------------------
 
 static bool
-window_domain_setup(
-	Domain* self,
+window_scope_setup(
+	Scope* self,
 	WindowManager* window_manager
 );
 
 
 static void
-window_domain_destroy(
-	Domain* self
+window_scope_destroy(
+	Scope* self
 );
 
 
-// --- window Domain implementation -------------------------------------------
+// --- window Scope implementation -------------------------------------------
 
 
 #define WIDTH_PARAMETER  0
@@ -85,7 +85,7 @@ window_domain_destroy(
 #define TITLE_PARAMETER  2
 
 static const ParameterDefinition
-window_domain_parameters[] = {
+window_scope_parameters[] = {
 	{
 		ParameterType__integer,
 		{ "width", 6 },
@@ -102,23 +102,23 @@ window_domain_parameters[] = {
 		{ .string_value = { "pestacle", 9 } }
 	},
 	{ ParameterType__last }
-}; // window_domain_parameters
+}; // window_scope_parameters
 
 
-const DomainDelegate
-window_domain_delegate = {
+const ScopeDelegate
+window_scope_delegate = {
 	{ "window", 7 },
-	window_domain_parameters,
+	window_scope_parameters,
 	{
-		window_domain_setup,
-		window_domain_destroy
+		window_scope_setup,
+		window_scope_destroy
 	},
-}; // window_domain_delegate
+}; // window_scope_delegate
 
 
 static bool
-window_domain_setup(
-	Domain* self,
+window_scope_setup(
+	Scope* self,
 	WindowManager* window_manager
 ) {
 	// Retrieve the parameters
@@ -148,7 +148,7 @@ window_domain_setup(
 	if (!display_node)
 		goto failure;
 
-	if (!Domain_add_node(self, display_node))
+	if (!Scope_add_node(self, display_node))
 		goto failure;
 
 	// Job done
@@ -163,8 +163,8 @@ failure:
 
 
 static void
-window_domain_destroy(
-	Domain* self
+window_scope_destroy(
+	Scope* self
 ) {
 	
 }

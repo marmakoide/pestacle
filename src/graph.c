@@ -35,16 +35,16 @@ push_node_inputs(Stack* stack, Node* node) {
 
 
 static void
-Domain_gather_node_with_type(
-	Domain* self,
+Scope_gather_node_with_type(
+	Scope* self,
 	Stack* out,
 	enum NodeType node_type
 ) {
 	DictIterator it;
 
-	DomainMember root = {
-		DomainMemberType__domain,
-		{ .domain = self }
+	ScopeMember root = {
+		ScopeMemberType__scope,
+		{ .scope = self }
 	};
 
 	Stack stack;
@@ -52,15 +52,15 @@ Domain_gather_node_with_type(
 	
 	Stack_push(&stack, &root);
 	while(!Stack_empty(&stack)) {
-		DomainMember* member = (DomainMember*)Stack_pop(&stack);
+		ScopeMember* member = (ScopeMember*)Stack_pop(&stack);
 		switch(member->type) {
-			case DomainMemberType__node:
+			case ScopeMemberType__node:
 				if (member->node->delegate->type == node_type)
 					Stack_push(out, member->node);
 				break;
 
-			case DomainMemberType__domain:
-				DictIterator_init(&it, &(member->domain->members));
+			case ScopeMemberType__scope:
+				DictIterator_init(&it, &(member->scope->members));
 				for( ; DictIterator_has_next(&it); DictIterator_next(&it))
 					Stack_push(&stack, it.entry->value);
 				break;
@@ -133,7 +133,7 @@ Graph_topological_sort(
 bool
 Graph_init(
 	Graph* self,
-	Domain* domain
+	Scope* scope
 ) {
 	assert(self != 0);
 
@@ -144,7 +144,7 @@ Graph_init(
 	// Gather root nodes
 	Stack root_nodes;
 	Stack_init(&root_nodes);
-	Domain_gather_node_with_type(domain, &root_nodes, NodeType__void);
+	Scope_gather_node_with_type(scope, &root_nodes, NodeType__void);
 
 	// Sort the nodes
 	if (!Graph_topological_sort(self, &root_nodes))

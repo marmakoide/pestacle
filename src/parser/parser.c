@@ -10,7 +10,7 @@
 
 typedef struct {
 	Lexer* lexer;
-	Domain* domain;
+	Scope* scope;
 	WindowManager* window_manager;
 } ParseContext;
 
@@ -19,16 +19,16 @@ static void
 ParseContext_init(
 	ParseContext* self,
 	Lexer* lexer,
-	Domain* domain,
+	Scope* scope,
 	WindowManager* window_manager
 ) {
 	assert(self != 0);
 	assert(lexer != 0);
-	assert(domain != 0);
+	assert(scope != 0);
 	assert(window_manager != 0);
 
 	self->lexer = lexer;
-	self->domain = domain;
+	self->scope = scope;
 	self->window_manager = window_manager;
 }
 
@@ -41,7 +41,7 @@ ParseContext_destroy(
 
 	#ifdef DEBUG
 	self->lexer = 0;
-	self->domain = 0;
+	self->scope = 0;
 	self->window_manager = 0;
 	#endif
 }
@@ -55,8 +55,8 @@ Parser_get_node(
 	const String* path,
 	size_t path_len
 ) {
-	DomainMember* member =
-		Domain_get_member(context->domain, path, path_len);
+	ScopeMember* member =
+		Scope_get_member(context->scope, path, path_len);
 
 	if (!member) {
 		SDL_LogError(
@@ -67,7 +67,7 @@ Parser_get_node(
 		return 0;
 	}
 
-	if (member->type != DomainMemberType__node) {
+	if (member->type != ScopeMemberType__node) {
 		SDL_LogError(
 			SDL_LOG_CATEGORY_SYSTEM,
 			"line %d : path is not a node\n",
@@ -88,11 +88,11 @@ Parser_get_node(
 bool
 Parser_parse_parameter(
 	ParseContext* context,
-	DomainMember* member
+	ScopeMember* member
 ) {
 	assert(
-		(member->type == DomainMemberType__node) ||
-		(member->type == DomainMemberType__domain)
+		(member->type == ScopeMemberType__node) ||
+		(member->type == ScopeMemberType__scope)
 	);
 
 	bool ret = true;
@@ -112,7 +112,7 @@ Parser_parse_parameter(
 	ParameterValue* param_value = 0;
 	ParameterDefinition const* param_def = 0;
 
-	if (member->type == DomainMemberType__node) {
+	if (member->type == ScopeMemberType__node) {
 		Node* node = member->node;
 		if (!Node_get_parameter_by_name(node, &name_str, &param_def, &param_value)) {
 			SDL_LogError(
@@ -126,14 +126,14 @@ Parser_parse_parameter(
 			goto termination;
 		}
 	}
-	else if (member->type == DomainMemberType__domain) {
-		Domain* domain = member->domain;
-		if (!Domain_get_parameter_by_name(domain, &name_str, &param_def, &param_value)) {
+	else if (member->type == ScopeMemberType__scope) {
+		Scope* scope = member->scope;
+		if (!Scope_get_parameter_by_name(scope, &name_str, &param_def, &param_value)) {
 			SDL_LogError(
 				SDL_LOG_CATEGORY_SYSTEM,
-				"line %d : domain '%s' does not have a '%s' parameter\n",
+				"line %d : scope '%s' does not have a '%s' parameter\n",
 				context->lexer->token.location.line + 1,
-				domain->name.data,
+				scope->name.data,
 				name_str.data
 			);
 			ret = false;
@@ -210,7 +210,7 @@ termination:
 bool
 Parser_parse_parameter_list(
 	ParseContext* context,
-	DomainMember* member
+	ScopeMember* member
 ) {
 	bool ret = true;
 
@@ -319,8 +319,8 @@ Parser_parse_instanciation(
 	}
 
 	// Check that the name is not taken already
-	if (Domain_get_member(
-		context->domain,
+	if (Scope_get_member(
+		context->scope,
 		StringList_items(left_path),
 		StringList_length(left_path)
 	)) {
@@ -334,9 +334,9 @@ Parser_parse_instanciation(
 	}
 	
 	// Evaluate the path
-	DomainMember* builder = 
-		Domain_get_member(
-			context->domain,
+	ScopeMember* builder = 
+		Scope_get_member(
+			context->scope,
 			StringList_items(&right_path),
 			StringList_length(&right_path)
 		);
@@ -352,11 +352,11 @@ Parser_parse_instanciation(
 	}
 
 	// Check that the path leads to a builder
-	if ((builder->type != DomainMemberType__node_delegate) &&
-	    (builder->type != DomainMemberType__domain_delegate)) {  // TODO : invalid path should be printed
+	if ((builder->type != ScopeMemberType__node_delegate) &&
+	    (builder->type != ScopeMemberType__scope_delegate)) {  // TODO : invalid path should be printed
 		SDL_LogError(
 			SDL_LOG_CATEGORY_SYSTEM,
-			"line %d : path is not a node delegate or a domain delegate\n",
+			"line %d : path is not a node delegate or a scope delegate\n",
 			context->lexer->token.location.line + 1
 		);
 		ret = false;
@@ -364,14 +364,14 @@ Parser_parse_instanciation(
 	}
 
 	// Call the constructor
-	if (builder->type == DomainMemberType__node_delegate) {
+	if (builder->type == ScopeMemberType__node_delegate) {
 		// Build the node
 		Node* node = 
 			Node_new(StringList_at(left_path, 0), builder->node_delegate);
 
 		// Parse parameters
-		DomainMember constructor_output = {
-			DomainMemberType__node,
+		ScopeMember constructor_output = {
+			ScopeMemberType__node,
 			{ .node = node }
 		};
 
@@ -380,27 +380,27 @@ Parser_parse_instanciation(
 			goto termination;
 		}
 
-		// Add the node to the root domain
-		Domain_add_node(context->domain, node);
+		// Add the node to the root scope
+		Scope_add_node(context->scope, node);
 		
 	}
-	else if (builder->type == DomainMemberType__domain_delegate) {
-		// Build the domain
-		Domain* domain =
-			Domain_new(
+	else if (builder->type == ScopeMemberType__scope_delegate) {
+		// Build the scope
+		Scope* scope =
+			Scope_new(
 				StringList_at(left_path, 0),
-				builder->domain_delegate
+				builder->scope_delegate
 			);
 
-		if (!domain) {
+		if (!scope) {
 			ret = false;
 			goto termination;
 		}
 
 		// Parse parameters
-		DomainMember constructor_output = {
-			DomainMemberType__domain,
-			{ .domain = domain }
+		ScopeMember constructor_output = {
+			ScopeMemberType__scope,
+			{ .scope = scope }
 		};
 
 		if (!Parser_parse_parameter_list(context, &constructor_output)) {
@@ -408,11 +408,11 @@ Parser_parse_instanciation(
 			goto termination;
 		}
 
-		// Add the newly build domain
-		if (!Domain_setup(domain, context->window_manager))
+		// Add the newly build scope
+		if (!Scope_setup(scope, context->window_manager))
 			goto termination;
 
-		Domain_add_domain(context->domain, domain);
+		Scope_add_scope(context->scope, scope);
 
 	}
 termination:
@@ -580,11 +580,11 @@ Parser_parse_statement_list(
 bool
 Parser_parse(
 	Lexer* lexer,
-	Domain* domain,
+	Scope* scope,
 	WindowManager* window_manager
 ) {
 	ParseContext context;
-	ParseContext_init(&context, lexer, domain, window_manager);
+	ParseContext_init(&context, lexer, scope, window_manager);
 
 	bool ret = Parser_parse_statement_list(&context);
 
