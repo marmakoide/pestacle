@@ -1,6 +1,11 @@
 #ifndef PESTACLE_STRING_LIST_H
 #define PESTACLE_STRING_LIST_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 #include <stdio.h>
 #include "strings.h"
 
@@ -68,5 +73,9 @@ StringList_append(
 	const String* str
 );
 
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* PESTACLE_STRING_LIST_H */

@@ -1,6 +1,11 @@
 #ifndef PESTACLE_SCOPE_H
 #define PESTACLE_SCOPE_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 #include "dict.h"
 #include "node.h"
 #include "stack.h"
@@ -135,5 +140,9 @@ Scope_add_scope_delegate(
 	const ScopeDelegate* scope_delegate
 );
 
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* PESTACLE_SCOPE_H */

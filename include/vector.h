@@ -1,6 +1,11 @@
 #ifndef PESTACLE_VECTOR_H
 #define PESTACLE_VECTOR_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 #include "array_ops.h"
 
 
@@ -146,5 +151,9 @@ Vector_convolution(
 	Vector* out
 );
 
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* PESTACLE_VECTOR_H */

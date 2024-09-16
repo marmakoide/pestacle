@@ -1,6 +1,11 @@
 #ifndef PESTACLE_STACK_H
 #define PESTACLE_STACK_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 /******************************************************************************
   Implementation of a stack, that will extend itself as needed
  *****************************************************************************/
@@ -72,5 +77,9 @@ Stack_length(
 	const Stack* self
 );
 
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* PESTACLE_STACK_H */

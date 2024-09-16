@@ -1,6 +1,11 @@
 #ifndef PESTACLE_EVENT_H
 #define PESTACLE_EVENT_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 #include <SDL.h>
 #include "array_ops.h"
 
@@ -78,5 +83,9 @@ cast_mouse_motion_event(
 	Event* dst
 );
 
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* PESTACLE_EVENT_H */

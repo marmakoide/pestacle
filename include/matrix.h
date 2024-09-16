@@ -1,6 +1,11 @@
 #ifndef PESTACLE_MATRIX_H
 #define PESTACLE_MATRIX_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 #include "vector.h"
 
 // col major matrix
@@ -133,5 +138,9 @@ Matrix_colwise_convolution(
 	Matrix* out
 );
 
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* PESTACLE_MATRIX_H */

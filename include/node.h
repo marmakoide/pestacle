@@ -1,6 +1,11 @@
 #ifndef PESTACLE_NODE_H
 #define PESTACLE_NODE_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 #include <SDL.h>
 #include "event.h"
 #include "matrix.h"
@@ -189,5 +194,9 @@ Node_output(
 	Node* self
 );
 
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* PESTACLE_NODE_H */

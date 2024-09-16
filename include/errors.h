@@ -1,6 +1,11 @@
 #ifndef PESTACLE_ERRORS_H
 #define PESTACLE_ERRORS_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 #include <stdnoreturn.h>
 #include "file_location.h"
 
@@ -21,4 +26,8 @@ handle_processing_error(
 );
 
 
-#endif // PESTACLE_ERRORS_H 
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* PESTACLE_ERRORS_H */

@@ -1,6 +1,11 @@
 #ifndef PESTACLE_GRAPH_H
 #define PESTACLE_GRAPH_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 #include <SDL.h>
 #include "vector.h"
 #include "matrix.h"
@@ -43,5 +48,9 @@ Graph_update(
 	Graph* self
 );
 
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* PESTACLE_GRAPH_H */ 

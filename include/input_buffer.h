@@ -1,6 +1,11 @@
 #ifndef PESTACLE_INPUT_BUFFER_H
 #define PESTACLE_INPUT_BUFFER_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 /******************************************************************************
   Buffered file reader : provides bytes from a file one by one, but the
   the file is read page per page.
@@ -50,5 +55,9 @@ InputBuffer_get(
 	const InputBuffer* self
 );
 
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* PESTACLE_INPUT_BUFFER_H */

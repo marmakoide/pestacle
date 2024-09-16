@@ -1,6 +1,11 @@
 #ifndef PESTACLE_WINDOW_MANAGER_H
 #define PESTACLE_WINDOW_MANAGER_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 #include <SDL.h>
 
 
@@ -60,4 +65,8 @@ WindowManager_update_windows(
 );
 
 
-#endif /* #define PESTACLE_WINDOW_MANAGER_H */
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* PESTACLE_WINDOW_MANAGER_H */

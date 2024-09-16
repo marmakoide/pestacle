@@ -1,6 +1,11 @@
 #ifndef PESTACLE_ARRAY_OPS_H
 #define PESTACLE_ARRAY_OPS_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 #include <stddef.h>
 #include <stdio.h>
 #include "real.h"
@@ -165,5 +170,9 @@ array_ops_strided_convolution(
 	size_t src_stride
 );
 
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* PESTACLE_ARRAY_OPS_H */

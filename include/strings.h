@@ -1,6 +1,11 @@
 #ifndef PESTACLE_STRING_H
 #define PESTACLE_STRING_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 /******************************************************************************
   Implementation of strings.
   The main reason to not just use raw char arrays is to avoid using functions
@@ -44,5 +49,9 @@ String_equals(
 	const String *restrict other
 );
 
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* PESTACLE_STRING_H */

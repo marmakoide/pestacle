@@ -1,6 +1,11 @@
 #ifndef PESTACLE_PARAMETER_H
 #define PESTACLE_PARAMETER_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 #include "real.h"
 #include "strings.h"
 
@@ -36,5 +41,8 @@ ParameterValue_copy(
 );
 
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* PESTACLE_PARAMETER_H */

@@ -1,6 +1,11 @@
 #ifndef PESTACLE_DICT_H
 #define PESTACLE_DICT_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 /******************************************************************************
   Implementation of a dictionary aka hashmap with strings as keys
     - Linear probing
@@ -103,5 +108,9 @@ Dict_erase(
 	DictEntry* entry
 );
 
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* PESTACLE_DICT_H */
