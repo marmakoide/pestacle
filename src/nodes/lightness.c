@@ -70,7 +70,6 @@ lightness_node_delegate = {
 		lightness_node_setup,
 		lightness_node_destroy,
 		lightness_node_update,
-		0,
 		lightness_node_output
 	},
 };

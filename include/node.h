@@ -7,7 +7,6 @@ extern "C" {
 
 
 #include <SDL.h>
-#include "event.h"
 #include "matrix.h"
 #include "parameter.h"
 
@@ -70,11 +69,6 @@ typedef struct {
 
 	void (*update)(       // update method (optional, can be 0)
 		Node*
-	);
-
-	void (*handle_event)( // handle_event output (optional, can be 0)
-		Node*,
-		const Event* event
 	);
 
 	NodeOutput (*output)( // output method (optional, can be 0)
@@ -179,13 +173,6 @@ Node_destroy(
 extern void
 Node_update(
 	Node* self
-);
-
-
-extern void
-Node_handle_event(
-	Node* self,
-	const Event* event
 );
 
 

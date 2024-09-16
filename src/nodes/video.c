@@ -61,7 +61,6 @@ video_node_delegate = {
 		video_node_setup,
 		video_node_destroy,
 		video_node_update,
-		0,
 		video_node_output
 	},
 };

@@ -194,17 +194,6 @@ Graph_setup(
 
 
 void
-Graph_handle_event(
-	Graph* self,
-	const Event* event
-) {
-	Node** node_ptr = self->sorted_nodes;
-	for(size_t i = self->sorted_node_count; i != 0; --i, ++node_ptr)
-		Node_handle_event(*node_ptr, event);
-}
-
-
-void
 Graph_update(
 	Graph* self
 ) {

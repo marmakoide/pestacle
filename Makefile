@@ -19,7 +19,6 @@ $(BUILD_DIR)/stack.o \
 $(BUILD_DIR)/array_ops.o \
 $(BUILD_DIR)/vector.o \
 $(BUILD_DIR)/matrix.o \
-$(BUILD_DIR)/event.o \
 $(BUILD_DIR)/spng.o \
 $(BUILD_DIR)/picture.o \
 $(BUILD_DIR)/parameter.o \
@@ -33,7 +32,6 @@ $(BUILD_DIR)/nodes/gradient_map.o \
 $(BUILD_DIR)/nodes/heat_diffusion.o \
 $(BUILD_DIR)/nodes/lightness.o \
 $(BUILD_DIR)/nodes/matrix_resize.o \
-$(BUILD_DIR)/nodes/mouse_motion.o \
 $(BUILD_DIR)/nodes/picture.o \
 $(BUILD_DIR)/nodes/surface_blend.o \
 $(BUILD_DIR)/nodes/surface_resize.o \

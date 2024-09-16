@@ -2,7 +2,7 @@
 #include "memory.h"
 
 
-// --- display Node interface -------------------------------------------------
+// --- display Node interface & implementation --------------------------------
 
 static void
 display_node_update(
@@ -39,7 +39,6 @@ display_node_delegate = {
 		0,
 		0,
 		display_node_update,
-		0,
 		0
 	},
 }; // display_node_delegate

@@ -81,7 +81,6 @@ matrix_resize_node_delegate = {
 		matrix_resize_node_setup,
 		matrix_resize_node_destroy,
 		matrix_resize_node_update,
-		0,
 		matrix_resize_node_output
 	},
 };

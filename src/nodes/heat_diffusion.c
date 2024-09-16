@@ -75,7 +75,6 @@ heat_diffusion_node_delegate = {
 		heat_diffusion_node_setup,
 		heat_diffusion_node_destroy,
 		heat_diffusion_node_update,
-		0,
 		heat_diffusion_node_output
 	},
 };

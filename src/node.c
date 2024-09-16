@@ -251,20 +251,6 @@ Node_update(
 }
 
 
-void
-Node_handle_event(
-	Node* self,
-	const Event* event
-) {
-	assert(self != 0);
-	assert(self->delegate != 0);
-	assert(event != 0);
-
-	if (self->delegate->methods.handle_event)
-		self->delegate->methods.handle_event(self, event);
-}
-
-
 NodeOutput
 Node_output(
 	Node* self

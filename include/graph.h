@@ -37,13 +37,6 @@ Graph_setup(
 
 
 extern void
-Graph_handle_event(
-	Graph* self,
-	const Event* event
-);
-
-
-extern void
 Graph_update(
 	Graph* self
 );

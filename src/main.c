@@ -3,7 +3,6 @@
 #include <stdbool.h>
 #include <SDL.h>
 #include "graph.h"
-#include "event.h"
 #include "scope.h"
 #include "scopes/root.h"
 #include "parser/parser.h"

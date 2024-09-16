@@ -80,7 +80,6 @@ surface_resize_node_delegate = {
 		surface_resize_node_setup,
 		surface_resize_node_destroy,
 		surface_resize_node_update,
-		0,
 		surface_resize_node_output
 	},
 };

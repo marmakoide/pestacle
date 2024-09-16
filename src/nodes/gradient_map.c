@@ -70,7 +70,6 @@ gradient_map_node_delegate = {
 		gradient_map_node_setup,
 		gradient_map_node_destroy,
 		gradient_map_node_update,
-		0,
 		gradient_map_node_output
 	},
 };

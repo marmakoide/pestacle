@@ -51,7 +51,6 @@ picture_node_delegate = {
 		picture_node_setup,
 		picture_node_destroy,
 		0,
-		0,
 		picture_node_output
 	},
 };

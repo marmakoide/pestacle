@@ -80,7 +80,6 @@ surface_blend_node_delegate = {
 		surface_blend_node_setup,
 		surface_blend_node_destroy,
 		surface_blend_node_update,
-		0,
 		surface_blend_node_output
 	},
 };
