@@ -141,7 +141,7 @@ Stack_pop(
 
 
 void*
-Stack_peek(
+Stack_top(
 	Stack* self
 ) {
 	assert(self != 0);

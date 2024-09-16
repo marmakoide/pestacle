@@ -10,6 +10,8 @@
 #include "window_manager.h"
 
 
+//#define DRY_RUN
+
 // --- Main entry point -------------------------------------------------------
 
 bool quit = false;
@@ -110,6 +112,8 @@ main(int argc, char* argv[]) {
 	}
 	*/
 
+	#ifndef DRY_RUN
+
 	// Main processing loop
 	Uint64 performance_refresh_period = SDL_GetPerformanceFrequency() / 60;
 
@@ -164,6 +168,8 @@ main(int argc, char* argv[]) {
 		if (time_delta < performance_refresh_period)
 			SDL_Delay((performance_refresh_period - time_delta) / (1e-3f * SDL_GetPerformanceFrequency()));
 	}
+
+	#endif // DRY_RUN
 
 	// Wait for the timers to stop
 	//SDL_Delay(100);

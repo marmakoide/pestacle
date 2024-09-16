@@ -61,7 +61,7 @@ Stack_pop(
 
 
 extern void*
-Stack_peek(
+Stack_top(
 	Stack* self
 );
 

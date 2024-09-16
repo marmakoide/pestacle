@@ -113,6 +113,7 @@ WindowManager_destroy(
 	for(Window* window = self->head; window != 0; ) {
 		Window* next_window = window->next;
 		Window_destroy(window);
+		free(window);
 		window = next_window;
 	}
 

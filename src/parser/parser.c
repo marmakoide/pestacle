@@ -166,6 +166,7 @@ Parser_parse_parameter(
 			}		
 			param_value->int64_value = context->lexer->token.value.int64_value;
 			break;
+
 		case ParameterType__real:
 			if ((context->lexer->token.type != TokenType__integer) && (context->lexer->token.type != TokenType__real)) {
 				SDL_LogError(
@@ -179,6 +180,7 @@ Parser_parse_parameter(
 			}
 			param_value->real_value = context->lexer->token.value.real_value;
 			break;
+
 		case ParameterType__string:
 			if (context->lexer->token.type != TokenType__string) {
 				SDL_LogError(
@@ -194,6 +196,7 @@ Parser_parse_parameter(
 			String_destroy(&(param_value->string_value));
 			String_clone(&(param_value->string_value), Lexer_token_text(context->lexer));
 			break;
+
 		default:
 			assert(0);
 	}

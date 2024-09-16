@@ -6,6 +6,33 @@
 // --- ScopeMember ------------------------------------------------------------
 
 static void
+ScopeMember_destroy(
+	ScopeMember* self
+) {
+	assert(self != 0);
+
+	switch(self->type) {
+		case ScopeMemberType__node:
+			Node_destroy(self->node);
+			free(self->node);
+			break;
+
+		case ScopeMemberType__scope:
+			Scope_destroy(self->scope);
+			free(self->scope);
+			break;
+
+		case ScopeMemberType__node_delegate:
+		case ScopeMemberType__scope_delegate:
+			break;
+
+		default:
+			assert(0);
+	}
+}
+
+
+static void
 ScopeMember_print_node_delegate(
 	ScopeMember* self,
 	FILE* out,
@@ -133,7 +160,7 @@ ScopeDelegate_has_parameters(
 ) {
 	assert(self != 0);
 
-	return self->parameter_defs->type == ParameterType__last;
+	return self->parameter_defs->type != ParameterType__last;
 }
 
 
@@ -172,9 +199,7 @@ Scope_new(
 	Dict_init(&(ret->members));
 
 	// Setup parameters array
-	if (ScopeDelegate_has_parameters(delegate))
-		ret->parameters = 0;
-	else {
+	if (ScopeDelegate_has_parameters(delegate)) {
 		size_t parameter_count = ScopeDelegate_parameter_count(delegate);
 		
 		ret->parameters =
@@ -189,6 +214,8 @@ Scope_new(
 				param_def->type
 			);
 	}
+	else
+		ret->parameters = 0;
 
 	// Job done
 	return ret;
@@ -201,17 +228,16 @@ Scope_destroy(
 ) {
 	assert(self != 0);
 	assert(self->delegate != 0);
-
+	
 	if (self->delegate->methods.destroy)
 		self->delegate->methods.destroy(self);
-
-	String_destroy(&(self->name));
 
 	// Deallocate members
 	DictIterator it;
 	DictIterator_init(&it, &(self->members));
 	for( ; DictIterator_has_next(&it); DictIterator_next(&it)) {
 		ScopeMember* member = (ScopeMember*)it.entry->value;
+		ScopeMember_destroy(member);
 		free(member);
 	}
 
@@ -228,6 +254,9 @@ Scope_destroy(
 
 	if (ScopeDelegate_has_parameters(self->delegate))
 		free(self->parameters);
+
+	// Destroy name
+	String_destroy(&(self->name));
 
 	#ifdef DEBUG
 	self->data = 0;

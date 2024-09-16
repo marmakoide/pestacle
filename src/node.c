@@ -11,7 +11,7 @@ NodeDelegate_has_inputs(
 ) {
 	assert(self != 0);
 
-	return self->input_defs->type == NodeType__last;
+	return self->input_defs->type != NodeType__last;
 }
 
 
@@ -35,7 +35,7 @@ NodeDelegate_has_parameters(
 ) {
 	assert(self != 0);
 
-	return self->parameter_defs->type == ParameterType__last;
+	return self->parameter_defs->type != ParameterType__last;
 }
 
 
@@ -73,9 +73,7 @@ Node_new(
 	String_clone(&(ret->name), name);
 
 	// Setup inputs array
-	if (NodeDelegate_has_inputs(delegate))
-		ret->inputs = 0;
-	else {
+	if (NodeDelegate_has_inputs(delegate)) {
 		size_t input_count = NodeDelegate_input_count(delegate);
 		ret->inputs = (Node**)checked_malloc(input_count * sizeof(Node*));
 
@@ -84,11 +82,11 @@ Node_new(
 		for( ; input_def->type != NodeType__last; ++input_ptr, ++input_def)
 			*input_ptr = 0;
 	}
+	else
+		ret->inputs = 0;
 
 	// Setup parameters array
-	if (NodeDelegate_has_parameters(delegate))
-		ret->parameters = 0;
-	else {
+	if (NodeDelegate_has_parameters(delegate)) {
 		size_t parameter_count = NodeDelegate_parameter_count(delegate);
 		
 		ret->parameters =
@@ -103,6 +101,8 @@ Node_new(
 				param_def->type
 			);
 	}
+	else
+		ret->parameters = 0;
 
 	// Job done
 	return ret;
