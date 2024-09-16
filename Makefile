@@ -19,7 +19,6 @@ $(BUILD_DIR)/stack.o \
 $(BUILD_DIR)/array_ops.o \
 $(BUILD_DIR)/vector.o \
 $(BUILD_DIR)/matrix.o \
-$(BUILD_DIR)/root_scope.o \
 $(BUILD_DIR)/event.o \
 $(BUILD_DIR)/spng.o \
 $(BUILD_DIR)/picture.o \
@@ -28,6 +27,7 @@ $(BUILD_DIR)/node.o \
 $(BUILD_DIR)/scope.o \
 $(BUILD_DIR)/graph.o \
 $(BUILD_DIR)/window_manager.o \
+$(BUILD_DIR)/scopes/root.o \
 $(BUILD_DIR)/scopes/window.o \
 $(BUILD_DIR)/nodes/gradient_map.o \
 $(BUILD_DIR)/nodes/heat_diffusion.o \

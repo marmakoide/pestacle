@@ -5,7 +5,7 @@
 #include "graph.h"
 #include "event.h"
 #include "scope.h"
-#include "root_scope.h"
+#include "scopes/root.h"
 #include "parser/parser.h"
 #include "window_manager.h"
 
