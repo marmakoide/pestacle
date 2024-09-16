@@ -3,6 +3,20 @@
 #include "window_manager.h"
 
 
+// --- WindowEventListener implementation -------------------------------------
+
+static void
+WindowEventListener_init(
+	WindowEventListener* self,
+	void* caller,
+	WindowEventListener__on_event callback
+) {
+	self->next = 0;
+	self->caller = caller;
+	self->callback = callback;
+}
+
+
 // --- Window implementation --------------------------------------------------
 
 static void
@@ -15,6 +29,20 @@ Window_destroy(
 	self->next = 0;
 	#endif
 
+	// Destroy the listeners
+	if (self->listener_head) {
+		for(WindowEventListener* listener = self->listener_head; listener != 0; ) {
+			WindowEventListener* next_listener = listener->next;
+			free(listener);
+			listener = next_listener;
+		}
+	
+		#ifdef DEBUG
+		self->listener_head = 0;
+		#endif
+	}
+
+	// Destroy the renderer
 	if (self->renderer) {
 		SDL_DestroyRenderer(self->renderer);
 		#ifdef DEBUG
@@ -22,6 +50,7 @@ Window_destroy(
 		#endif
 	}
 
+	// Destroy the window
 	if (self->window) {
 		SDL_DestroyWindow(self->window);
 		#ifdef DEBUG
@@ -45,6 +74,7 @@ Window_init(
 	self->window = 0;
 	self->surface = 0;
 	self->renderer = 0;
+	self->listener_head = 0;
 
 	self->window = SDL_CreateWindow(
 		title,
@@ -90,6 +120,80 @@ Window_update(
 	SDL_UpdateWindowSurface(self->window);
 }
 
+
+void
+Window_add_event_listener(
+	Window* self,
+	void* caller,
+	WindowEventListener__on_event callback
+) {
+	assert(self != 0);
+
+	// Allocation
+	WindowEventListener* listener =
+		(WindowEventListener*)checked_malloc(sizeof(WindowEventListener));
+
+	// Initialisation
+	WindowEventListener_init(listener, caller, callback);
+
+	// Update list of windows
+	listener->next = self->listener_head;
+	self->listener_head = listener;
+}
+
+
+static void
+Window_dispatch_event(
+	Window* self,
+	SDL_Event* event
+) {
+	assert(self != 0);
+
+	// Select the event
+	Uint32 windowID = SDL_GetWindowID(self->window);
+	switch(event->type) {
+		case SDL_MOUSEBUTTONUP:
+		case SDL_MOUSEBUTTONDOWN:
+			if (event->button.windowID != windowID)
+				return;
+			break;
+
+		case SDL_MOUSEMOTION:
+			if (event->motion.windowID != windowID)
+				return;
+			break;
+
+		case SDL_MOUSEWHEEL:
+			if (event->wheel.windowID != windowID)
+				return;
+			break;
+
+		case SDL_KEYUP:
+		case SDL_KEYDOWN:
+			if (event->key.windowID != windowID)
+				return;
+			break;
+
+		case SDL_FINGERMOTION:
+		case SDL_FINGERDOWN:
+		case SDL_FINGERUP:
+			if (event->tfinger.windowID != windowID)
+				return;
+			break;
+
+		case SDL_WINDOWEVENT:
+			if (event->window.windowID != windowID)
+				return;
+			break;
+
+		default:
+			return;
+	}
+
+	// Dispatch the event
+	for(WindowEventListener* listener = self->listener_head; listener != 0; listener = listener->next)
+		listener->callback(listener->caller, event);
+}
 
 
 // --- WindowManager implementation -------------------------------------------
@@ -170,7 +274,7 @@ WindowManager_add_window(
 	// Update list of windows
 	ret->next = self->head;
 	self->head = ret;
-		
+
 	// Job done
 	return ret;
 }
@@ -214,4 +318,17 @@ WindowManager_update_windows(
 
 	for(Window* window = self->head; window != 0; window = window->next)
 		Window_update(window);
+}
+
+
+void
+WindowManager_dispatch_event(
+	WindowManager* self,
+	SDL_Event* event
+) {
+	assert(self != 0);
+	assert(event != 0);
+
+	for(Window* window = self->head; window != 0; window = window->next)
+		Window_dispatch_event(window, event);
 }

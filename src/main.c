@@ -51,8 +51,6 @@ load_config() {
 
 int
 main(int argc, char* argv[]) {
-	//SDL_Surface* framebuffer_native = 0;
-
 	//SDL_TimerID graph_update_timer = 0;
 	int exit_code = EXIT_SUCCESS;
 
@@ -121,37 +119,15 @@ main(int argc, char* argv[]) {
 		Uint64 start_time = SDL_GetPerformanceCounter();
 
 		// Event processing
-		SDL_Event src_event;
-		//Event dst_event;
-
-		while (SDL_PollEvent(&src_event)) {
-			switch(src_event.type) {
+		SDL_Event event;
+		while (SDL_PollEvent(&event)) {
+			switch(event.type) {
 				case SDL_QUIT:
-					//SDL_LockMutex(graph_state_mutex);
 					quit = true;
-					//SDL_UnlockMutex(graph_state_mutex);
 					break;
-
-				/*
-				case SDL_MOUSEBUTTONUP:
-				case SDL_MOUSEBUTTONDOWN:
-					if (cast_mouse_button_event(&display, &src_event, &dst_event)) {
-						SDL_LockMutex(graph_state_mutex);
-						Graph_handle_event(&graph, &dst_event);
-						SDL_UnlockMutex(graph_state_mutex);
-					}
-					break;
-
-				case SDL_MOUSEMOTION:
-					if (cast_mouse_motion_event(&display, &src_event, &dst_event)) {
-						SDL_LockMutex(graph_state_mutex);
-						Graph_handle_event(&graph, &dst_event);
-						SDL_UnlockMutex(graph_state_mutex);
-					}
-					break;
-				*/
 
 				default:
+					WindowManager_dispatch_event(&window_manager, &event);
 					break;
 			}
 		}
@@ -170,9 +146,6 @@ main(int argc, char* argv[]) {
 	}
 
 	#endif // DRY_RUN
-
-	// Wait for the timers to stop
-	//SDL_Delay(100);
 
 	// Free ressources
 termination:
