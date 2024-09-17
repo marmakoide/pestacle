@@ -73,7 +73,7 @@ typedef struct {
 	AVCodecParameters* params;
 	int video_id;
 	AVCodecContext* codec_ctx;
-	AVCodec* codec;
+	const AVCodec* codec;
 	AVFrame* frame;
 	AVPacket* packet;
 
@@ -125,7 +125,7 @@ VideoData_init(
 	bool found_video = false;
 	for (int i = 0; i < self->format_ctx->nb_streams; i++) {
 		AVCodecParameters* localparam = self->format_ctx->streams[i]->codecpar;
-		AVCodec *localcodec = avcodec_find_decoder(localparam->codec_id);
+		const AVCodec* localcodec = avcodec_find_decoder(localparam->codec_id);
 		if (localparam->codec_type == AVMEDIA_TYPE_VIDEO && !found_video) {
 			self->codec = localcodec;
 			self->params = localparam;
