@@ -49,8 +49,8 @@ ParseContext_destroy(
 
 // --- Parser utilities -------------------------------------------------------
 
-static Node*
-Parser_get_node(
+static ScopeMember*
+Parser_get_scope_member(
 	ParseContext* context,
 	const String* path,
 	size_t path_len
@@ -58,14 +58,28 @@ Parser_get_node(
 	ScopeMember* member =
 		Scope_get_member(context->scope, path, path_len);
 
-	if (!member) {
+	if (!member)
 		SDL_LogError(
 			SDL_LOG_CATEGORY_SYSTEM,
 			"line %d : invalid path\n",
 			context->lexer->token.location.line + 1
 		);
+
+	return member;
+}
+
+
+static Node*
+Parser_get_node(
+	ParseContext* context,
+	const String* path,
+	size_t path_len
+) {
+	ScopeMember* member =
+		Parser_get_scope_member(context, path, path_len);
+
+	if (!member)
 		return 0;
-	}
 
 	if (member->type != ScopeMemberType__node) {
 		SDL_LogError(
@@ -305,6 +319,65 @@ Parser_parse_identifier_path(
 
 
 static bool
+Parser_parse_node_delegate_instanciation(
+	ParseContext* context,
+	const String* name,
+	Scope* owner,
+	const NodeDelegate* node_delegate
+) {
+	// Build the node
+	Node* node = Node_new(owner, name, node_delegate);
+
+	// Parse parameters
+	ScopeMember constructor_output = {
+		ScopeMemberType__node,
+		{ .node = node }
+	};
+
+	if (!Parser_parse_parameter_list(context, &constructor_output))
+		return false;
+
+	// Add the node to the root scope
+	Scope_add_node(context->scope, node);
+
+	// Job done
+	return true;
+}
+
+
+static bool
+Parser_parse_scope_delegate_instanciation(
+	ParseContext* context,
+	const String* name,
+	const ScopeDelegate* scope_delegate
+) {
+	// Build the scope
+	Scope* scope = Scope_new(name, scope_delegate);
+
+	if (!scope)
+		return false;
+
+	// Parse parameters
+	ScopeMember constructor_output = {
+		ScopeMemberType__scope,
+		{ .scope = scope }
+	};
+
+	if (!Parser_parse_parameter_list(context, &constructor_output))
+		return false;
+
+	// Add the newly build scope
+	if (!Scope_setup(scope, context->window_manager))
+		return false;
+
+	Scope_add_scope(context->scope, scope);
+
+	// Job done
+	return true;
+}
+
+
+static bool
 Parser_parse_instanciation(
 	ParseContext* context,
 	const StringList* left_path
@@ -337,14 +410,24 @@ Parser_parse_instanciation(
 	}
 	
 	// Evaluate the path
-	ScopeMember* builder = 
+	ScopeMember* member = 
 		Scope_get_member(
 			context->scope,
 			StringList_items(&right_path),
 			StringList_length(&right_path)
 		);
 
-	if (!builder) { // TODO : invalid path should be printed
+	Scope* owner = 0;
+	if (StringList_length(&right_path) > 1) {
+		owner =
+			Scope_get_member(
+				context->scope,
+				StringList_items(&right_path),
+				StringList_length(&right_path) - 1
+			)->scope;
+	}
+
+	if (!member) { // TODO : invalid path should be printed
 		SDL_LogError(
 			SDL_LOG_CATEGORY_SYSTEM,
 			"line %d : invalid path\n",
@@ -353,71 +436,35 @@ Parser_parse_instanciation(
 		ret = false;
 		goto termination;
 	}
-
+	
 	// Check that the path leads to a builder
-	if ((builder->type != ScopeMemberType__node_delegate) &&
-	    (builder->type != ScopeMemberType__scope_delegate)) {  // TODO : invalid path should be printed
-		SDL_LogError(
-			SDL_LOG_CATEGORY_SYSTEM,
-			"line %d : path is not a node delegate or a scope delegate\n",
-			context->lexer->token.location.line + 1
-		);
-		ret = false;
-		goto termination;
-	}
-
-	// Call the constructor
-	if (builder->type == ScopeMemberType__node_delegate) {
-		// Build the node
-		Node* node = 
-			Node_new(StringList_at(left_path, 0), builder->node_delegate);
-
-		// Parse parameters
-		ScopeMember constructor_output = {
-			ScopeMemberType__node,
-			{ .node = node }
-		};
-
-		if (!Parser_parse_parameter_list(context, &constructor_output)) {
-			ret = false;
-			goto termination;
-		}
-
-		// Add the node to the root scope
-		Scope_add_node(context->scope, node);
-		
-	}
-	else if (builder->type == ScopeMemberType__scope_delegate) {
-		// Build the scope
-		Scope* scope =
-			Scope_new(
+	switch(member->type) {
+		case ScopeMemberType__node_delegate:
+			ret = Parser_parse_node_delegate_instanciation(
+				context,
 				StringList_at(left_path, 0),
-				builder->scope_delegate
+				owner,
+				member->node_delegate
 			);
+			break;
 
-		if (!scope) {
+		case ScopeMemberType__scope_delegate:
+			ret = Parser_parse_scope_delegate_instanciation(
+				context,
+				StringList_at(left_path, 0),
+				member->scope_delegate
+			);
+			break;
+
+		default:
+			SDL_LogError(
+				SDL_LOG_CATEGORY_SYSTEM,
+				"line %d : path is not a node, a node delegate or a scope delegate\n",
+				context->lexer->token.location.line + 1
+			);
 			ret = false;
-			goto termination;
-		}
-
-		// Parse parameters
-		ScopeMember constructor_output = {
-			ScopeMemberType__scope,
-			{ .scope = scope }
-		};
-
-		if (!Parser_parse_parameter_list(context, &constructor_output)) {
-			ret = false;
-			goto termination;
-		}
-
-		// Add the newly build scope
-		if (!Scope_setup(scope, context->window_manager))
-			goto termination;
-
-		Scope_add_scope(context->scope, scope);
-
 	}
+
 termination:
 	// Free ressources
 	StringList_destroy(&right_path);
@@ -524,7 +571,7 @@ Parser_parse_statement(
 		);
 	 Lexer_next_token(context->lexer);
 
-	// Node creation statement
+	// Determine the type of statement
 	if (StringList_length(&left_path) == 1) {
 		if (!Parser_parse_instanciation(context, &left_path))
 			ret = false;

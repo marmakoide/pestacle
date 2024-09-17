@@ -1,3 +1,4 @@
+#include <assert.h>
 #include "scopes/window.h"
 #include "memory.h"
 
@@ -44,13 +45,11 @@ display_node_delegate = {
 }; // display_node_delegate
 
 
-// --- display Node implementation --------------------------------------------
-
 static void
 display_node_update(
 	Node* self
 ) {
-	Window* window = (Window*)self->data;
+	Window* window = (Window*)self->owner->data;
 
 	// Retrieve the input
 	SDL_Surface* src =
@@ -60,6 +59,151 @@ display_node_update(
 	SDL_BlitSurface(src, 0, window->surface, 0);
 }
 
+
+// --- mouse-motion Node interface & implementation ---------------------------
+
+static bool
+mouse_motion_node_setup(
+	Node* self
+);
+
+
+static void
+mouse_motion_node_destroy(
+	Node* self
+);
+
+
+static void
+mouse_motion_node_update(
+	Node* self
+);
+
+
+static NodeOutput
+mouse_motion_node_output(
+	const Node* self
+);
+
+
+static const NodeInputDefinition
+mouse_motion_inputs[] = {
+	{ NodeType__last }
+};
+
+
+#define VALUE_PARAMETER  0
+
+static const ParameterDefinition
+mouse_motion_parameters[] = {
+	{
+		ParameterType__real,
+		{ "value", 6 },
+		{ .real_value = (real_t)1 }
+	},
+	{ ParameterType__last }
+};
+
+
+const NodeDelegate
+mouse_motion_node_delegate = {
+	{ "mouse-motion", 13 },
+	NodeType__matrix,
+	mouse_motion_inputs,
+	mouse_motion_parameters,
+	{
+		mouse_motion_node_setup,
+		mouse_motion_node_destroy,
+		mouse_motion_node_update,
+		mouse_motion_node_output
+	},
+};
+
+
+static void
+mouse_motion_on_event(
+	void* listener,
+	SDL_Event* event
+) {
+	Node* node = (Node*)listener;
+	Matrix* accumulator = (Matrix*)node->data;
+
+	switch(event->type) {
+		case SDL_MOUSEMOTION:
+			Matrix_set_coeff(
+				accumulator,
+				event->motion.y,
+				event->motion.x,
+				node->parameters[VALUE_PARAMETER].real_value
+			);
+			break;
+
+		default:
+			break;
+	}
+}
+
+
+static bool
+mouse_motion_node_setup(
+	Node* self
+) {
+	assert(self->owner->data);
+
+	// Retrieve the window
+	Window* window = (Window*)self->owner->data;
+
+	// Allocate
+	Matrix* accumulator = (Matrix*)checked_malloc(sizeof(Matrix));
+
+	// Setup node type metadata
+	int w, h;
+	SDL_GetWindowSize(window->window, &w, &h);
+	self->metadata.matrix.width = w;
+	self->metadata.matrix.height = h;
+
+	// Setup the accumulator matrix
+	Matrix_init(accumulator, h, w);
+	Matrix_fill(accumulator, (real_t)0);
+
+	// Register to windows events
+	Window_add_event_listener(window, self, mouse_motion_on_event);
+
+	// Job done
+	self->data = accumulator;
+	return true;
+}
+
+
+static void
+mouse_motion_node_destroy(
+	Node* self
+) {
+	Matrix* accumulator = (Matrix*)self->data;
+	if (accumulator != 0) {
+		Matrix_destroy(accumulator);
+		free(accumulator);
+	}
+}
+
+
+static void
+mouse_motion_node_update(
+	Node* self
+) {
+	Matrix* accumulator = (Matrix*)self->data;
+	Matrix_fill(accumulator, (real_t)0);
+}
+
+
+static NodeOutput
+mouse_motion_node_output(
+	const Node* self
+) {
+	Matrix* accumulator = (Matrix*)self->data;
+	NodeOutput ret = { .matrix = accumulator };
+	return ret;
+}
 
 // --- window Scope interface ------------------------------------------------
 
@@ -137,18 +281,17 @@ window_scope_setup(
 	if (!window)
 		goto failure;
 
-	// Add the display node
-	Node* display_node = Node_new(
-		&(display_node_delegate.name),
-		&display_node_delegate
-	);
-	display_node->data = window;
+	self->data = window;
 
-	if (!display_node)
+	// Add the 'display' node
+	Node* display_node = 
+		Node_new(self, &(display_node_delegate.name), &display_node_delegate);
+
+	if ((!display_node) || (!Scope_add_node(self, display_node)))
 		goto failure;
 
-	if (!Scope_add_node(self, display_node))
-		goto failure;
+	// Add the 'mouse-motion' delegate
+	Scope_add_node_delegate(self, &mouse_motion_node_delegate);
 
 	// Job done
 	return true;
