@@ -19,7 +19,6 @@ $(BUILD_DIR)/stack.o \
 $(BUILD_DIR)/array_ops.o \
 $(BUILD_DIR)/vector.o \
 $(BUILD_DIR)/matrix.o \
-$(BUILD_DIR)/spng.o \
 $(BUILD_DIR)/picture.o \
 $(BUILD_DIR)/parameter.o \
 $(BUILD_DIR)/node.o \

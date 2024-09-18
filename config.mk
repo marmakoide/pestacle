@@ -1,5 +1,5 @@
 # build mode, dbg=debug rls=release
-MODE=rls
+MODE=dbg
 
 # paths
 INCLUDES=-I./include
@@ -7,6 +7,7 @@ LIBS=\
 $(shell pkg-config --libs libavcodec) \
 $(shell pkg-config --libs libavformat) \
 $(shell pkg-config --libs libavutil) \
+$(shell pkg-config --libs libpng) \
 $(shell sdl2-config --libs) \
 $(shell pkg-config --libs zlib) \
 -lm
@@ -28,5 +29,6 @@ CFLAGS += $(INCLUDES)
 CFLAGS += $(shell pkg-config --cflags libavcodec)
 CFLAGS += $(shell pkg-config --cflags libavformat)
 CFLAGS += $(shell pkg-config --cflags libavutil)
+CFLAGS += $(shell pkg-config --cflags libpng)
 CFLAGS += $(shell sdl2-config --cflags)
 CFLAGS += $(shell pkg-config --cflags zlib)
