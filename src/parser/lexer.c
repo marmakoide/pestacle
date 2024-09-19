@@ -93,8 +93,7 @@ static void
 Lexer_parse_decimal_integer(Lexer* self) {
 	uint32_t value = 0;
 
-	const char* str = self->token.text_data;
-	for(int i = 0; *str != '\0'; ++i, ++str) {
+	for(const char* str = self->token.text_data; *str != '\0'; ++str) {
 		if ((value >= 429496729) && (*str > '5'))
 			handle_processing_error(
 				&(self->location),
@@ -120,8 +119,7 @@ static void
 Lexer_parse_hexadecimal_integer(Lexer* self) {
 	uint32_t value = 0; 
 
-	const char* str = self->token.text_data + 2;
-	for(int i = 0; *str != '\0'; ++i, ++str) {
+	for(const char* str = self->token.text_data + 2; *str != '\0'; ++str) {
 		if ((value & 0x10000000) != 0)
 			handle_processing_error(
 				&(self->location),
