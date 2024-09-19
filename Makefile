@@ -7,6 +7,7 @@ BUILD_DIR = ./build
 all: $(TARGET)
 
 $(TARGET): \
+$(BUILD_DIR)/argtable3.o \
 $(BUILD_DIR)/errors.o \
 $(BUILD_DIR)/memory.o \
 $(BUILD_DIR)/strings.o \

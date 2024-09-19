@@ -1,5 +1,5 @@
 #include <stdlib.h>
-
+#include <errno.h>
 #include <stdbool.h>
 #include <SDL.h>
 #include "graph.h"
@@ -7,9 +7,15 @@
 #include "scopes/root.h"
 #include "parser/parser.h"
 #include "window_manager.h"
+#include "argtable3.h"
 
 
-//#define DRY_RUN
+// --- Command-line arguments -------------------------------------------------
+
+struct arg_lit *help;
+struct arg_file *file;
+struct arg_end *end;
+
 
 // --- Main entry point -------------------------------------------------------
 
@@ -41,17 +47,62 @@ graph_update_callback(Uint32 interval, void* param) {
 
 
 static bool
-load_config() {
+load_script(const char* path) {
+	// Open input file
+	FILE* fp = fopen(path, "r");
+	if (!fp) {
+		SDL_LogError(
+			SDL_LOG_CATEGORY_SYSTEM,
+			"Unable to open file '%s': %s",
+			path,
+			strerror(errno)
+		);
+		return false;
+	}
+
+	// Parse the file
 	Lexer lexer;
-	Lexer_init(&lexer, stdin);
-	return Parser_parse(&lexer, root_scope, &window_manager);
+	Lexer_init(&lexer, fp);
+	bool ret = Parser_parse(&lexer, root_scope, &window_manager);
+
+	// Job done
+	fclose(fp);
+	return ret;
 }
 
 
 int
 main(int argc, char* argv[]) {
-	//SDL_TimerID graph_update_timer = 0;
 	int exit_code = EXIT_SUCCESS;
+	char prog_name[] = "pestacle";  
+
+	// Command-line parsing
+	void* argtable[] = {
+		help    = arg_litn(NULL, "help", 0, 1, "display this help and exit"),
+		file    = arg_filen(NULL, NULL, "<file>", 1, 1, "input script"),
+		end     = arg_end(20),
+	};
+
+	int cmd_line_error_count = arg_parse(argc, argv, argtable);
+
+	if (help->count > 0) {
+		printf("Usage: %s", prog_name);
+		arg_print_syntax(stdout, argtable, "\n");
+		printf("Runs a pestacle script.\n\n");
+		arg_print_glossary(stdout, argtable, "  %-25s %s\n");
+
+		exit_code = EXIT_FAILURE;
+		goto termination;
+	}
+
+	if (cmd_line_error_count > 0) {
+		arg_print_errors(stdout, end, prog_name);
+		printf("Try '%s --help' for more information.\n", prog_name);
+
+		goto termination;
+	}
+
+	//SDL_TimerID graph_update_timer = 0;
 
 	// SDL logging settings
 	 SDL_LogSetAllPriority(SDL_LOG_PRIORITY_INFO);
@@ -75,8 +126,8 @@ main(int argc, char* argv[]) {
 	if (!Scope_setup(root_scope, &window_manager))
 		goto termination;
 
-	// Load configuraiton
-	if (!load_config())
+	// Load script
+	if (!load_script(file->filename[0]))
 		goto termination;
 
 	// Initialize the graph
@@ -108,8 +159,6 @@ main(int argc, char* argv[]) {
 		goto termination;
 	}
 	*/
-
-	#ifndef DRY_RUN
 
 	// Main processing loop
 	Uint64 performance_refresh_period = SDL_GetPerformanceFrequency() / 60;
@@ -144,14 +193,13 @@ main(int argc, char* argv[]) {
 			SDL_Delay((performance_refresh_period - time_delta) / (1e-3f * SDL_GetPerformanceFrequency()));
 	}
 
-	#endif // DRY_RUN
-
 	// Free ressources
 termination:
 	//if (graph_update_timer)
 	//	SDL_RemoveTimer(graph_update_timer);
 
-	Scope_destroy(root_scope);
+	if (root_scope)
+		Scope_destroy(root_scope);
 
 	Graph_destroy(&graph);
 
@@ -161,6 +209,11 @@ termination:
 	//	SDL_DestroyMutex(graph_state_mutex);
 	
 	SDL_Quit();
+
+	arg_freetable(
+		argtable,
+		sizeof(argtable) / sizeof(argtable[0])
+	);
 
 	// Job done
 	return exit_code;
