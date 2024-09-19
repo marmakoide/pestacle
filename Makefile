@@ -39,35 +39,35 @@ $(BUILD_DIR)/main.o
 	$(CC) -o $@ $^ $(LIBS)
 
 $(BUILD_DIR)/%.deps: src/%.c
-	@mkdir --parents $(BUILD_DIR)
+	@mkdir -p $(BUILD_DIR)
 	$(CC) $(INCLUDES) -MM -MG -MT$(patsubst src/%.c, $(BUILD_DIR)/%.o, $^) -MF $@ $^
 
 $(BUILD_DIR)/parser/%.deps: src/parser/%.c
-	@mkdir --parents $(BUILD_DIR)/parser
+	@mkdir -p $(BUILD_DIR)/parser
 	$(CC) $(INCLUDES) -MM -MG -MT$(patsubst src/parser/%.c, $(BUILD_DIR)/parser/%.o, $^) -MF $@ $^
 
 $(BUILD_DIR)/nodes/%.deps: src/nodes/%.c
-	@mkdir --parents $(BUILD_DIR)/nodes
+	@mkdir -p $(BUILD_DIR)/nodes
 	$(CC) $(INCLUDES) -MM -MG -MT$(patsubst src/nodes/%.c, $(BUILD_DIR)/nodes/%.o, $^) -MF $@ $^
 
 $(BUILD_DIR)/scopes/%.deps: src/scopes/%.c
-	@mkdir --parents $(BUILD_DIR)/scopes
+	@mkdir -p $(BUILD_DIR)/scopes
 	$(CC) $(INCLUDES) -MM -MG -MT$(patsubst src/scopes/%.c, $(BUILD_DIR)/scopes/%.o, $^) -MF $@ $^
 
 $(BUILD_DIR)/%.o: src/%.c
-	@mkdir --parents $(BUILD_DIR)
+	@mkdir -p $(BUILD_DIR)
 	$(CC) -o $@ -c $(CFLAGS) $<
 
 $(BUILD_DIR)/parser/%.o: src/parser/%.c
-	@mkdir --parents $(BUILD_DIR)/parser
+	@mkdir -p $(BUILD_DIR)/parser
 	$(CC) -o $@ -c $(CFLAGS) $<
 
 $(BUILD_DIR)/nodes/%.o: src/nodes/%.c
-	@mkdir --parents $(BUILD_DIR)/nodes
+	@mkdir -p $(BUILD_DIR)/nodes
 	$(CC) -o $@ -c $(CFLAGS) $<
 
 $(BUILD_DIR)/scopes/%.o: src/scopes/%.c
-	@mkdir --parents $(BUILD_DIR)/scopes
+	@mkdir -p $(BUILD_DIR)/scopes
 	$(CC) -o $@ -c $(CFLAGS) $<
 
 clean:
