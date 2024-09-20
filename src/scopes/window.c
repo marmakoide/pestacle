@@ -50,7 +50,7 @@ static void
 display_node_update(
 	Node* self
 ) {
-	Window* window = (Window*)self->owner->data;
+	Window* window = (Window*)self->parent->data;
 
 	// Retrieve the input
 	SDL_Surface* src =
@@ -149,10 +149,10 @@ static bool
 mouse_motion_node_setup(
 	Node* self
 ) {
-	assert(self->owner->data);
+	assert(self->parent->data);
 
 	// Retrieve the window
-	Window* window = (Window*)self->owner->data;
+	Window* window = (Window*)self->parent->data;
 
 	// Allocate
 	Matrix* accumulator = (Matrix*)checked_malloc(sizeof(Matrix));

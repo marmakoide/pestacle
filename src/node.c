@@ -57,7 +57,7 @@ NodeDelegate_parameter_count(
 
 Node*
 Node_new(
-	struct s_Scope* owner,
+	struct s_Scope* parent,
 	const String* name,
 	const NodeDelegate* delegate
 ) {
@@ -69,7 +69,7 @@ Node_new(
 	Node* ret = (Node*)checked_malloc(sizeof(Node));
 
 	// Setup
-	ret->owner = owner;
+	ret->parent = parent;
 	ret->data = 0;
 	ret->delegate = delegate;
 	String_clone(&(ret->name), name);

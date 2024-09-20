@@ -96,7 +96,7 @@ typedef struct {
 
 
 struct s_Node {
-	struct s_Scope* owner;
+	struct s_Scope* parent;
 	void* data;
 	const NodeDelegate* delegate;
 	NodeTypeMetadata metadata;
@@ -108,14 +108,14 @@ struct s_Node {
 
 /*
  * Creates a new node instance
- *   scope : scope owning this node
+ *   parent : scope owning this node
  *   name : name of the instance, will make a copy of the string instance
  *   delegate : delegate for this node
  */
 
 extern Node*
 Node_new(
-	struct s_Scope* owner,
+	struct s_Scope* parent,
 	const String* name,
 	const NodeDelegate* delegate
 );
