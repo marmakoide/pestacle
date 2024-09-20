@@ -16,6 +16,9 @@ ParameterValue_copy(
 		case ParameterType__last:
 			assert(0);
 			break;
+		case ParameterType__bool:
+			dst->bool_value = src->bool_value;
+			break;
 		case ParameterType__integer:
 			dst->int64_value = src->int64_value;
 			break;

@@ -122,6 +122,17 @@ Window_update(
 
 
 void
+Window_set_bordered(
+	Window* self,
+	bool bordered
+) {
+	assert(self != 0);
+
+	SDL_SetWindowBordered(self->window, bordered);
+}
+
+
+void
 Window_add_event_listener(
 	Window* self,
 	void* caller,

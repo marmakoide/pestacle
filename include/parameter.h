@@ -12,6 +12,7 @@ extern "C" {
 
 enum ParameterType {
 	ParameterType__invalid = 0, // Used as a debugging help
+	ParameterType__bool,
 	ParameterType__integer,
 	ParameterType__real,
 	ParameterType__string,
@@ -20,6 +21,7 @@ enum ParameterType {
 
 
 typedef union {
+	bool bool_value;
 	int64_t int64_value;
 	real_t real_value;
 	String string_value;

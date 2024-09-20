@@ -167,48 +167,62 @@ Parser_parse_parameter(
 	// Assign the value to the node parameter
 	Lexer_next_token(context->lexer);
 	switch(param_def->type) {
+		case ParameterType__bool:
+			if (context->lexer->token.type == TokenType__bool)
+				param_value->bool_value = context->lexer->token.value.bool_value;
+			else {
+				ret = false;
+				SDL_LogError(
+					SDL_LOG_CATEGORY_SYSTEM,
+					"line %d : expected a boolean value, got '%s' instead\n",
+					context->lexer->token.location.line + 1,
+					context->lexer->token.text_data
+				);
+			}
+			break;
+
 		case ParameterType__integer:
-			if (context->lexer->token.type != TokenType__integer) {
+			if (context->lexer->token.type == TokenType__integer)
+				param_value->int64_value = context->lexer->token.value.int64_value;
+			else {
+				ret = false;
 				SDL_LogError(
 					SDL_LOG_CATEGORY_SYSTEM,
 					"line %d : expected an integer value, got '%s' instead\n",
 					context->lexer->token.location.line + 1,
 					context->lexer->token.text_data
 				);
-				ret = false;
-				goto termination;
-			}		
-			param_value->int64_value = context->lexer->token.value.int64_value;
+			}
 			break;
 
 		case ParameterType__real:
-			if ((context->lexer->token.type != TokenType__integer) && (context->lexer->token.type != TokenType__real)) {
+			if ((context->lexer->token.type == TokenType__integer) || (context->lexer->token.type == TokenType__real))
+				param_value->real_value = context->lexer->token.value.real_value;
+			else {
+				ret = false;
 				SDL_LogError(
 					SDL_LOG_CATEGORY_SYSTEM,
 					"line %d : expected a numeric value, got '%s' instead",
 					context->lexer->token.location.line + 1,
 					context->lexer->token.text_data
 				);
-				ret = false;
-				goto termination;
 			}
-			param_value->real_value = context->lexer->token.value.real_value;
 			break;
 
 		case ParameterType__string:
-			if (context->lexer->token.type != TokenType__string) {
+			if (context->lexer->token.type == TokenType__string) {
+				String_destroy(&(param_value->string_value));
+				String_clone(&(param_value->string_value), Lexer_token_text(context->lexer));
+			}
+			else {
+				ret = false;
 				SDL_LogError(
 					SDL_LOG_CATEGORY_SYSTEM,
 					"line %d : expected a string constant, got '%s' instead",
 					context->lexer->token.location.line + 1,
 					context->lexer->token.text_data
 				);
-				ret = false;
-				goto termination;
 			}
-			
-			String_destroy(&(param_value->string_value));
-			String_clone(&(param_value->string_value), Lexer_token_text(context->lexer));
 			break;
 
 		default:
@@ -417,16 +431,6 @@ Parser_parse_instanciation(
 			StringList_length(&right_path)
 		);
 
-	Scope* owner = 0;
-	if (StringList_length(&right_path) > 1) {
-		owner =
-			Scope_get_member(
-				context->scope,
-				StringList_items(&right_path),
-				StringList_length(&right_path) - 1
-			)->scope;
-	}
-
 	if (!member) { // TODO : invalid path should be printed
 		SDL_LogError(
 			SDL_LOG_CATEGORY_SYSTEM,
@@ -435,6 +439,16 @@ Parser_parse_instanciation(
 		);
 		ret = false;
 		goto termination;
+	}
+
+	Scope* owner = 0;
+	if (StringList_length(&right_path) > 1) {
+		owner =
+			Scope_get_member(
+				context->scope,
+				StringList_items(&right_path),
+				StringList_length(&right_path) - 1
+			)->scope;
 	}
 	
 	// Check that the path leads to a builder

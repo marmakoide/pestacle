@@ -16,6 +16,7 @@
 enum TokenType {
 	TokenType__invalid = 0, // debugging help
 	TokenType__identifier,  // identifier
+	TokenType__bool,        // boolean constant
 	TokenType__integer,     // integer constant
 	TokenType__real,        // real constant
 	TokenType__string,      // string constant
@@ -31,6 +32,7 @@ enum TokenType {
 #define LEXER_TOKEN_TEXT_MAX_SIZE 1024
 
 typedef union {
+	bool bool_value;
 	int64_t int64_value;
 	real_t real_value;
 } TokenValue;

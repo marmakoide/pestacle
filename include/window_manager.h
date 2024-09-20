@@ -39,6 +39,13 @@ struct s_Window {
 
 
 extern void
+Window_set_bordered(
+	Window* self,
+	bool bordered
+);
+
+
+extern void
 Window_add_event_listener(
 	Window* self,
 	void* caller,

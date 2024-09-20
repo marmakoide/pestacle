@@ -5,6 +5,19 @@
 #include "parser/lexer.h"
 
 
+static const char*
+str_true = "true";
+
+static const size_t
+str_true_len = 4;
+
+static const char*
+str_false = "false";
+
+static const size_t
+str_false_len = 5;
+
+
 void
 Lexer_init(
 	Lexer* self,
@@ -369,7 +382,16 @@ Lexer_next_token(Lexer* self) {
 						Lexer_accept_and_next_char(self);
 						break;
 					default:
-						self->token.type = TokenType__identifier;
+						if (strncmp(str_true, self->token.text_data, str_true_len) == 0) {
+							self->token.type = TokenType__bool;
+							self->token.value.bool_value = true;
+						}
+						else if (strncmp(str_false, self->token.text_data, str_false_len) == 0) {
+							self->token.type = TokenType__bool;
+							self->token.value.bool_value = false;
+						}
+						else
+							self->token.type = TokenType__identifier;
 						return;
 				}
 				break;

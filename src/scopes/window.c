@@ -223,9 +223,10 @@ window_scope_destroy(
 // --- window Scope implementation -------------------------------------------
 
 
-#define WIDTH_PARAMETER  0
-#define HEIGHT_PARAMETER 1
-#define TITLE_PARAMETER  2
+#define WIDTH_PARAMETER    0
+#define HEIGHT_PARAMETER   1
+#define TITLE_PARAMETER    2
+#define BORDERED_PARAMETER 3
 
 static const ParameterDefinition
 window_scope_parameters[] = {
@@ -243,6 +244,11 @@ window_scope_parameters[] = {
 		ParameterType__string,
 		{ "title", 6 },
 		{ .string_value = { "pestacle", 9 } }
+	},
+	{
+		ParameterType__bool,
+		{ "bordered", 9 },
+		{ .bool_value = true }
 	},
 	{ ParameterType__last }
 }; // window_scope_parameters
@@ -268,6 +274,7 @@ window_scope_setup(
 	size_t width = (size_t)self->parameters[WIDTH_PARAMETER].int64_value;
 	size_t height = (size_t)self->parameters[HEIGHT_PARAMETER].int64_value;
 	const String* title = &(self->parameters[TITLE_PARAMETER].string_value);
+	bool bordered = self->parameters[BORDERED_PARAMETER].bool_value;
 
 	// Create the window
 	Window* window = 
@@ -281,6 +288,9 @@ window_scope_setup(
 	if (!window)
 		goto failure;
 
+	Window_set_bordered(window, bordered);
+
+	// Keep a pointer on the window object
 	self->data = window;
 
 	// Add the 'display' node
