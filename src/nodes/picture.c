@@ -24,7 +24,7 @@ picture_node_output(
 
 static const NodeInputDefinition
 picture_inputs[] = {
-	{ NodeType__last }
+	NODE_INPUT_DEFINITION_END
 };
 
 
@@ -37,7 +37,7 @@ picture_parameters[] = {
 		{ "path", 5 },
 		{ .string_value = { "", 1 } }
 	},
-	{ ParameterType__last }
+	PARAMETER_DEFINITION_END
 };
 
 

@@ -28,6 +28,13 @@ typedef struct {
 } NodeInputDefinition;
 
 
+#define NODE_INPUT_DEFINITION_END \
+{ \
+	NodeType__last, \
+	{ 0, 0 }, \
+}
+
+
 typedef struct {
 	size_t width;
 	size_t height;

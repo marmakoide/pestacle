@@ -1,4 +1,5 @@
 #include <assert.h>
+#include "macros.h"
 #include "scopes/window.h"
 #include "memory.h"
 
@@ -20,13 +21,13 @@ display_inputs[] = {
 		NodeType__rgb_surface,
 		{ "source", 7 }
 	},
-	{ NodeType__last }
+	NODE_INPUT_DEFINITION_END
 }; // display_inputs
 
 
 static const ParameterDefinition
 display_parameters[] = {
-	{ ParameterType__last }
+	PARAMETER_DEFINITION_END
 }; // display_parameters
 
 
@@ -88,7 +89,7 @@ mouse_motion_node_output(
 
 static const NodeInputDefinition
 mouse_motion_inputs[] = {
-	{ NodeType__last }
+	NODE_INPUT_DEFINITION_END
 };
 
 
@@ -101,7 +102,7 @@ mouse_motion_parameters[] = {
 		{ "value", 6 },
 		{ .real_value = (real_t)1 }
 	},
-	{ ParameterType__last }
+	PARAMETER_DEFINITION_END
 };
 
 
@@ -250,7 +251,7 @@ window_scope_parameters[] = {
 		{ "bordered", 9 },
 		{ .bool_value = true }
 	},
-	{ ParameterType__last }
+	PARAMETER_DEFINITION_END
 }; // window_scope_parameters
 
 
@@ -316,7 +317,7 @@ failure:
 
 static void
 window_scope_destroy(
-	Scope* self
+	ATTRIBUTE_UNUSED Scope* self
 ) {
 	
 }

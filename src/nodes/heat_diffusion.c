@@ -36,7 +36,7 @@ heat_diffusion_inputs[] = {
 		NodeType__matrix,
 		{ "source", 7 }
 	},
-	{ NodeType__last }
+	NODE_INPUT_DEFINITION_END
 };
 
 
@@ -61,7 +61,7 @@ heat_diffusion_parameters[] = {
 		{ "decay", 6 },
 		{ .real_value = 1e-2f }
 	},
-	{ ParameterType__last }
+	PARAMETER_DEFINITION_END
 };
 
 

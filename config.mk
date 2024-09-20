@@ -1,5 +1,5 @@
 # build mode, dbg=debug rls=release
-MODE=dbg
+MODE=rls
 
 # paths
 INCLUDES=-I./include
@@ -13,7 +13,7 @@ $(shell pkg-config --libs zlib) \
 -lm
 
 # flags setup
-CFLAGS += -std=c11 -Wall -Wno-deprecated-declarations
+CFLAGS += -std=c11 -Wall -Wextra -Wno-deprecated-declarations
 
 ifeq ($(MODE), rls)
 CFLAGS += -Werror

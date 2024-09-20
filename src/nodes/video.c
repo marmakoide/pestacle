@@ -34,7 +34,7 @@ video_node_output(
 
 static const NodeInputDefinition
 video_inputs[] = {
-	{ NodeType__last }
+	NODE_INPUT_DEFINITION_END
 };
 
 
@@ -47,7 +47,7 @@ video_parameters[] = {
 		{ "path", 5 },
 		{ .string_value = { "", 1 } }
 	},
-	{ ParameterType__last }
+	PARAMETER_DEFINITION_END
 };
 
 
@@ -123,7 +123,7 @@ VideoData_init(
 
 	// Find coded
 	bool found_video = false;
-	for (int i = 0; i < self->format_ctx->nb_streams; i++) {
+	for (unsigned int i = 0; i < self->format_ctx->nb_streams; i++) {
 		AVCodecParameters* localparam = self->format_ctx->streams[i]->codecpar;
 		const AVCodec* localcodec = avcodec_find_decoder(localparam->codec_id);
 		if (localparam->codec_type == AVMEDIA_TYPE_VIDEO && !found_video) {

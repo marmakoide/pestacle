@@ -348,6 +348,8 @@ Lexer_next_token(Lexer* self) {
 						break;
 					case '\n':
 						self->location.line += 1;
+						Lexer_skip_char(self);
+						break;
 					default:
 						Lexer_skip_char(self);
 				}

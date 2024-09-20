@@ -1,3 +1,5 @@
+#include "macros.h"
+
 #include "nodes/gradient_map.h"
 #include "nodes/heat_diffusion.h"
 #include "nodes/lightness.h"
@@ -46,7 +48,7 @@ scope_delegate_list[] = {
 
 static const ParameterDefinition
 root_scope_parameters[] = {
-	{ ParameterType__last }
+	PARAMETER_DEFINITION_END
 };
 
 
@@ -65,7 +67,7 @@ const ScopeDelegate root_scope_delegate = {
 bool
 root_scope_setup(
 	Scope* self,
-	WindowManager* window_manager
+	ATTRIBUTE_UNUSED WindowManager* window_manager
 ) {
 	const NodeDelegate** node_delegate_ptr = node_delegate_list;
 	for( ; *node_delegate_ptr != NODE_DELEGATE_LIST_END; ++node_delegate_ptr)

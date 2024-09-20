@@ -35,6 +35,13 @@ typedef struct {
 } ParameterDefinition;
 
 
+#define PARAMETER_DEFINITION_END \
+{ \
+	ParameterType__last, \
+	{ 0, 0 }, \
+	{ .int64_value = 0 } \
+}
+
 extern void
 ParameterValue_copy(
 	ParameterValue* dst,

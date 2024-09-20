@@ -36,7 +36,7 @@ matrix_resize_inputs[] = {
 		NodeType__matrix,
 		{ "source", 7 }
 	},
-	{ NodeType__last }
+	NODE_INPUT_DEFINITION_END
 };
 
 
@@ -67,7 +67,7 @@ matrix_resize_parameters[] = {
 		{ "output-height", 14 },
 		{ .int64_value = 32 }
 	},
-	{ ParameterType__last }
+	PARAMETER_DEFINITION_END
 };
 
 

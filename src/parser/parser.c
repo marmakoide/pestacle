@@ -33,18 +33,18 @@ ParseContext_init(
 }
 
 
+#ifdef DEBUG
 static void
 ParseContext_destroy(
 	ParseContext* self
 ) {
 	assert(self != 0);
 
-	#ifdef DEBUG
 	self->lexer = 0;
 	self->scope = 0;
 	self->window_manager = 0;
-	#endif
 }
+#endif
 
 
 // --- Parser utilities -------------------------------------------------------
@@ -652,6 +652,9 @@ Parser_parse(
 
 	bool ret = Parser_parse_statement_list(&context);
 
+	#ifdef DEBUG
 	ParseContext_destroy(&context);
+	#endif
+
 	return ret;
 }

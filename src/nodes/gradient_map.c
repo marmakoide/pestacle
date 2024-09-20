@@ -37,7 +37,7 @@ gradient_map_inputs[] = {
 		NodeType__matrix,
 		{ "source", 7 }
 	},
-	{ NodeType__last }
+	NODE_INPUT_DEFINITION_END
 };
 
 
@@ -56,7 +56,7 @@ gradient_map_parameters[] = {
 		{ "height", 7 },
 		{ .int64_value = 32 }
 	},
-	{ ParameterType__last }
+	PARAMETER_DEFINITION_END
 };
 
 
