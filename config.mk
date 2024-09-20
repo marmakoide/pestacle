@@ -1,5 +1,5 @@
 # build mode, dbg=debug rls=release
-MODE=dbg
+MODE=rls
 
 # paths
 INCLUDES=-I./include

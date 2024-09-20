@@ -12,38 +12,16 @@
 
 // --- Command-line arguments -------------------------------------------------
 
-struct arg_lit *help;
-struct arg_file *file;
-struct arg_end *end;
+struct arg_lit* help;
+struct arg_lit* dry_run;
+struct arg_file* file;
+struct arg_end* end;
 
 
 // --- Main entry point -------------------------------------------------------
 
-bool quit = false;
-
-//static SDL_mutex* graph_state_mutex = 0;
-
-Graph graph;
 Scope* root_scope = 0;
 WindowManager window_manager;
-
-/*
-static Uint32
-graph_update_callback(Uint32 interval, void* param) {
-	Uint32 ret = 0;
-
-	// Update the graph state
-	SDL_LockMutex(graph_state_mutex);
-	if (!quit) {
-		Graph_update(&graph);
-		ret = interval;
-	}
-	SDL_UnlockMutex(graph_state_mutex);
-
-	// Job done
-	return ret;
-}
-*/
 
 
 static bool
@@ -78,8 +56,9 @@ main(int argc, char* argv[]) {
 
 	// Command-line parsing
 	void* argtable[] = {
-		help    = arg_litn(NULL, "help", 0, 1, "display this help and exit"),
-		file    = arg_filen(NULL, NULL, "<file>", 1, 1, "input script"),
+		help    = arg_litn( NULL,       "help",    0, 1, "display this help and exit"),
+		dry_run = arg_litn( NULL,       "dry-run", 0, 1, "load but do not execute the script"),
+		file    = arg_filen(NULL, NULL, "<file>",  1, 1, "input script"),
 		end     = arg_end(20),
 	};
 
@@ -88,6 +67,7 @@ main(int argc, char* argv[]) {
 	if (help->count > 0) {
 		printf("Usage: %s", prog_name);
 		arg_print_syntax(stdout, argtable, "\n");
+
 		printf("Runs a pestacle script.\n\n");
 		arg_print_glossary(stdout, argtable, "  %-25s %s\n");
 
@@ -102,15 +82,14 @@ main(int argc, char* argv[]) {
 		goto termination;
 	}
 
-	//SDL_TimerID graph_update_timer = 0;
-
 	// SDL logging settings
 	 SDL_LogSetAllPriority(SDL_LOG_PRIORITY_INFO);
-	 
+
 	// SDL initialization
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_EVENTS)) {
-		exit_code = EXIT_FAILURE;
 		SDL_LogError(SDL_LOG_CATEGORY_SYSTEM, "Unable to initialize SDL: %s", SDL_GetError());
+
+		exit_code = EXIT_FAILURE;
 		goto termination;
 	}
 
@@ -123,47 +102,37 @@ main(int argc, char* argv[]) {
 		&root_scope_delegate
 	);
 
-	if (!Scope_setup(root_scope, &window_manager))
+	if (!Scope_setup(root_scope, &window_manager)) {
+		exit_code = EXIT_FAILURE;
 		goto termination;
+	}
 
 	// Load script
-	if (!load_script(file->filename[0]))
+	if (!load_script(file->filename[0])) {
+		exit_code = EXIT_FAILURE;
 		goto termination;
+	}
 
 	// Initialize the graph
-	if (!Graph_init(&graph, root_scope))
-		goto termination;
-
-	if (!Graph_setup(&graph))
-		goto termination;
-
-	/*
-	// Initialize the animation state mutex
-	graph_state_mutex = SDL_CreateMutex();
-	if (!graph_state_mutex) {
+	Graph graph;
+	if (!Graph_init(&graph, root_scope)) {
 		exit_code = EXIT_FAILURE;
-		SDL_LogError(SDL_LOG_CATEGORY_SYSTEM, "Unable to create state mutex: %s", SDL_GetError());
 		goto termination;
 	}
 
-	// Setup a 20Hz for the animation logic update
-	graph_update_timer = SDL_AddTimer(
-		50,
-		graph_update_callback,
-		0
-	);
-	
-	if (!graph_update_timer) {
+	if (!Graph_setup(&graph)) {
 		exit_code = EXIT_FAILURE;
-		SDL_LogError(SDL_LOG_CATEGORY_SYSTEM, "Could not create SDL timer for state update : %s\n", SDL_GetError());
 		goto termination;
 	}
-	*/
+
+	// If we are in dry-run mode, terminate now
+	if (dry_run->count > 0)
+		goto termination;
 
 	// Main processing loop
 	Uint64 performance_refresh_period = SDL_GetPerformanceFrequency() / 60;
 
-	for(quit = false; !quit; ) {
+	for(bool quit = false; !quit; ) {
 		Uint64 start_time = SDL_GetPerformanceCounter();
 
 		// Event processing
@@ -195,18 +164,12 @@ main(int argc, char* argv[]) {
 
 	// Free ressources
 termination:
-	//if (graph_update_timer)
-	//	SDL_RemoveTimer(graph_update_timer);
-
 	if (root_scope)
 		Scope_destroy(root_scope);
 
 	Graph_destroy(&graph);
 
 	WindowManager_destroy(&window_manager);
-	
-	//if (graph_state_mutex)
-	//	SDL_DestroyMutex(graph_state_mutex);
 	
 	SDL_Quit();
 

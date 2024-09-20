@@ -17,7 +17,7 @@ void
 handle_out_of_memory_error() {
 	SDL_LogError(
 		SDL_LOG_CATEGORY_SYSTEM,
-		"Out of memory\n"
+		"Out of memory"
 	);
 	exit(EXIT_FAILURE);
 }
