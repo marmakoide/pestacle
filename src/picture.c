@@ -126,7 +126,7 @@ load_png(const char* path) {
 	row_pointers = (png_bytep*)checked_malloc(sizeof(png_bytep) * height);
 
 	png_bytep row_ptr = (png_bytep)surface->pixels;
-	for(size_t i = 0; i < height; ++i, row_ptr += surface->pitch)
+	for(int i = 0; i < height; ++i, row_ptr += surface->pitch)
 		row_pointers[i] = row_ptr;
 
 	png_read_image(png, row_pointers);
