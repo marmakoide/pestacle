@@ -35,8 +35,7 @@ ScopeMember_destroy(
 static void
 ScopeMember_print_node_delegate(
 	ScopeMember* self,
-	FILE* out,
-	size_t i
+	FILE* out
 ) {
 	const NodeDelegate* node_delegate = self->node_delegate;
 
@@ -51,8 +50,7 @@ ScopeMember_print_node_delegate(
 static void
 ScopeMember_print_scope_delegate(
 	ScopeMember* self,
-	FILE* out,
-	size_t i
+	FILE* out
 ) {
 	const ScopeDelegate* scope_delegate = self->scope_delegate;
 
@@ -67,8 +65,7 @@ ScopeMember_print_scope_delegate(
 static void
 ScopeMember_print_node(
 	ScopeMember* self,
-	FILE* out,
-	size_t i
+	FILE* out
 ) {
 	Node* node = self->node;
 
@@ -131,7 +128,7 @@ ScopeMember_print(
 
 	switch(self->type) {
 		case ScopeMemberType__node:
-			ScopeMember_print_node(self, out, i);
+			ScopeMember_print_node(self, out);
 			break;
 
 		case ScopeMemberType__scope:
@@ -139,11 +136,11 @@ ScopeMember_print(
 			break;
 
 		case ScopeMemberType__node_delegate:
-			ScopeMember_print_node_delegate(self, out, i);
+			ScopeMember_print_node_delegate(self, out);
 			break;
 
 		case ScopeMemberType__scope_delegate:
-			ScopeMember_print_scope_delegate(self, out, i);
+			ScopeMember_print_scope_delegate(self, out);
 			break;
 
 		default:
