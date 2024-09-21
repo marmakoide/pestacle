@@ -336,16 +336,20 @@ static bool
 Parser_parse_node_delegate_instanciation(
 	ParseContext* context,
 	const String* name,
-	const NodeDelegate* delegate,
-	Scope* delegate_scope
+	ScopeMember* member
 ) {
 	// Build the node
-	Node* node = Node_new(name, delegate, delegate_scope);
+	Node* node = Node_new(
+		name,
+		member->node_delegate,
+		member->parent
+	);
 
 	// Parse parameters
 	ScopeMember constructor_output = {
 		ScopeMemberType__node,
-		{ .node = node }
+		{ .node = node },
+		0
 	};
 
 	if (!Parser_parse_parameter_list(context, &constructor_output))
@@ -353,6 +357,7 @@ Parser_parse_node_delegate_instanciation(
 
 	// Add the node to the root scope
 	Scope_add_node(context->scope, node);
+
 
 	// Job done
 	return true;
@@ -363,11 +368,14 @@ static bool
 Parser_parse_scope_delegate_instanciation(
 	ParseContext* context,
 	const String* name,
-	const ScopeDelegate* delegate,
-	Scope* delegate_scope
+	const ScopeMember* member
 ) {
 	// Build the scope
-	Scope* scope = Scope_new(name, delegate, delegate_scope);
+	Scope* scope = Scope_new(
+		name,
+		member->scope_delegate,
+		member->parent
+	);
 
 	if (!scope)
 		return false;
@@ -375,7 +383,8 @@ Parser_parse_scope_delegate_instanciation(
 	// Parse parameters
 	ScopeMember constructor_output = {
 		ScopeMemberType__scope,
-		{ .scope = scope }
+		{ .scope = scope },
+		0
 	};
 
 	if (!Parser_parse_parameter_list(context, &constructor_output))
@@ -441,16 +450,6 @@ Parser_parse_instanciation(
 		ret = false;
 		goto termination;
 	}
-
-	Scope* owner = 0;
-	if (StringList_length(&right_path) > 1) {
-		owner =
-			Scope_get_member(
-				context->scope,
-				StringList_items(&right_path),
-				StringList_length(&right_path) - 1
-			)->scope;
-	}
 	
 	// Check that the path leads to a builder
 	switch(member->type) {
@@ -458,8 +457,7 @@ Parser_parse_instanciation(
 			ret = Parser_parse_node_delegate_instanciation(
 				context,
 				StringList_at(left_path, 0),
-				member->node_delegate,
-				owner
+				member
 			);
 			break;
 
@@ -467,8 +465,7 @@ Parser_parse_instanciation(
 			ret = Parser_parse_scope_delegate_instanciation(
 				context,
 				StringList_at(left_path, 0),
-				member->scope_delegate,
-				owner
+				member
 			);
 			break;
 

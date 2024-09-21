@@ -99,8 +99,6 @@ struct s_Node {
 	void* data;
 	String name;
 
-	struct s_Scope* parent_scope;   // Scope owning the node, 0 if any
-
 	const NodeDelegate* delegate;
 	struct s_Scope* delegate_scope; // Scope owning the delegate
 

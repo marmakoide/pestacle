@@ -193,7 +193,6 @@ Scope_new(
 	// Setup
 	ret->data = 0;
 	String_clone(&(ret->name), name);
-	ret->parent_scope = 0;
 	ret->delegate = delegate;
 	ret->delegate_scope = delegate_scope;
 
@@ -263,7 +262,6 @@ Scope_destroy(
 	#ifdef DEBUG
 	self->data = 0;
 	self->name.data = 0;
-	self->parent_scope = 0;
 	self->delegate = 0;
 	self->delegate_scope = 0;	
 	self->parameters = 0;
@@ -387,13 +385,13 @@ Scope_add_node(
 
 	ScopeMember member = {
 		ScopeMemberType__node,
-		{ .node = node }
+		{ .node = node },
+		self
 	};
 
 	if (!Scope_add_member(self, &(node->name), &member))
 		return false;
 
-	node->parent_scope = self;
 	return true;
 }
 
@@ -407,14 +405,15 @@ Scope_add_scope(
 	assert(scope != 0);
 
 	ScopeMember member = {
+
 		ScopeMemberType__scope,
-		{ .scope = scope }
+		{ .scope = scope },
+		self
 	};
 
 	if (!Scope_add_member(self, &(scope->name), &member))
 		return false;
 
-	scope->parent_scope = self;
 	return true;
 }
 
@@ -428,7 +427,8 @@ Scope_add_node_delegate(
 
 	ScopeMember member = {
 		ScopeMemberType__node_delegate,
-		{ .node_delegate = node_delegate }
+		{ .node_delegate = node_delegate },
+		self
 	};
 
 	return
@@ -445,7 +445,8 @@ Scope_add_scope_delegate(
 
 	ScopeMember member = {
 		ScopeMemberType__scope_delegate,
-		{ .scope_delegate = scope_delegate }
+		{ .scope_delegate = scope_delegate },
+		self
 	};
 
 	return
@@ -462,7 +463,8 @@ Scope_print(
 
 	ScopeMember root = {
 		ScopeMemberType__scope,
-		{ .scope = self }
+		{ .scope = self },
+		0
 	};
 
 	ScopeMember_print(&root, out, 0);

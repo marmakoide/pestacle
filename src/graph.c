@@ -44,7 +44,8 @@ Scope_gather_node_with_type(
 
 	ScopeMember root = {
 		ScopeMemberType__scope,
-		{ .scope = self }
+		{ .scope = self },
+		0
 	};
 
 	Stack stack;

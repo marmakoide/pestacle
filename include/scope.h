@@ -38,6 +38,7 @@ typedef struct {
 		const NodeDelegate* node_delegate;
 		const ScopeDelegate* scope_delegate;
 	};
+	Scope* parent;
 } ScopeMember;
 
 
@@ -63,8 +64,6 @@ struct s_ScopeDelegate {
 struct s_Scope {
 	void* data;
 	String name;
-
-	struct s_Scope* parent_scope;   // Scope owning the scope, 0 if any
 
 	const ScopeDelegate* delegate;
 	struct s_Scope* delegate_scope; // Scope owning the delegate

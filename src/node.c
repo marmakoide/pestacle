@@ -72,7 +72,6 @@ Node_new(
 	// Setup
 	ret->data = 0;
 	String_clone(&(ret->name), name);
-	ret->parent_scope = 0;
 	ret->delegate = delegate;
 	ret->delegate_scope = delegate_scope;	
 
@@ -152,7 +151,6 @@ Node_destroy(
 	#ifdef DEBUG
 	self->data = 0;
 	self->name.data = 0;
-	self->parent_scope = 0;
 	self->delegate = 0;
 	self->delegate_scope = 0;
 	self->inputs = 0;
