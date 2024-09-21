@@ -135,6 +135,7 @@ ScopeMember_print(
 			ScopeMember_print_scope(self, out, i);
 			break;
 
+
 		case ScopeMemberType__node_delegate:
 			ScopeMember_print_node_delegate(self, out);
 			break;
@@ -180,8 +181,10 @@ ScopeDelegate_parameter_count(
 Scope*
 Scope_new(
 	const String* name,
-	const ScopeDelegate* delegate
+	const ScopeDelegate* delegate,
+	Scope* delegate_scope
 ) {
+	assert(name != 0);
 	assert(delegate != 0);
 
 	// Allocate
@@ -189,8 +192,10 @@ Scope_new(
 
 	// Setup
 	ret->data = 0;
-	ret->delegate = delegate;
 	String_clone(&(ret->name), name);
+	ret->parent_scope = 0;
+	ret->delegate = delegate;
+	ret->delegate_scope = delegate_scope;
 
 	// Allocate members dictionary
 	Dict_init(&(ret->members));
@@ -257,8 +262,10 @@ Scope_destroy(
 
 	#ifdef DEBUG
 	self->data = 0;
-	self->delegate = 0;
 	self->name.data = 0;
+	self->parent_scope = 0;
+	self->delegate = 0;
+	self->delegate_scope = 0;	
 	self->parameters = 0;
 	#endif
 }
@@ -383,8 +390,11 @@ Scope_add_node(
 		{ .node = node }
 	};
 
-	return
-		Scope_add_member(self, &(node->name), &member);
+	if (!Scope_add_member(self, &(node->name), &member))
+		return false;
+
+	node->parent_scope = self;
+	return true;
 }
 
 
@@ -401,8 +411,11 @@ Scope_add_scope(
 		{ .scope = scope }
 	};
 
-	return
-		Scope_add_member(self, &(scope->name), &member);
+	if (!Scope_add_member(self, &(scope->name), &member))
+		return false;
+
+	scope->parent_scope = self;
+	return true;
 }
 
 

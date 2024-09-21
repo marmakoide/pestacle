@@ -96,11 +96,15 @@ typedef struct {
 
 
 struct s_Node {
-	struct s_Scope* parent;
 	void* data;
-	const NodeDelegate* delegate;
-	NodeTypeMetadata metadata;
 	String name;
+
+	struct s_Scope* parent_scope;   // Scope owning the node, 0 if any
+
+	const NodeDelegate* delegate;
+	struct s_Scope* delegate_scope; // Scope owning the delegate
+
+	NodeTypeMetadata metadata;
 	Node** inputs;
 	ParameterValue* parameters;
 }; // struct s_Node
@@ -108,16 +112,16 @@ struct s_Node {
 
 /*
  * Creates a new node instance
- *   parent : scope owning this node
  *   name : name of the instance, will make a copy of the string instance
  *   delegate : delegate for this node
+  *  delegate_scope : scope owning the delegate
  */
 
 extern Node*
 Node_new(
-	struct s_Scope* parent,
 	const String* name,
-	const NodeDelegate* delegate
+	const NodeDelegate* delegate,
+	struct s_Scope* delegate_scope
 );
 
 

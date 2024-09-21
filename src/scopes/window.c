@@ -50,7 +50,7 @@ static void
 display_node_update(
 	Node* self
 ) {
-	Window* window = (Window*)self->parent->data;
+	Window* window = (Window*)self->delegate_scope->data;
 
 	// Retrieve the input
 	SDL_Surface* src =
@@ -152,7 +152,7 @@ mouse_motion_node_setup(
 	assert(self->parent->data);
 
 	// Retrieve the window
-	Window* window = (Window*)self->parent->data;
+	Window* window = (Window*)self->delegate_scope->data;
 
 	// Allocate
 	Matrix* accumulator = (Matrix*)checked_malloc(sizeof(Matrix));
@@ -296,7 +296,7 @@ window_scope_setup(
 
 	// Add the 'display' node
 	Node* display_node = 
-		Node_new(self, &(display_node_delegate.name), &display_node_delegate);
+		Node_new(&(display_node_delegate.name), &display_node_delegate, self);
 
 	if ((!display_node) || (!Scope_add_node(self, display_node)))
 		goto failure;

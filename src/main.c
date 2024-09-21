@@ -99,7 +99,8 @@ main(int argc, char* argv[]) {
 	// Initialize root scope
 	root_scope = Scope_new(
 		&(root_scope_delegate.name),
-		&root_scope_delegate
+		&root_scope_delegate,
+		0
 	);
 
 	if (!Scope_setup(root_scope, &window_manager)) {

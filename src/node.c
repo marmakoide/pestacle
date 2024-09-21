@@ -57,10 +57,11 @@ NodeDelegate_parameter_count(
 
 Node*
 Node_new(
-	struct s_Scope* parent,
 	const String* name,
-	const NodeDelegate* delegate
+	const NodeDelegate* delegate,
+	struct s_Scope* delegate_scope
 ) {
+	assert(name != 0);
 	assert(delegate != 0);
 	assert(delegate->type != NodeType__invalid);
 	assert(delegate->type != NodeType__last);
@@ -69,10 +70,11 @@ Node_new(
 	Node* ret = (Node*)checked_malloc(sizeof(Node));
 
 	// Setup
-	ret->parent = parent;
 	ret->data = 0;
-	ret->delegate = delegate;
 	String_clone(&(ret->name), name);
+	ret->parent_scope = 0;
+	ret->delegate = delegate;
+	ret->delegate_scope = delegate_scope;	
 
 	// Setup inputs array
 	if (NodeDelegate_has_inputs(delegate)) {
@@ -149,8 +151,10 @@ Node_destroy(
 
 	#ifdef DEBUG
 	self->data = 0;
-	self->delegate = 0;
 	self->name.data = 0;
+	self->parent_scope = 0;
+	self->delegate = 0;
+	self->delegate_scope = 0;
 	self->inputs = 0;
 	self->parameters = 0;
 	#endif

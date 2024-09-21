@@ -336,11 +336,11 @@ static bool
 Parser_parse_node_delegate_instanciation(
 	ParseContext* context,
 	const String* name,
-	Scope* owner,
-	const NodeDelegate* node_delegate
+	const NodeDelegate* delegate,
+	Scope* delegate_scope
 ) {
 	// Build the node
-	Node* node = Node_new(owner, name, node_delegate);
+	Node* node = Node_new(name, delegate, delegate_scope);
 
 	// Parse parameters
 	ScopeMember constructor_output = {
@@ -363,10 +363,11 @@ static bool
 Parser_parse_scope_delegate_instanciation(
 	ParseContext* context,
 	const String* name,
-	const ScopeDelegate* scope_delegate
+	const ScopeDelegate* delegate,
+	Scope* delegate_scope
 ) {
 	// Build the scope
-	Scope* scope = Scope_new(name, scope_delegate);
+	Scope* scope = Scope_new(name, delegate, delegate_scope);
 
 	if (!scope)
 		return false;
@@ -457,8 +458,8 @@ Parser_parse_instanciation(
 			ret = Parser_parse_node_delegate_instanciation(
 				context,
 				StringList_at(left_path, 0),
-				owner,
-				member->node_delegate
+				member->node_delegate,
+				owner
 			);
 			break;
 
@@ -466,7 +467,8 @@ Parser_parse_instanciation(
 			ret = Parser_parse_scope_delegate_instanciation(
 				context,
 				StringList_at(left_path, 0),
-				member->scope_delegate
+				member->scope_delegate,
+				owner
 			);
 			break;
 

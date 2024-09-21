@@ -62,8 +62,13 @@ struct s_ScopeDelegate {
 
 struct s_Scope {
 	void* data;
-	const ScopeDelegate* delegate;
 	String name;
+
+	struct s_Scope* parent_scope;   // Scope owning the scope, 0 if any
+
+	const ScopeDelegate* delegate;
+	struct s_Scope* delegate_scope; // Scope owning the delegate
+	
 	ParameterValue* parameters;
 	Dict members;
 }; // struct s_Scope
@@ -79,7 +84,8 @@ Scope_print(
 extern Scope*
 Scope_new(
 	const String* name,
-	const ScopeDelegate* delegate
+	const ScopeDelegate* delegate,
+	Scope* delegate_scope
 );
 
 
