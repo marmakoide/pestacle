@@ -50,6 +50,18 @@ ParameterValue_copy(
 );
 
 
+extern bool
+ParameterDefinition_has_parameters(
+	const ParameterDefinition* array	
+);
+
+
+extern size_t
+ParameterDefinition_parameter_count(
+	const ParameterDefinition* array	
+);
+
+
 #ifdef __cplusplus
 }
 #endif

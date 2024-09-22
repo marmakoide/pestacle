@@ -150,32 +150,6 @@ ScopeMember_print(
 }
 
 
-// --- ScopeDelegate ----------------------------------------------------------
-
-static bool
-ScopeDelegate_has_parameters(
-	const ScopeDelegate* self
-) {
-	assert(self != 0);
-
-	return self->parameter_defs->type != ParameterType__last;
-}
-
-
-static size_t
-ScopeDelegate_parameter_count(
-	const ScopeDelegate* self
-) {
-	assert(self != 0);
-
-	size_t count = 0;
-	const ParameterDefinition* param_def = self->parameter_defs;
-	for( ; param_def->type != ParameterType__last; ++param_def, ++count);
-
-	return count;
-}
-
-
 // --- Scope ------------------------------------------------------------------
 
 Scope*
@@ -200,8 +174,8 @@ Scope_new(
 	Dict_init(&(ret->members));
 
 	// Setup parameters array
-	if (ScopeDelegate_has_parameters(delegate)) {
-		size_t parameter_count = ScopeDelegate_parameter_count(delegate);
+	if (ParameterDefinition_has_parameters(delegate->parameter_defs)) {
+		size_t parameter_count = ParameterDefinition_parameter_count(delegate->parameter_defs);
 		
 		ret->parameters =
 			(ParameterValue*)checked_malloc(parameter_count * sizeof(ParameterValue));
@@ -253,7 +227,7 @@ Scope_destroy(
 			String_destroy(&(param->string_value));
 	}
 
-	if (ScopeDelegate_has_parameters(self->delegate))
+	if (ParameterDefinition_has_parameters(self->delegate->parameter_defs))
 		free(self->parameters);
 
 	// Destroy name

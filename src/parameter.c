@@ -30,3 +30,26 @@ ParameterValue_copy(
 			break;
 	}
 }
+
+
+bool
+ParameterDefinition_has_parameters(
+	const ParameterDefinition* array
+) {
+	assert(array != 0);
+
+	return array->type != ParameterType__last;
+}
+
+
+size_t
+ParameterDefinition_parameter_count(
+	const ParameterDefinition* array
+) {
+	assert(array != 0);
+
+	size_t count = 0;
+	for( ; array->type != ParameterType__last; ++array, ++count);
+
+	return count;
+}

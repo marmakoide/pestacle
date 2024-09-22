@@ -29,30 +29,6 @@ NodeDelegate_input_count(
 }
 
 
-static bool
-NodeDelegate_has_parameters(
-	const NodeDelegate* self
-) {
-	assert(self != 0);
-
-	return self->parameter_defs->type != ParameterType__last;
-}
-
-
-static size_t
-NodeDelegate_parameter_count(
-	const NodeDelegate* self
-) {
-	assert(self != 0);
-
-	size_t count = 0;
-	const ParameterDefinition* param_def = self->parameter_defs;
-	for( ; param_def->type != ParameterType__last; ++param_def, ++count);
-
-	return count;
-}
-
-
 // --- Node -------------------------------------------------------------------
 
 Node*
@@ -89,8 +65,8 @@ Node_new(
 		ret->inputs = 0;
 
 	// Setup parameters array
-	if (NodeDelegate_has_parameters(delegate)) {
-		size_t parameter_count = NodeDelegate_parameter_count(delegate);
+	if (ParameterDefinition_has_parameters(delegate->parameter_defs)) {
+		size_t parameter_count = ParameterDefinition_parameter_count(delegate->parameter_defs);
 		
 		ret->parameters =
 			(ParameterValue*)checked_malloc(parameter_count * sizeof(ParameterValue));
@@ -145,7 +121,7 @@ Node_destroy(
 	}
 
 	// Deallocate parameter array
-	if (NodeDelegate_has_parameters(self->delegate))
+	if (ParameterDefinition_has_parameters(self->delegate->parameter_defs))
 		free(self->parameters);
 
 	#ifdef DEBUG
