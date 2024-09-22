@@ -174,23 +174,7 @@ Scope_new(
 	Dict_init(&(ret->members));
 
 	// Setup parameters array
-	if (ParameterDefinition_has_parameters(delegate->parameter_defs)) {
-		size_t parameter_count = ParameterDefinition_parameter_count(delegate->parameter_defs);
-		
-		ret->parameters =
-			(ParameterValue*)checked_malloc(parameter_count * sizeof(ParameterValue));
-
-		ParameterValue* param = ret->parameters;
-		const ParameterDefinition* param_def = delegate->parameter_defs;
-		for( ; param_def->type != ParameterType__last; ++param, ++param_def)
-			ParameterValue_copy(
-				param,
-				&(param_def->default_value),
-				param_def->type
-			);
-	}
-	else
-		ret->parameters = 0;
+	ret->parameters = ParameterValue_new(delegate->parameter_defs);
 
 	// Job done
 	return ret;
@@ -220,15 +204,10 @@ Scope_destroy(
 	Dict_destroy(&(self->members));
 
 	// Deallocate parameters
-	ParameterValue* param = self->parameters;
-	const ParameterDefinition* param_def = self->delegate->parameter_defs;
-	for( ; param_def->type != ParameterType__last; ++param, ++param_def) {
-		if (param_def->type == ParameterType__string)
-			String_destroy(&(param->string_value));
-	}
-
-	if (ParameterDefinition_has_parameters(self->delegate->parameter_defs))
+	if (self->parameters) {
+		ParameterValue_destroy(self->parameters, self->delegate->parameter_defs);
 		free(self->parameters);
+	}
 
 	// Destroy name
 	String_destroy(&(self->name));

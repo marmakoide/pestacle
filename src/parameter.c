@@ -1,4 +1,5 @@
 #include <assert.h>
+#include "memory.h"
 #include "parameter.h"
 
 
@@ -32,7 +33,7 @@ ParameterValue_copy(
 }
 
 
-bool
+static bool
 ParameterDefinition_has_parameters(
 	const ParameterDefinition* array
 ) {
@@ -42,7 +43,7 @@ ParameterDefinition_has_parameters(
 }
 
 
-size_t
+static size_t
 ParameterDefinition_parameter_count(
 	const ParameterDefinition* array
 ) {
@@ -52,4 +53,44 @@ ParameterDefinition_parameter_count(
 	for( ; array->type != ParameterType__last; ++array, ++count);
 
 	return count;
+}
+
+
+ParameterValue*
+ParameterValue_new(
+	const ParameterDefinition* param_defs
+) {
+	assert(param_defs != 0);
+
+	if (!ParameterDefinition_has_parameters(param_defs))
+		return 0;
+
+	size_t parameter_count = ParameterDefinition_parameter_count(param_defs);
+		
+	ParameterValue* ret =
+		(ParameterValue*)checked_malloc(parameter_count * sizeof(ParameterValue));
+
+	ParameterValue* param = ret;
+	for( ; param_defs->type != ParameterType__last; ++param, ++param_defs)
+		ParameterValue_copy(
+			param,
+			&(param_defs->default_value),
+			param_defs->type
+		);
+
+	return ret;
+}
+
+
+void
+ParameterValue_destroy(
+	ParameterValue* self,
+	const ParameterDefinition* param_defs
+) {
+	assert(self != 0);
+	assert(param_defs != 0);
+
+	for( ; param_defs->type != ParameterType__last; ++self, ++param_defs)
+		if (param_defs->type == ParameterType__string)
+			String_destroy(&(self->string_value));
 }

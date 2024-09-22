@@ -50,15 +50,16 @@ ParameterValue_copy(
 );
 
 
-extern bool
-ParameterDefinition_has_parameters(
-	const ParameterDefinition* array	
+extern ParameterValue*
+ParameterValue_new(
+	const ParameterDefinition* param_defs
 );
 
 
-extern size_t
-ParameterDefinition_parameter_count(
-	const ParameterDefinition* array	
+extern void
+ParameterValue_destroy(
+	ParameterValue* self,
+	const ParameterDefinition* param_defs
 );
 
 
