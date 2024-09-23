@@ -1,3 +1,4 @@
+#include <math.h>
 #include <assert.h>
 #include <memory.h>
 #include "graph.h"
@@ -72,18 +73,50 @@ GraphProfile_print_report(
 	assert(self != 0);
 	assert(fp != 0);
 
-	Node** node_ptr = graph->sorted_nodes;
-	NodeProfile* profile_ptr = self->node_profiles;
+	Node** node_ptr;
+	NodeProfile* profile_ptr;
 
+
+	// Compute the max length for the node identification field
+	size_t node_id_max_len = 0;
+
+	node_ptr = graph->sorted_nodes;
+	profile_ptr = self->node_profiles;
+	for(size_t i = graph->sorted_node_count; i != 0; --i, ++node_ptr, ++profile_ptr) {
+		size_t node_id_len =
+			(*node_ptr)->name.len +
+			(*node_ptr)->delegate->name.len;
+
+		if (node_id_max_len < node_id_len)
+			node_id_max_len = node_id_len;
+	}
+
+	// Print the report
 	printf("%lu updates\n", self->update_count);
 
+	node_ptr = graph->sorted_nodes;
+	profile_ptr = self->node_profiles;
 	for(size_t i = graph->sorted_node_count; i != 0; --i, ++node_ptr, ++profile_ptr) {
+		// 
 		fprintf(
 			fp,
-			"  %s : %s => %f msec\n",
+			"  %s : %s",
 			(*node_ptr)->name.data,
-			(*node_ptr)->delegate->name.data,
-			1e3f * profile_ptr->mean_time
+			(*node_ptr)->delegate->name.data
+		);
+
+		size_t node_id_len =
+			(*node_ptr)->name.len +
+			(*node_ptr)->delegate->name.len;
+
+		for(size_t j = 0; j < node_id_max_len - node_id_len; ++j)
+			fputc(' ', fp);
+
+		fprintf(
+			fp,
+			" => %.3f msec (+/- %.3f)\n",
+			1e3f * profile_ptr->mean_time,
+			sqrtf(3 * 1e3f * profile_ptr->m2_time / self->update_count)
 		);
 	}
 }
