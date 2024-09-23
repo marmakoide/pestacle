@@ -170,6 +170,8 @@ void
 Graph_destroy(
 	Graph* self
 ) {
+	assert(self != 0);
+
 	if (self->sorted_nodes) {
 		free(self->sorted_nodes);
 
@@ -185,11 +187,15 @@ bool
 Graph_setup(
 	Graph* self
 ) {
+	assert(self != 0);
+
+	// Setup the nodes in reverse topological order
 	Node** node_ptr = self->sorted_nodes + self->sorted_node_count - 1;
 	for(size_t i = self->sorted_node_count; i != 0; --i, --node_ptr)
 		if (!Node_setup(*node_ptr))
 			return false;
 
+	// Job done
 	return true;
 }
 
@@ -198,8 +204,41 @@ void
 Graph_update(
 	Graph* self
 ) {
+	assert(graph != 0);
+
 	// Update the nodes in topological order
 	Node** node_ptr = self->sorted_nodes;
 	for(size_t i = self->sorted_node_count; i != 0; --i, ++node_ptr)
 		Node_update(*node_ptr);
+}
+
+
+void
+Graph_update_with_profile(
+	Graph* self,
+	GraphProfile* profile
+) {
+	assert(graph != 0);
+	assert(profile != 0);
+
+	// Update the number of updates
+	profile->update_count += 1;
+
+	// Update the nodes in topological order
+	Node** node_ptr = self->sorted_nodes;
+	NodeProfile* profile_ptr = profile->node_profiles;
+
+	for(size_t i = self->sorted_node_count; i != 0; --i, ++node_ptr, ++profile_ptr) {
+		// Update the node
+		Uint64 start_time = SDL_GetPerformanceCounter();
+		Node_update(*node_ptr);
+		Uint64 end_time = SDL_GetPerformanceCounter();
+
+		// Track the running time for that node
+		NodeProfile_update(
+			profile_ptr,
+			((float)(end_time - start_time)) / SDL_GetPerformanceFrequency(),
+			profile->update_count
+		);
+	}
 }

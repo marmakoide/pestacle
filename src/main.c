@@ -14,6 +14,7 @@
 
 struct arg_lit* help;
 struct arg_lit* dry_run;
+struct arg_lit* profile_mode;
 struct arg_file* file;
 struct arg_end* end;
 
@@ -56,10 +57,11 @@ main(int argc, char* argv[]) {
 
 	// Command-line parsing
 	void* argtable[] = {
-		help    = arg_litn( NULL,       "help",    0, 1, "display this help and exit"),
-		dry_run = arg_litn( NULL,       "dry-run", 0, 1, "load but do not execute the script"),
-		file    = arg_filen(NULL, NULL, "<file>",  1, 1, "input script"),
-		end     = arg_end(20),
+		help         = arg_litn( NULL,       "help",    0, 1, "display this help and exit"),
+		dry_run      = arg_litn( NULL,       "dry-run", 0, 1, "load but do not execute the script"),
+		profile_mode = arg_litn( NULL,       "profile", 0, 1, "enable profiling of the executed script"),
+		file         = arg_filen(NULL, NULL, "<file>",  1, 1, "input script"),
+		end          = arg_end(20),
 	};
 
 	int cmd_line_error_count = arg_parse(argc, argv, argtable);
@@ -116,6 +118,7 @@ main(int argc, char* argv[]) {
 
 	// Initialize the graph
 	Graph graph;
+
 	if (!Graph_init(&graph, root_scope)) {
 		exit_code = EXIT_FAILURE;
 		goto termination;
@@ -125,6 +128,11 @@ main(int argc, char* argv[]) {
 		exit_code = EXIT_FAILURE;
 		goto termination;
 	}
+
+	// Setup graph profiling if required
+	GraphProfile graph_profile;
+	if (profile_mode->count > 0)
+		GraphProfile_init(&graph_profile, &graph);
 
 	// If we are in dry-run mode, terminate now
 	if (dry_run->count > 0)
@@ -151,7 +159,10 @@ main(int argc, char* argv[]) {
 		}
 
 		// Graph update
-		Graph_update(&graph);
+		if (profile_mode->count > 0)
+			Graph_update_with_profile(&graph, &graph_profile);
+		else
+			Graph_update(&graph);
 
 		// Update all windows
 		WindowManager_update_windows(&window_manager);
@@ -163,12 +174,19 @@ main(int argc, char* argv[]) {
 			SDL_Delay((performance_refresh_period - time_delta) / (1e-3f * SDL_GetPerformanceFrequency()));
 	}
 
+	// Print the profiling report if required
+	if (profile_mode->count > 0)
+		GraphProfile_print_report(&graph_profile, &graph, stdout);
+
 	// Free ressources
 termination:
 	if (root_scope)
 		Scope_destroy(root_scope);
 
 	Graph_destroy(&graph);
+
+	if (profile_mode->count > 0)
+		GraphProfile_destroy(&graph_profile);
 
 	WindowManager_destroy(&window_manager);
 	

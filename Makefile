@@ -25,6 +25,7 @@ $(BUILD_DIR)/parameter.o \
 $(BUILD_DIR)/node.o \
 $(BUILD_DIR)/scope.o \
 $(BUILD_DIR)/graph.o \
+$(BUILD_DIR)/graph_profile.o \
 $(BUILD_DIR)/window_manager.o \
 $(BUILD_DIR)/scopes/root.o \
 $(BUILD_DIR)/scopes/window.o \

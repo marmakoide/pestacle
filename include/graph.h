@@ -10,11 +10,15 @@ extern "C" {
 #include "vector.h"
 #include "matrix.h"
 #include "scope.h"
+#include "graph_profile.h"
 
-typedef struct {
+
+struct s_Graph {
 	size_t sorted_node_count;
 	Node** sorted_nodes;
-} Graph;
+}; // struct s_Graph
+
+typedef struct s_Graph Graph;
 
 
 extern bool
@@ -40,6 +44,13 @@ extern void
 Graph_update(
 	Graph* self
 );
+
+extern void
+Graph_update_with_profile(
+	Graph* self,
+	GraphProfile* profile
+);
+
 
 
 #ifdef __cplusplus
