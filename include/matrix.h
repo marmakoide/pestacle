@@ -8,7 +8,7 @@ extern "C" {
 
 #include "vector.h"
 
-// col major matrix
+// row major matrix
 
 typedef struct {
 	size_t row_count;
@@ -54,6 +54,13 @@ Matrix_get_coeff(
 	const Matrix* self,
 	size_t row,
 	size_t col
+);
+
+
+extern void
+Matrix_transpose(
+	Matrix* self,
+	const Matrix* other
 );
 
 

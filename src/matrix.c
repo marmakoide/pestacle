@@ -40,7 +40,7 @@ Matrix_destroy(
 void
 Matrix_print(
 	const Matrix* self,
-	FILE* f,
+	FILE* fp,
 	const char* format
 ) {
 	assert(self != 0);
@@ -51,18 +51,18 @@ Matrix_print(
 	const real_t* src = self->data;
 	for(size_t i = self->row_count; i != 0; --i, src += self->col_count) {
 		if (i == self->row_count)
-			fputs("[", f);
+			fputs("[", fp);
 		else
-			fputs(" ", f);
+			fputs(" ", fp);
 	
-		fputs("[", f);
-		array_ops_print(src, self->col_count, f, format);
-		fputs("]", f);
+		fputs("[", fp);
+		array_ops_print(src, self->col_count, fp, format);
+		fputs("]", fp);
 
 		if (i > 0)
-			fputs("]\n", f);
+			fputs("]\n", fp);
 		else
-			fputs("]]\n", f);
+			fputs("]]\n", fp);
 	}
 }
 
@@ -95,6 +95,35 @@ Matrix_get_coeff(
 	assert(col < self->col_count);
 
 	return self->data[row * self->col_count + col];
+}
+
+
+void
+Matrix_transpose(
+	Matrix* self,
+	const Matrix* other
+) {
+	assert(self != 0);
+	assert(self->data != 0);
+	assert(other != 0);
+	assert(other->data != 0);
+	assert(self->row_count == other->col_count);
+	assert(self->col_count == other->row_count);
+
+	// Transpose the square part of the matrix
+	real_t* u_row_ptr = self->data;
+	real_t* v_col_ptr = other->data;
+
+	for(size_t i = 0; i < self->row_count; ++i, u_row_ptr += self->col_count, v_col_ptr += 1) {
+		real_t* u_ptr = u_row_ptr;
+		real_t* v_ptr = v_col_ptr;
+
+		for(size_t j = 0; j < self->col_count; ++j, ++u_ptr, v_ptr += self->row_count) {
+			size_t tmp = *u_ptr;
+			*u_ptr = *v_ptr;
+			*v_ptr = tmp;
+		}
+	}
 }
 
 
