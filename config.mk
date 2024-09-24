@@ -23,12 +23,12 @@ CFLAGS += -DDEBUG -O0 -g -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer
 endif
 
 # include paths
-INCLUDES=-I./include
+LIBPESTACLE_INCLUDES=-I./libpestacle/include
+LIBPESTACLE_INCLUDES += $(shell sdl2-config --cflags)
 
-CFLAGS += $(INCLUDES)
-CFLAGS += $(shell pkg-config --cflags libavcodec)
-CFLAGS += $(shell pkg-config --cflags libavformat)
-CFLAGS += $(shell pkg-config --cflags libavutil)
-CFLAGS += $(shell pkg-config --cflags libpng)
-CFLAGS += $(shell sdl2-config --cflags)
-CFLAGS += $(shell pkg-config --cflags zlib)
+PESTACLE_INCLUDES=-I./tools/pestacle/include
+PESTACLE_INCLUDES += $(shell pkg-config --cflags libavcodec)
+PESTACLE_INCLUDES += $(shell pkg-config --cflags libavformat)
+PESTACLE_INCLUDES += $(shell pkg-config --cflags libavutil)
+PESTACLE_INCLUDES += $(shell pkg-config --cflags libpng)
+PESTACLE_INCLUDES += $(shell pkg-config --cflags zlib)
