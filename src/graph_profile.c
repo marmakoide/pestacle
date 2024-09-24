@@ -97,7 +97,6 @@ GraphProfile_print_report(
 	node_ptr = graph->sorted_nodes;
 	profile_ptr = self->node_profiles;
 	for(size_t i = graph->sorted_node_count; i != 0; --i, ++node_ptr, ++profile_ptr) {
-		// 
 		fprintf(
 			fp,
 			"  %s : %s",

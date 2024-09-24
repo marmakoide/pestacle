@@ -110,7 +110,6 @@ Matrix_transpose(
 	assert(self->row_count == other->col_count);
 	assert(self->col_count == other->row_count);
 
-	// Transpose the square part of the matrix
 	real_t* u_row_ptr = self->data;
 	real_t* v_col_ptr = other->data;
 
