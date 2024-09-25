@@ -94,6 +94,6 @@ $(BUILD_DIR)/libpestacle/parser/%.deps: libpestacle/src/parser/%.c
 # --- Misc targets ------------------------------------------------------------
 
 clean:
-	@rm -rf $(BUILD_DIR)
+	@rm -rf $(BUILD_DIR) pestacle
 
 .PHONY: all clean
