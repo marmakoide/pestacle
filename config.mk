@@ -1,7 +1,13 @@
 # build mode, dbg=debug rls=release
 MODE=rls
 
-# libraries
+# Build directory
+BUILD_DIR=./build
+
+# Libraries paths
+LIBPESTACLE_LIBS=-L./build -lpestacle
+
+LIBS += $(LIBPESTACLE_LIBS)
 LIBS += $(shell pkg-config --libs libavcodec)
 LIBS += $(shell pkg-config --libs libavformat)
 LIBS += $(shell pkg-config --libs libavutil)
@@ -22,7 +28,7 @@ ifeq ($(MODE), dbg)
 CFLAGS += -DDEBUG -O0 -g -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer
 endif
 
-# include paths
+# Include paths
 LIBPESTACLE_INCLUDES=-I./libpestacle/include
 LIBPESTACLE_INCLUDES += $(shell sdl2-config --cflags)
 

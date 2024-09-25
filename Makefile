@@ -1,7 +1,8 @@
 include config.mk
 
-BUILD_DIR = ./build
-TARGETS = pestacle $(BUILD_DIR)/libpestacle.a
+TARGETS = \
+$(BUILD_DIR)/libpestacle.so \
+$(BUILD_DIR)/pestacle
 
 
 all: $(TARGETS)
@@ -9,7 +10,7 @@ all: $(TARGETS)
 
 # ------ pestacle -------------------------------------------------------------
 
-pestacle: \
+$(BUILD_DIR)/pestacle: \
 $(BUILD_DIR)/tools/pestacle/main.o \
 $(BUILD_DIR)/tools/pestacle/argtable3.o \
 $(BUILD_DIR)/tools/pestacle/picture.o \
@@ -22,8 +23,7 @@ $(BUILD_DIR)/tools/pestacle/nodes/surface_blend.o \
 $(BUILD_DIR)/tools/pestacle/nodes/surface_resize.o \
 $(BUILD_DIR)/tools/pestacle/nodes/video.o \
 $(BUILD_DIR)/tools/pestacle/scopes/root.o \
-$(BUILD_DIR)/tools/pestacle/scopes/window.o \
-$(BUILD_DIR)/libpestacle.a
+$(BUILD_DIR)/tools/pestacle/scopes/window.o
 	$(CC) -o $@ $^ $(LIBS)
 
 
@@ -45,9 +45,9 @@ $(BUILD_DIR)/tools/pestacle/scopes/%.o: tools/pestacle/src/scopes/%.c
 -include $(patsubst tools/pestacle/src/scopes/%.c, $(BUILD_DIR)/tools/pestacle/src/scopes/%.deps, $(wildcard tools/pestacle/src/scopes/*.c))
 
 
-# ------ libpestacle.a --------------------------------------------------------
+# ------ libpestacle.so -------------------------------------------------------
 
-$(BUILD_DIR)/libpestacle.a: \
+$(BUILD_DIR)/libpestacle.so: \
 $(BUILD_DIR)/libpestacle/errors.o \
 $(BUILD_DIR)/libpestacle/memory.o \
 $(BUILD_DIR)/libpestacle/strings.o \
@@ -66,16 +66,16 @@ $(BUILD_DIR)/libpestacle/graph_profile.o \
 $(BUILD_DIR)/libpestacle/window_manager.o \
 $(BUILD_DIR)/libpestacle/parser/lexer.o \
 $(BUILD_DIR)/libpestacle/parser/parser.o
-	$(AR) rcs $@ $^
+	$(CC) -shared -o $@ $^
 
 
 $(BUILD_DIR)/libpestacle/%.o: libpestacle/src/%.c
 	@mkdir -p $(BUILD_DIR)/libpestacle
-	$(CC) -o $@ -c $(CFLAGS) $(LIBPESTACLE_INCLUDES) $<
+	$(CC) -o $@ -c -fPIC $(CFLAGS) $(LIBPESTACLE_INCLUDES) $<
 
 $(BUILD_DIR)/libpestacle/parser/%.o: libpestacle/src/parser/%.c
 	@mkdir -p $(BUILD_DIR)/libpestacle/parser
-	$(CC) -o $@ -c $(CFLAGS) $(SDL2_CFLAGS) $(LIBPESTACLE_INCLUDES) $<
+	$(CC) -o $@ -c -fPIC $(CFLAGS) $(SDL2_CFLAGS) $(LIBPESTACLE_INCLUDES) $<
 
 
 $(BUILD_DIR)/libpestacle/%.deps: libpestacle/src/%.c
@@ -94,6 +94,6 @@ $(BUILD_DIR)/libpestacle/parser/%.deps: libpestacle/src/parser/%.c
 # --- Misc targets ------------------------------------------------------------
 
 clean:
-	@rm -rf $(BUILD_DIR) pestacle
+	@rm -rf $(BUILD_DIR)
 
 .PHONY: all clean
