@@ -10,7 +10,7 @@ all: $(TARGETS)
 
 # ------ pestacle -------------------------------------------------------------
 
-$(BUILD_DIR)/pestacle: \
+PESTACLE_OBJS = \
 $(BUILD_DIR)/tools/pestacle/main.o \
 $(BUILD_DIR)/tools/pestacle/argtable3.o \
 $(BUILD_DIR)/tools/pestacle/picture.o \
@@ -24,7 +24,9 @@ $(BUILD_DIR)/tools/pestacle/nodes/surface_resize.o \
 $(BUILD_DIR)/tools/pestacle/nodes/video.o \
 $(BUILD_DIR)/tools/pestacle/scopes/root.o \
 $(BUILD_DIR)/tools/pestacle/scopes/window.o
-	$(CC) -o $@ $^ $(LIBS)
+
+$(BUILD_DIR)/pestacle: $(PESTACLE_OBJS) $(BUILD_DIR)/libpestacle.so
+	$(CC) -o $@ $(PESTACLE_OBJS) $(LIBS)
 
 
 $(BUILD_DIR)/tools/pestacle/%.o: tools/pestacle/src/%.c
@@ -91,7 +93,23 @@ $(BUILD_DIR)/libpestacle/parser/%.deps: libpestacle/src/parser/%.c
 -include $(patsubst libpestacle/src/parser/%.c, $(BUILD_DIR)/libpestacle/parser/%.deps, $(wildcard libpestacle/src/parser/*.c))
 
 
-# --- Misc targets ------------------------------------------------------------
+# ------ Unit testing ---------------------------------------------------------
+
+test: \
+$(BUILD_DIR)/test/math
+
+$(BUILD_DIR)/test/math: $(BUILD_DIR)/test/math.o $(BUILD_DIR)/libpestacle.so
+	@mkdir -p $(BUILD_DIR)/test
+	$(CC) -o $@ $< $(LIBS)
+
+$(BUILD_DIR)/test/%.o: test/%.c
+	@mkdir -p $(BUILD_DIR)/test
+	$(CC) -o $@ -c $(CFLAGS) $(LIBPESTACLE_INCLUDES) $(TEST_INCLUDES) $<
+
+-include $(patsubst test/%.c, $(BUILD_DIR)/test/%.deps, $(wildcard test/*.c))
+
+
+# ------ Misc targets ---------------------------------------------------------
 
 clean:
 	@rm -rf $(BUILD_DIR)

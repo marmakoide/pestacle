@@ -29,6 +29,8 @@ CFLAGS += -DDEBUG -O0 -g -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer
 endif
 
 # Include paths
+TEST_INCLUDES=-I./test
+
 LIBPESTACLE_INCLUDES=-I./libpestacle/include
 LIBPESTACLE_INCLUDES += $(shell sdl2-config --cflags)
 

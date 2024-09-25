@@ -9,6 +9,7 @@ Vector_init(
 	size_t len
 ) {
 	assert(self != 0);
+	assert(len > 0);
 
 	self->len = len;
 	self->data = array_ops_allocate(self->len);
