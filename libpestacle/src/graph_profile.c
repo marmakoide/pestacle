@@ -92,7 +92,7 @@ GraphProfile_print_report(
 	}
 
 	// Print the report
-	printf("%lu updates\n", self->update_count);
+	fprintf(fp, "%llu updates\n", self->update_count);
 
 	node_ptr = graph->sorted_nodes;
 	profile_ptr = self->node_profiles;
