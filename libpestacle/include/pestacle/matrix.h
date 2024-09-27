@@ -72,6 +72,13 @@ Matrix_fill(
 
 
 extern void
+Matrix_copy(
+	Matrix* self,
+	const Matrix* other
+);
+
+
+extern void
 Matrix_scale(
 	Matrix* self,
 	real_t value

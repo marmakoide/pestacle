@@ -237,11 +237,22 @@ MU_TEST(test_Vector_convolution) {
 
 // --- Matrix tests -----------------------------------------------------------
 
+static void
+matrix_filler(
+	Matrix* M
+) {
+	size_t k = 0;
+	for(size_t i = 0; i < M->row_count; ++i)
+		for(size_t j = 0; j < M->col_count; ++j, ++k)
+			Matrix_set_coeff(M, i, j, k);
+}
+
+
 MU_TEST(test_Matrix_fill) {
 	Matrix U;
 
-	for(size_t i = 1; i < 256; i += 8) {
-		for(size_t j = 1; j < 256; j += 8) {
+	for(size_t i = 1; i < 256; i += 9) {
+		for(size_t j = 1; j < 256; j += 9) {
 			real_t k = i * j;
 
 			Matrix_init(&U, i, j);
@@ -255,6 +266,31 @@ MU_TEST(test_Matrix_fill) {
 					);
 
 			Matrix_destroy(&U);
+		}
+	}
+}
+
+
+MU_TEST(test_Matrix_copy) {
+	Matrix U, V;
+
+	for(size_t i = 1; i < 256; i += 9) {
+		for(size_t j = 1; j < 256; j += 9) {
+			Matrix_init(&U, i, j);
+			matrix_filler(&U);
+			
+			Matrix_init(&V, i, j);
+			Matrix_copy(&V, &U);
+
+			for(size_t ui = 0; ui < i; ++ui)
+				for(size_t uj = 0; uj < j; ++uj)
+					mu_assert_double_eq(
+						Matrix_get_coeff(&U, ui, uj),
+						Matrix_get_coeff(&V, ui, uj)
+					);
+
+			Matrix_destroy(&U);
+			Matrix_destroy(&V);
 		}
 	}
 }
@@ -278,6 +314,7 @@ MU_TEST_SUITE(test_Vector_suite) {
 
 MU_TEST_SUITE(test_Matrix_suite) {
 	MU_RUN_TEST(test_Matrix_fill);
+	MU_RUN_TEST(test_Matrix_copy);
 }
 
 

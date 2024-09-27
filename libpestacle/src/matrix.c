@@ -143,6 +143,25 @@ Matrix_fill(
 
 
 void
+Matrix_copy(
+	Matrix* self,
+	const Matrix* other
+) {
+	assert(self != 0);
+	assert(self->data != 0);
+	assert(other != 0);
+	assert(other->data != 0);
+	assert(self->row_count == other->row_count);
+	assert(self->col_count == other->col_count);
+
+	array_ops_copy(
+		self->data,
+		other->data,
+		self->data_len
+	);
+}
+
+void
 Matrix_scale(
 	Matrix* self,
 	real_t value
