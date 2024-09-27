@@ -195,6 +195,26 @@ Matrix_add(
 
 
 void
+Matrix_sub(
+	Matrix* self,
+	const Matrix* in
+) {
+	assert(self != 0);
+	assert(self->data != 0);
+	assert(in != 0);
+	assert(in->data != 0);
+	assert(self->row_count == in->row_count);
+	assert(self->col_count == in->col_count);
+
+	array_ops_sub(
+		self->data,
+		in->data,
+		self->data_len
+	);
+}
+
+
+void
 Matrix_scaled_add(
 	Matrix* self,
 	const Matrix* in,

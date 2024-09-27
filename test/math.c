@@ -238,7 +238,7 @@ MU_TEST(test_Vector_convolution) {
 // --- Matrix tests -----------------------------------------------------------
 
 static void
-matrix_filler(
+Matrix_filler(
 	Matrix* M
 ) {
 	size_t k = 0;
@@ -277,7 +277,7 @@ MU_TEST(test_Matrix_copy) {
 	for(size_t i = 1; i < 256; i += 9) {
 		for(size_t j = 1; j < 256; j += 9) {
 			Matrix_init(&U, i, j);
-			matrix_filler(&U);
+			Matrix_filler(&U);
 			
 			Matrix_init(&V, i, j);
 			Matrix_copy(&V, &U);
@@ -302,7 +302,7 @@ MU_TEST(test_Matrix_transpose) {
 	for(size_t i = 1; i < 256; i += 9) {
 		for(size_t j = 1; j < 256; j += 9) {
 			Matrix_init(&U, i, j);
-			matrix_filler(&U);
+			Matrix_filler(&U);
 			
 			Matrix_init(&V, j, i);
 			Matrix_transpose(&V, &U);
@@ -316,6 +316,112 @@ MU_TEST(test_Matrix_transpose) {
 
 			Matrix_destroy(&U);
 			Matrix_destroy(&V);
+		}
+	}
+}
+
+
+MU_TEST(test_Matrix_add) {
+	Matrix U, V;
+
+	for(size_t i = 1; i < 256; i += 9) {
+		for(size_t j = 1; j < 256; j += 9) {
+			Matrix_init(&U, i, j);
+			Matrix_filler(&U);
+			
+			Matrix_init(&V, i, j);
+			Matrix_copy(&V, &U);
+
+			Matrix_add(&U, &V);
+
+			for(size_t ui = 0; ui < i; ++ui)
+				for(size_t uj = 0; uj < j; ++uj)
+					mu_assert_double_eq(
+						Matrix_get_coeff(&U, ui, uj),
+						2 * Matrix_get_coeff(&V, ui, uj)
+					);
+
+			Matrix_destroy(&U);
+			Matrix_destroy(&V);
+		}
+	}
+}
+
+
+MU_TEST(test_Matrix_sub) {
+	Matrix U, V;
+
+	for(size_t i = 1; i < 256; i += 9) {
+		for(size_t j = 1; j < 256; j += 9) {
+			Matrix_init(&U, i, j);
+			Matrix_filler(&U);
+			
+			Matrix_init(&V, i, j);
+			Matrix_copy(&V, &U);
+
+			Matrix_sub(&U, &V);
+
+			for(size_t ui = 0; ui < i; ++ui)
+				for(size_t uj = 0; uj < j; ++uj)
+					mu_assert_double_eq(
+						Matrix_get_coeff(&U, ui, uj),
+						(real_t)0
+					);
+
+			Matrix_destroy(&U);
+			Matrix_destroy(&V);
+		}
+	}
+}
+
+
+MU_TEST(test_Matrix_scaled_add) {
+	Matrix U, V;
+
+	for(size_t i = 1; i < 256; i += 9) {
+		for(size_t j = 1; j < 256; j += 9) {
+			Matrix_init(&U, i, j);
+			Matrix_filler(&U);
+			
+			Matrix_init(&V, i, j);
+			Matrix_copy(&V, &U);
+
+			Matrix_scaled_add(&U, &V, (real_t)4);
+
+			for(size_t ui = 0; ui < i; ++ui)
+				for(size_t uj = 0; uj < j; ++uj)
+					mu_assert_double_eq(
+						Matrix_get_coeff(&U, ui, uj),
+						5 * Matrix_get_coeff(&V, ui, uj)
+					);
+
+			Matrix_destroy(&U);
+			Matrix_destroy(&V);
+		}
+	}
+}
+
+
+MU_TEST(test_Matrix_scale) {
+	Matrix U;
+
+	for(size_t i = 1; i < 256; i += 9) {
+		for(size_t j = 1; j < 256; j += 9) {
+			real_t k = 42;
+
+			Matrix_init(&U, i, j);
+			Matrix_filler(&U);
+			Matrix_scale(&U, k);
+
+			size_t uk = 0;
+			for(size_t ui = 0; ui < i; ++ui)
+				for(size_t uj = 0; uj < j; ++uj, ++uk)
+					mu_assert_double_eq(
+						k * uk,
+						Matrix_get_coeff(&U, ui, uj)
+					);
+
+			Matrix_destroy(&U);
 		}
 	}
 }
@@ -341,6 +447,10 @@ MU_TEST_SUITE(test_Matrix_suite) {
 	MU_RUN_TEST(test_Matrix_fill);
 	MU_RUN_TEST(test_Matrix_copy);
 	MU_RUN_TEST(test_Matrix_transpose);
+	MU_RUN_TEST(test_Matrix_add);
+	MU_RUN_TEST(test_Matrix_sub);
+	MU_RUN_TEST(test_Matrix_scaled_add);
+	MU_RUN_TEST(test_Matrix_scale);
 }
 
 

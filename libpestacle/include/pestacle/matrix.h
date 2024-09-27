@@ -93,6 +93,13 @@ Matrix_add(
 
 
 extern void
+Matrix_sub(
+	Matrix* self,
+	const Matrix* in
+);
+
+
+extern void
 Matrix_scaled_add(
 	Matrix* self,
 	const Matrix* in,
