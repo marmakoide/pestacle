@@ -296,6 +296,31 @@ MU_TEST(test_Matrix_copy) {
 }
 
 
+MU_TEST(test_Matrix_transpose) {
+	Matrix U, V;
+
+	for(size_t i = 1; i < 256; i += 9) {
+		for(size_t j = 1; j < 256; j += 9) {
+			Matrix_init(&U, i, j);
+			matrix_filler(&U);
+			
+			Matrix_init(&V, j, i);
+			Matrix_transpose(&V, &U);
+
+			for(size_t ui = 0; ui < i; ++ui)
+				for(size_t uj = 0; uj < j; ++uj)
+					mu_assert_double_eq(
+						Matrix_get_coeff(&U, ui, uj),
+						Matrix_get_coeff(&V, uj, ui)
+					);
+
+			Matrix_destroy(&U);
+			Matrix_destroy(&V);
+		}
+	}
+}
+
+
 // --- Main entry point -------------------------------------------------------
 
 MU_TEST_SUITE(test_Vector_suite) {
@@ -315,6 +340,7 @@ MU_TEST_SUITE(test_Vector_suite) {
 MU_TEST_SUITE(test_Matrix_suite) {
 	MU_RUN_TEST(test_Matrix_fill);
 	MU_RUN_TEST(test_Matrix_copy);
+	MU_RUN_TEST(test_Matrix_transpose);
 }
 
 
