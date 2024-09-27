@@ -160,6 +160,17 @@ array_ops_add(
 
 
 void
+array_ops_sub(
+	real_t* dst,
+	const real_t* src,
+	size_t len
+) {
+	for( ; len != 0; --len, ++dst, ++src)
+		*dst -= (*src);
+}
+
+
+void
 array_ops_scaled_add(
 	real_t* dst,
 	const real_t* src,

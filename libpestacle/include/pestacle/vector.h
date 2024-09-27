@@ -114,6 +114,13 @@ Vector_add(
 
 
 extern void
+Vector_sub(
+	Vector* self,
+	const Vector* in
+);
+
+
+extern void
 Vector_scaled_add(
 	Vector* self,
 	const Vector* in,

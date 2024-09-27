@@ -223,6 +223,25 @@ Vector_add(
 
 
 void
+Vector_sub(
+	Vector* self,
+	const Vector* in
+) {
+	assert(self != 0);
+	assert(self->data != 0);
+	assert(in != 0);
+	assert(in->data != 0);
+	assert(self->len == in->len);
+
+	array_ops_sub(
+		self->data,
+		in->data,
+		self->len
+	);
+}
+
+
+void
 Vector_scaled_add(
 	Vector* self,
 	const Vector* in,

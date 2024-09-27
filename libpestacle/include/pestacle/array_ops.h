@@ -107,6 +107,14 @@ array_ops_add(
 
 
 extern void
+array_ops_sub(
+	real_t* dst,
+	const real_t* src,
+	size_t len
+);
+
+
+extern void
 array_ops_scaled_add(
 	real_t* dst,
 	const real_t* src,
