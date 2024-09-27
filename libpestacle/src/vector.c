@@ -104,6 +104,25 @@ Vector_fill(
 
 
 void
+Vector_copy(
+	Vector* self,
+	const Vector* other
+) {
+	assert(self != 0);
+	assert(self->data != 0);
+	assert(other != 0);
+	assert(other->data != 0);
+	assert(self->len == other->len);
+
+	array_ops_copy(
+		self->data,
+		other->data,
+		self->len
+	);
+}
+
+
+void
 Vector_arange(
 	Vector* self,
 	real_t start,

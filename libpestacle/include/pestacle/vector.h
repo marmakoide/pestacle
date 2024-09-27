@@ -66,6 +66,13 @@ Vector_fill(
 
 
 extern void
+Vector_copy(
+	Vector* self,
+	const Vector* other
+);
+
+
+extern void
 Vector_arange(
 	Vector* self,
 	real_t start,
