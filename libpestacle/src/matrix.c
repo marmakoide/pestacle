@@ -117,11 +117,8 @@ Matrix_transpose(
 		real_t* u_ptr = u_row_ptr;
 		real_t* v_ptr = v_col_ptr;
 
-		for(size_t j = 0; j < self->col_count; ++j, ++u_ptr, v_ptr += self->row_count) {
-			size_t tmp = *u_ptr;
+		for(size_t j = 0; j < self->col_count; ++j, ++u_ptr, v_ptr += self->row_count)
 			*u_ptr = *v_ptr;
-			*v_ptr = tmp;
-		}
 	}
 }
 
