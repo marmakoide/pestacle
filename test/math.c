@@ -2,6 +2,7 @@
 
 #include <pestacle/macros.h>
 #include <pestacle/vector.h>
+#include <pestacle/matrix.h>
 
 
 // --- Vector tests -----------------------------------------------------------
@@ -13,8 +14,8 @@ MU_TEST(test_Vector_fill) {
 		real_t k = i;
 
 		Vector_init(&U, i);
-
 		Vector_fill(&U, k);
+
 		for(size_t j = 0; j < i; ++j)
 			mu_assert_int_eq(
 				k,
@@ -234,9 +235,34 @@ MU_TEST(test_Vector_convolution) {
 	}
 }
 
+// --- Matrix tests -----------------------------------------------------------
+
+MU_TEST(test_Matrix_fill) {
+	Matrix U;
+
+	for(size_t i = 1; i < 256; i += 8) {
+		for(size_t j = 1; j < 256; j += 8) {
+			real_t k = i * j;
+
+			Matrix_init(&U, i, j);
+			Matrix_fill(&U, k);
+
+			for(size_t ui = 0; ui < i; ++ui)
+				for(size_t uj = 0; uj < j; ++uj)
+					mu_assert_int_eq(
+						k,
+						Matrix_get_coeff(&U, ui, uj)
+					);
+
+			Matrix_destroy(&U);
+		}
+	}
+}
+
+
 // --- Main entry point -------------------------------------------------------
 
-MU_TEST_SUITE(test_suite) {
+MU_TEST_SUITE(test_Vector_suite) {
 	MU_RUN_TEST(test_Vector_fill);
 	MU_RUN_TEST(test_Vector_copy);
 	MU_RUN_TEST(test_Vector_add);
@@ -250,9 +276,15 @@ MU_TEST_SUITE(test_suite) {
 }
 
 
+MU_TEST_SUITE(test_Matrix_suite) {
+	MU_RUN_TEST(test_Matrix_fill);
+}
+
+
 int
 main(ATTRIBUTE_UNUSED int argc, ATTRIBUTE_UNUSED char *argv[]) {
-	MU_RUN_SUITE(test_suite);
+	MU_RUN_SUITE(test_Vector_suite);
+	MU_RUN_SUITE(test_Matrix_suite);
 	MU_REPORT();
 	return MU_EXIT_CODE;
 }
