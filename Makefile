@@ -1,8 +1,8 @@
 include config.mk
 
 TARGETS = \
-$(BUILD_DIR)/libpestacle.so \
-$(BUILD_DIR)/pestacle
+$(BUILD_DIR)/$(LIBPESTACLE_FILENAME) \
+$(BUILD_DIR)/$(PESTACLE_FILENAME)
 
 
 all: $(TARGETS)
@@ -25,7 +25,7 @@ $(BUILD_DIR)/tools/pestacle/nodes/video.o \
 $(BUILD_DIR)/tools/pestacle/scopes/root.o \
 $(BUILD_DIR)/tools/pestacle/scopes/window.o
 
-$(BUILD_DIR)/pestacle: $(PESTACLE_OBJS) $(BUILD_DIR)/libpestacle.so
+$(BUILD_DIR)/$(PESTACLE_FILENAME): $(PESTACLE_OBJS) $(BUILD_DIR)/$(LIBPESTACLE_FILENAME)
 	$(CC) -o $@ $(PESTACLE_OBJS) $(LIBS)
 
 
@@ -47,9 +47,9 @@ $(BUILD_DIR)/tools/pestacle/scopes/%.o: tools/pestacle/src/scopes/%.c
 -include $(patsubst tools/pestacle/src/scopes/%.c, $(BUILD_DIR)/tools/pestacle/src/scopes/%.deps, $(wildcard tools/pestacle/src/scopes/*.c))
 
 
-# ------ libpestacle.so -------------------------------------------------------
+# ------ libpestacle ---------------------------------------------------------
 
-$(BUILD_DIR)/libpestacle.so: \
+$(BUILD_DIR)/$(LIBPESTACLE_FILENAME): \
 $(BUILD_DIR)/libpestacle/errors.o \
 $(BUILD_DIR)/libpestacle/memory.o \
 $(BUILD_DIR)/libpestacle/strings.o \
@@ -68,7 +68,7 @@ $(BUILD_DIR)/libpestacle/graph_profile.o \
 $(BUILD_DIR)/libpestacle/window_manager.o \
 $(BUILD_DIR)/libpestacle/parser/lexer.o \
 $(BUILD_DIR)/libpestacle/parser/parser.o
-	$(CC) -shared -o $@ $^
+	$(CC) -shared -o $@ $^ $(SDL2_LIBS)
 
 
 $(BUILD_DIR)/libpestacle/%.o: libpestacle/src/%.c
@@ -98,7 +98,7 @@ $(BUILD_DIR)/libpestacle/parser/%.deps: libpestacle/src/parser/%.c
 test: \
 $(BUILD_DIR)/test/math
 
-$(BUILD_DIR)/test/math: $(BUILD_DIR)/test/math.o $(BUILD_DIR)/libpestacle.so
+$(BUILD_DIR)/test/math: $(BUILD_DIR)/test/math.o $(BUILD_DIR)/$(LIBPESTACLE_FILENAME)
 	@mkdir -p $(BUILD_DIR)/test
 	$(CC) -o $@ $< $(LIBS)
 

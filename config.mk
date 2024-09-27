@@ -2,10 +2,34 @@
 MODE=rls
 
 # Build directory
-BUILD_DIR=./build
+BUILD_DIR=build
+
+# OS detection
+ifeq ($(OS),Windows_NT) 
+    detected_OS := Windows
+else
+    detected_OS := $(shell sh -c 'uname 2>/dev/null || echo Unknown')
+endif
+
+# Plateform dependent configuration
+ifeq ($(detected_OS),Windows)
+	PESTACLE := pestacle
+    PESTACLE_FILENAME := $(PESTACLE).exe
+
+	LIBPESTACLE := pestacle
+	LIBPESTACLE_FILENAME := lib$(LIBPESTACLE).dll
+else
+	PESTACLE := pestacle
+	PESTACLE_FILENAME := $(PESTACLE)
+
+	LIBPESTACLE := pestacle
+	LIBPESTACLE_FILENAME := lib$(LIBPESTACLE).so
+endif
 
 # Libraries paths
-LIBPESTACLE_LIBS=-L./build -lpestacle
+LIBPESTACLE_LIBS=-L./$(BUILD_DIR) -l$(LIBPESTACLE)
+
+SDL2_LIBS := $(shell sdl2-config --libs)
 
 LIBS += $(LIBPESTACLE_LIBS)
 LIBS += $(shell pkg-config --libs libavcodec)
@@ -16,7 +40,7 @@ LIBS += $(shell sdl2-config --libs)
 LIBS += $(shell pkg-config --libs zlib)
 LIBS += -lm
 
-# flags setup
+# Flags setup
 CFLAGS += -std=c11 -Wall -Wextra -Werror -Wno-deprecated-declarations
 
 ifeq ($(MODE), rls)
