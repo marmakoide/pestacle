@@ -332,3 +332,23 @@ array_ops_strided_convolution(
 		*dst = sum;
 	}
 }
+
+
+void
+array_ops_box_filter(
+	real_t* dst,
+	const real_t* src,
+	size_t len,
+	size_t filter_size
+) {
+	size_t n = filter_size / 2;
+	real_t k = ((real_t)1) / ((real_t)filter_size);
+
+	for(size_t i = 0; i < len; i++) {
+		real_t sum = (real_t)0;
+		for(size_t j = 0; j < filter_size; ++j)
+			if ((i + j >= n) && (i + j < len + n))
+				sum += src[i + j - n];
+		dst[i] = k * sum;
+	}
+}

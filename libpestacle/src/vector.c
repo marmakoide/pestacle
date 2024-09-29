@@ -364,3 +364,25 @@ Vector_convolution(
 		kernel->len
 	);
 }
+
+
+void
+Vector_box_filter(
+	const Vector* self,
+	size_t filter_size,
+	Vector* out
+) {
+	assert(self != 0);
+	assert(self->data != 0);
+	assert(out != 0);
+	assert(out->data != 0);
+	assert(self->len == out->len);
+	assert(filter_size % 2 == 1);
+
+	array_ops_box_filter(
+		out->data,
+		self->data,
+		self->len,
+		filter_size
+	);
+}

@@ -179,6 +179,15 @@ array_ops_strided_convolution(
 );
 
 
+extern void
+array_ops_box_filter(
+	real_t* dst,
+	const real_t* src,
+	size_t len,
+	size_t filter_size
+);
+
+
 #ifdef __cplusplus
 }
 #endif

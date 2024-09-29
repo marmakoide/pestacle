@@ -214,19 +214,17 @@ MU_TEST(test_Vector_convolution) {
 
 			for(size_t k = 0; k < vector_len; ++k) {
 				real_t sum = (real_t)0;
-				for(size_t n = 0; n < kernel_len; ++n) {
-					if ((n >= i) && (k + n - i < vector_len))
+				for(size_t n = 0; n < kernel_len; ++n)
+					if ((k + n >= i) && (k + n < vector_len + i))
 						sum = fmaf(
 							Vector_get_coeff(&U, k + n - i),
 							Vector_get_coeff(&W, n),
 							sum
 						);
-				}
 				
 				mu_assert_double_eq(Vector_get_coeff(&V, k), sum);
 			}
-				
-
+			
 			Vector_destroy(&W);
 		}
 
@@ -234,6 +232,38 @@ MU_TEST(test_Vector_convolution) {
 		Vector_destroy(&V);
 	}
 }
+
+
+MU_TEST(test_Vector_box_filter) {
+	Vector U, V;
+
+	for(size_t vector_len = 16; vector_len < 256; ++vector_len) {
+		Vector_init(&U, vector_len);
+		Vector_arange(&U, (real_t)0, (real_t)1);
+
+		Vector_init(&V, vector_len);
+		Vector_fill(&V, (real_t)0);
+
+		for(size_t i = 1; i < 8; ++i) {
+			size_t kernel_len = 2 * i + 1;
+
+			Vector_box_filter(&U, kernel_len, &V);
+
+			for(size_t k = 0; k < vector_len; ++k) {
+				real_t sum = (real_t)0;
+				for(size_t n = 0; n < kernel_len; ++n)
+					if ((k + n >= i) && (k + n < vector_len + i))
+						sum += Vector_get_coeff(&U, k + n - i);
+				
+				mu_assert_double_eq(Vector_get_coeff(&V, k), sum / kernel_len);
+			}
+		}
+
+		Vector_destroy(&U);
+		Vector_destroy(&V);
+	}
+}
+
 
 // --- Matrix tests -----------------------------------------------------------
 
@@ -440,6 +470,7 @@ MU_TEST_SUITE(test_Vector_suite) {
 	MU_RUN_TEST(test_Vector_square_sum);
 	MU_RUN_TEST(test_Vector_dot);
 	MU_RUN_TEST(test_Vector_convolution);
+	MU_RUN_TEST(test_Vector_box_filter);
 }
 
 

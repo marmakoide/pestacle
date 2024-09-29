@@ -166,6 +166,14 @@ Vector_convolution(
 );
 
 
+extern void
+Vector_box_filter(
+	const Vector* self,
+	size_t filter_size,
+	Vector* out
+);
+
+
 #ifdef __cplusplus
 }
 #endif
