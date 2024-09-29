@@ -96,9 +96,9 @@ $(BUILD_DIR)/libpestacle/parser/%.deps: libpestacle/src/parser/%.c
 # ------ Unit testing ---------------------------------------------------------
 
 test: \
-$(BUILD_DIR)/test/math
+$(BUILD_DIR)/test_math
 
-$(BUILD_DIR)/test/math: $(BUILD_DIR)/test/math.o $(BUILD_DIR)/$(LIBPESTACLE_FILENAME)
+$(BUILD_DIR)/test_math: $(BUILD_DIR)/test/math.o $(BUILD_DIR)/$(LIBPESTACLE_FILENAME)
 	@mkdir -p $(BUILD_DIR)/test
 	$(CC) -o $@ $< $(LIBS)
 
@@ -114,4 +114,4 @@ $(BUILD_DIR)/test/%.o: test/%.c
 clean:
 	@rm -rf $(BUILD_DIR)
 
-.PHONY: all clean
+.PHONY: all test clean
