@@ -106,6 +106,11 @@ $(BUILD_DIR)/test/%.o: test/%.c
 	@mkdir -p $(BUILD_DIR)/test
 	$(CC) -o $@ -c $(CFLAGS) $(LIBPESTACLE_INCLUDES) $(TEST_INCLUDES) $<
 
+
+$(BUILD_DIR)/test/%.deps: test/%.c
+	@mkdir -p $(BUILD_DIR)/test
+	$(CC) $(INCLUDES) -MM -MG -MT$(patsubst test/%.c, $(BUILD_DIR)/%.o, $^) -MF $@ $^
+
 -include $(patsubst test/%.c, $(BUILD_DIR)/test/%.deps, $(wildcard test/*.c))
 
 
