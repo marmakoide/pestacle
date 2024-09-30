@@ -152,10 +152,18 @@ Matrix_rowwise_convolution(
 );
 
 
-void
+extern void
 Matrix_colwise_convolution(
 	const Matrix* self,
 	const Vector* kernel,
+	Matrix* out
+);
+
+
+extern void
+Matrix_rowwise_box_filter(
+	const Matrix* self,
+	size_t filter_size,
 	Matrix* out
 );
 

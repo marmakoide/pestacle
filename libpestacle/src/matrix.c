@@ -404,3 +404,29 @@ Matrix_colwise_convolution(
 			self->col_count
 		);
 }
+
+
+void
+Matrix_rowwise_box_filter(
+	const Matrix* self,
+	size_t filter_size,
+	Matrix* out
+) {
+	assert(self != 0);
+	assert(self->data != 0);
+	assert(out != 0);
+	assert(out->data != 0);
+	assert(filter_size % 2 == 1);
+	assert(self->row_count == out->row_count);
+	assert(self->col_count == out->col_count);
+
+	const real_t* src = self->data;
+	real_t* dst = out->data;
+	for(size_t i = self->row_count; i != 0; --i, src += self->col_count, dst += self->col_count)
+		array_ops_box_filter(
+			dst,
+			src,
+			self->col_count,
+			filter_size
+		);
+}

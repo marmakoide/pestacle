@@ -345,16 +345,16 @@ array_ops_box_filter(
 
 	// Left part 
 	real_t acc = (real_t)0;
-	for(size_t i = 0; i < n; ++i, ++src)
+	for(size_t i = n; i != 0; --i, ++src)
 		acc += *src;
 	
-	for(size_t i = n ; i < filter_size; ++i, ++src, ++dst) {
+	for(size_t i = n + 1; i != 0; --i, ++src, ++dst) {
 		acc += *src;
 		*dst = acc / filter_size;
 	}
 
 	// Center part
-	for(size_t i = filter_size; i < len; ++i, ++src, ++dst) {
+	for(size_t i = len - filter_size; i != 0; --i, ++src, ++dst) {
 		acc += *src;
 		acc -= *(src - filter_size);
 		*dst = acc / filter_size;
@@ -362,9 +362,8 @@ array_ops_box_filter(
 
 	// Right part
 	src -= filter_size;
-	for(size_t i = 0; i < n; ++i, ++src, ++dst) {
+	for(size_t i = n; i != 0; --i, ++src, ++dst) {
 		acc -= *src;
 		*dst = acc / filter_size;
-	}	
+	}
 }
-
