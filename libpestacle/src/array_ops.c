@@ -343,12 +343,28 @@ array_ops_box_filter(
 ) {
 	size_t n = filter_size / 2;
 
-	for(size_t i = 0; i < len; i++) {
-		real_t sum = (real_t)0;
-		for(size_t j = 0; j < filter_size; ++j)
-			if ((i + j >= n) && (i + j < len + n))
-				sum += src[i + j - n];
-
-		dst[i] = sum / filter_size;
+	// Left part 
+	real_t acc = (real_t)0;
+	for(size_t i = 0; i < n; ++i, ++src)
+		acc += *src;
+	
+	for(size_t i = n ; i < filter_size; ++i, ++src, ++dst) {
+		acc += *src;
+		*dst = acc / filter_size;
 	}
+
+	// Center part
+	for(size_t i = filter_size; i < len; ++i, ++src, ++dst) {
+		acc += *src;
+		acc -= *(src - filter_size);
+		*dst = acc / filter_size;
+	}
+
+	// Right part
+	src -= filter_size;
+	for(size_t i = 0; i < n; ++i, ++src, ++dst) {
+		acc -= *src;
+		*dst = acc / filter_size;
+	}	
 }
+
