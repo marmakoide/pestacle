@@ -198,57 +198,61 @@ matrix_resize_node_update(
 	const Matrix* src =
 		Node_output(self->inputs[SOURCE_INPUT]).matrix;
 
-	// X filter
+	// box-filter src => A
 	Matrix_rowwise_box_filter(
 		src,
 		data->box_filter_size_x,
 		&(data->A)
 	);
 
+	// box-filter A => B
 	Matrix_rowwise_box_filter(
 		&(data->A),
 		data->box_filter_size_x,
 		&(data->B)
 	);
 
+	// box-filter B => A
 	Matrix_rowwise_box_filter(
 		&(data->B),
 		data->box_filter_size_x,
 		&(data->A)
 	);
 
-	// Transposition
+	// Transposition A => C
 	Matrix_transpose(
 		&(data->C),
 		&(data->A)
 	);
 
-	// Y filter
+	// box-filter C => D
 	Matrix_rowwise_box_filter(
 		&(data->C),
 		data->box_filter_size_y,
 		&(data->D)
 	);
 
+	// box-filter D => C
 	Matrix_rowwise_box_filter(
 		&(data->D),
 		data->box_filter_size_y,
 		&(data->C)
 	);
 
+	// box-filter C => D
 	Matrix_rowwise_box_filter(
 		&(data->C),
 		data->box_filter_size_y,
 		&(data->D)
 	);
 
-	// Transposition
+	// Transposition D => A
 	Matrix_transpose(
-		&(data->D),
-		&(data->A)
+		&(data->A),
+		&(data->D)
 	);
 
-	// Resample
+	// Resample A => out
 	Matrix_resample_nearest(
 		&(data->out),
 		&(data->A)

@@ -194,8 +194,34 @@ static void
 mouse_motion_node_update(
 	Node* self
 ) {
+	// Retrieve the accumulator
 	Matrix* accumulator = (Matrix*)self->data;
+
+	// Empty the accumulator
 	Matrix_fill(accumulator, (real_t)0);
+
+	// Retrieve the window
+	Window* window = (Window*)self->delegate_scope->data;
+
+	// Get the window position and size
+	int win_x, win_y;
+	SDL_GetWindowPosition(window->window, &win_x, &win_y);
+
+	int win_w, win_h;
+	SDL_GetWindowSize(window->window, &win_w, &win_h);
+
+	// Get the mouse position
+	int mouse_x, mouse_y;
+	SDL_GetGlobalMouseState(&mouse_x, &mouse_y);
+
+	// If the mouse is inside the window, mark the pixel under it
+	if ((mouse_x >= win_x) && (mouse_y >= win_y) && (mouse_x < win_x + win_w) && (mouse_y < win_y + win_h))
+		Matrix_set_coeff(
+			accumulator,
+			mouse_y - win_y,
+			mouse_x - win_x,
+			self->parameters[VALUE_PARAMETER].real_value
+		);
 }
 
 
