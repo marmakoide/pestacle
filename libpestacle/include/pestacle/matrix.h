@@ -125,7 +125,7 @@ Matrix_scaled_min(
 extern void
 Matrix_resample_nearest(
 	Matrix* self,
-	const Matrix* in
+	const Matrix* other
 );
 
 

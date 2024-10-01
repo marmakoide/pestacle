@@ -158,6 +158,7 @@ Matrix_copy(
 	);
 }
 
+
 void
 Matrix_scale(
 	Matrix* self,

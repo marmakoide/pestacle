@@ -1,6 +1,12 @@
+#include <math.h>
 #include <pestacle/memory.h>
 
 #include "nodes/matrix_resize.h"
+
+
+#ifndef M_PI
+#   define M_PI 3.1415926535897932384626433832
+#endif
 
 
 // --- Interface --------------------------------------------------------------
@@ -92,9 +98,11 @@ matrix_resize_node_delegate = {
 typedef struct {
 	Matrix A;
 	Matrix B;
+	Matrix C;
+	Matrix D;
 	Matrix out;
-	Vector gaussian_kernel_x;
-	Vector gaussian_kernel_y;
+	size_t box_filter_size_x;
+	size_t box_filter_size_y;
 } MatrixResizeData;
 
 
@@ -108,6 +116,9 @@ matrix_resize_data_init(
 ) {
 	Matrix_init(&(self->A), input_height, input_width);
 	Matrix_init(&(self->B), input_height, input_width);
+	Matrix_init(&(self->C), input_width, input_height);
+	Matrix_init(&(self->D), input_width, input_height);
+
 	Matrix_init(&(self->out), output_height, output_width);
 
 	float x_factor = ((float)input_width) / ((float)output_width);
@@ -116,14 +127,8 @@ matrix_resize_data_init(
 	float kernel_x_sigma = (x_factor - 1) / 2;
 	float kernel_y_sigma = (y_factor - 1) / 2;
 
-	size_t kernel_x_size = (size_t)floorf(3 * kernel_x_sigma);
-	size_t kernel_y_size = (size_t)floorf(3 * kernel_y_sigma);
-
-	Vector_init(&(self->gaussian_kernel_x), 2 * kernel_x_size + 1);
-	Vector_init(&(self->gaussian_kernel_y), 2 * kernel_y_size + 1);
-
-	Vector_set_gaussian_kernel(&(self->gaussian_kernel_x), kernel_x_sigma);
-	Vector_set_gaussian_kernel(&(self->gaussian_kernel_y), kernel_y_sigma);
+	self->box_filter_size_x = (size_t)floorf(kernel_x_sigma * 3 * sqrtf(2 * M_PI) / 4 + ((real_t)0.5));
+	self->box_filter_size_y = (size_t)floorf(kernel_y_sigma * 3 * sqrtf(2 * M_PI) / 4 + ((real_t)0.5));
 }
 
 
@@ -133,9 +138,9 @@ matrix_resize_data_destroy(
 ) {
 	Matrix_destroy(&(self->A));
 	Matrix_destroy(&(self->B));
+	Matrix_destroy(&(self->C));
+	Matrix_destroy(&(self->D));
 	Matrix_destroy(&(self->out));
-	Vector_destroy(&(self->gaussian_kernel_x));
-	Vector_destroy(&(self->gaussian_kernel_y));
 }
 
 
@@ -193,21 +198,60 @@ matrix_resize_node_update(
 	const Matrix* src =
 		Node_output(self->inputs[SOURCE_INPUT]).matrix;
 
-	Matrix_rowwise_convolution(
+	// X filter
+	Matrix_rowwise_box_filter(
 		src,
-		&(data->gaussian_kernel_x),
+		data->box_filter_size_x,
 		&(data->A)
 	);
 
-	Matrix_colwise_convolution(
+	Matrix_rowwise_box_filter(
 		&(data->A),
-		&(data->gaussian_kernel_y),
+		data->box_filter_size_x,
 		&(data->B)
 	);
 
+	Matrix_rowwise_box_filter(
+		&(data->B),
+		data->box_filter_size_x,
+		&(data->A)
+	);
+
+	// Transposition
+	Matrix_transpose(
+		&(data->C),
+		&(data->A)
+	);
+
+	// Y filter
+	Matrix_rowwise_box_filter(
+		&(data->C),
+		data->box_filter_size_y,
+		&(data->D)
+	);
+
+	Matrix_rowwise_box_filter(
+		&(data->D),
+		data->box_filter_size_y,
+		&(data->C)
+	);
+
+	Matrix_rowwise_box_filter(
+		&(data->C),
+		data->box_filter_size_y,
+		&(data->D)
+	);
+
+	// Transposition
+	Matrix_transpose(
+		&(data->D),
+		&(data->A)
+	);
+
+	// Resample
 	Matrix_resample_nearest(
 		&(data->out),
-		&(data->B)	
+		&(data->A)
 	);
 }
 
