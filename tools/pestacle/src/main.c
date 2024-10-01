@@ -17,6 +17,7 @@
 struct arg_lit* help;
 struct arg_lit* dry_run;
 struct arg_lit* profile_mode;
+struct arg_int* frames_per_second;
 struct arg_file* file;
 struct arg_end* end;
 
@@ -55,15 +56,17 @@ load_script(const char* path) {
 int
 main(int argc, char* argv[]) {
 	int exit_code = EXIT_SUCCESS;
-	char prog_name[] = "pestacle";  
+	char prog_name[] = "pestacle";
+	int fps = 60;
 
 	// Command-line parsing
 	void* argtable[] = {
-		help         = arg_litn( NULL,       "help",    0, 1, "display this help and exit"),
-		dry_run      = arg_litn( NULL,       "dry-run", 0, 1, "load but do not execute the script"),
-		profile_mode = arg_litn( NULL,       "profile", 0, 1, "enable profiling of the executed script"),
-		file         = arg_filen(NULL, NULL, "<file>",  1, 1, "input script"),
-		end          = arg_end(20),
+		help              = arg_litn( NULL,       "help",    0, 1,   "display this help and exit"),
+		dry_run           = arg_litn( NULL,       "dry-run", 0, 1,   "load but do not execute the script"),
+		profile_mode      = arg_litn( NULL,       "profile", 0, 1,   "enable profiling of the executed script"),
+		frames_per_second = arg_intn( NULL,       "fps",     "<n>", 1, 240, "frames per seconds"),
+		file              = arg_filen(NULL, NULL, "<file>",  1, 1,   "input script"),
+		end               = arg_end(20),
 	};
 
 	int cmd_line_error_count = arg_parse(argc, argv, argtable);
@@ -85,6 +88,11 @@ main(int argc, char* argv[]) {
 
 		goto termination;
 	}
+
+	if (frames_per_second->count > 0)
+		fps = frames_per_second->ival[0];
+	else
+		fps = 60;
 
 	// SDL logging settings
 	 SDL_LogSetAllPriority(SDL_LOG_PRIORITY_INFO);
@@ -141,8 +149,8 @@ main(int argc, char* argv[]) {
 		goto termination;
 
 	// Main processing loop
-	Uint64 performance_refresh_period = SDL_GetPerformanceFrequency() / 60;
-
+	Uint64 performance_refresh_period = SDL_GetPerformanceFrequency() / fps;
+	
 	for(bool quit = false; !quit; ) {
 		Uint64 start_time = SDL_GetPerformanceCounter();
 
@@ -173,7 +181,7 @@ main(int argc, char* argv[]) {
 		Uint64 end_time = SDL_GetPerformanceCounter();
 		Uint64 time_delta = end_time - start_time;
 		if (time_delta < performance_refresh_period)
-			SDL_Delay((performance_refresh_period - time_delta) / (1e-3f * SDL_GetPerformanceFrequency()));
+			SDL_Delay((1e3f * (performance_refresh_period - time_delta)) / SDL_GetPerformanceFrequency());
 	}
 
 	// Print the profiling report if required
