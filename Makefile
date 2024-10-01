@@ -12,6 +12,7 @@ all: $(TARGETS)
 
 PESTACLE_OBJS = \
 $(BUILD_DIR)/tools/pestacle/main.o \
+$(BUILD_DIR)/tools/pestacle/cmdline.o \
 $(BUILD_DIR)/tools/pestacle/argtable3.o \
 $(BUILD_DIR)/tools/pestacle/picture.o \
 $(BUILD_DIR)/tools/pestacle/nodes/gradient_map.o \

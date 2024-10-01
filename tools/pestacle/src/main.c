@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <errno.h>
-#include <stdbool.h>
 #include <SDL.h>
 
 #include <pestacle/graph.h>
@@ -8,21 +7,9 @@
 #include <pestacle/window_manager.h>
 #include <pestacle/parser/parser.h>
 
+#include "cmdline.h"
 #include "scopes/root.h"
-#include "argtable3.h"
 
-
-// --- Command-line arguments -------------------------------------------------
-
-struct arg_lit* help;
-struct arg_lit* dry_run;
-struct arg_lit* profile_mode;
-struct arg_int* frames_per_second;
-struct arg_file* file;
-struct arg_end* end;
-
-
-// --- Main entry point -------------------------------------------------------
 
 Scope* root_scope = 0;
 WindowManager window_manager;
@@ -55,44 +42,8 @@ load_script(const char* path) {
 
 int
 main(int argc, char* argv[]) {
+	CmdParameters params;
 	int exit_code = EXIT_SUCCESS;
-	char prog_name[] = "pestacle";
-	int fps = 60;
-
-	// Command-line parsing
-	void* argtable[] = {
-		help              = arg_litn( NULL,       "help",    0, 1,   "display this help and exit"),
-		dry_run           = arg_litn( NULL,       "dry-run", 0, 1,   "load but do not execute the script"),
-		profile_mode      = arg_litn( NULL,       "profile", 0, 1,   "enable profiling of the executed script"),
-		frames_per_second = arg_intn( NULL,       "fps",     "<n>", 1, 240, "frames per seconds"),
-		file              = arg_filen(NULL, NULL, "<file>",  1, 1,   "input script"),
-		end               = arg_end(20),
-	};
-
-	int cmd_line_error_count = arg_parse(argc, argv, argtable);
-
-	if (help->count > 0) {
-		printf("Usage: %s", prog_name);
-		arg_print_syntax(stdout, argtable, "\n");
-
-		printf("Runs a pestacle script.\n\n");
-		arg_print_glossary(stdout, argtable, "  %-25s %s\n");
-
-		exit_code = EXIT_FAILURE;
-		goto termination;
-	}
-
-	if (cmd_line_error_count > 0) {
-		arg_print_errors(stdout, end, prog_name);
-		printf("Try '%s --help' for more information.\n", prog_name);
-
-		goto termination;
-	}
-
-	if (frames_per_second->count > 0)
-		fps = frames_per_second->ival[0];
-	else
-		fps = 60;
 
 	// SDL logging settings
 	 SDL_LogSetAllPriority(SDL_LOG_PRIORITY_INFO);
@@ -104,6 +55,11 @@ main(int argc, char* argv[]) {
 		exit_code = EXIT_FAILURE;
 		goto termination;
 	}
+
+	// Command line parsing
+	CmdParameters_init(&params);
+	if (!CmdParameters_parse(&params, argc, argv))
+		goto termination;
 
 	// Initialize the window manager
 	WindowManager_init(&window_manager);
@@ -121,7 +77,7 @@ main(int argc, char* argv[]) {
 	}
 
 	// Load script
-	if (!load_script(file->filename[0])) {
+	if (!load_script(params.input_path)) {
 		exit_code = EXIT_FAILURE;
 		goto termination;
 	}
@@ -141,15 +97,16 @@ main(int argc, char* argv[]) {
 
 	// Setup graph profiling if required
 	GraphProfile graph_profile;
-	if (profile_mode->count > 0)
+	if (params.profile_mode)
 		GraphProfile_init(&graph_profile, &graph);
 
 	// If we are in dry-run mode, terminate now
-	if (dry_run->count > 0)
+	if (params.dry_run)
 		goto termination;
 
 	// Main processing loop
-	Uint64 performance_refresh_period = SDL_GetPerformanceFrequency() / fps;
+	Uint64 performance_refresh_period =
+		SDL_GetPerformanceFrequency() / params.frames_per_second;
 	
 	for(bool quit = false; !quit; ) {
 		Uint64 start_time = SDL_GetPerformanceCounter();
@@ -169,7 +126,7 @@ main(int argc, char* argv[]) {
 		}
 
 		// Graph update
-		if (profile_mode->count > 0)
+		if (params.profile_mode)
 			Graph_update_with_profile(&graph, &graph_profile);
 		else
 			Graph_update(&graph);
@@ -185,7 +142,7 @@ main(int argc, char* argv[]) {
 	}
 
 	// Print the profiling report if required
-	if (profile_mode->count > 0)
+	if (params.profile_mode)
 		GraphProfile_print_report(&graph_profile, &graph, stdout);
 
 	// Free ressources
@@ -195,17 +152,14 @@ termination:
 
 	Graph_destroy(&graph);
 
-	if (profile_mode->count > 0)
+	if (params.profile_mode)
 		GraphProfile_destroy(&graph_profile);
 
 	WindowManager_destroy(&window_manager);
-	
-	SDL_Quit();
 
-	arg_freetable(
-		argtable,
-		sizeof(argtable) / sizeof(argtable[0])
-	);
+	CmdParameters_destroy(&params);
+
+	SDL_Quit();
 
 	// Job done
 	return exit_code;
