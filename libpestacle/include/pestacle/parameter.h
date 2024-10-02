@@ -6,8 +6,8 @@ extern "C" {
 #endif
 
 
-#include "math/real.h"
-#include "strings.h"
+#include <pestacle/math/real.h>
+#include <pestacle/strings.h>
 
 
 enum ParameterType {
