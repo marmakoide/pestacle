@@ -1,7 +1,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <assert.h>
-#include <pestacle/matrix.h>
+#include <pestacle/math/matrix.h>
 
 
 void

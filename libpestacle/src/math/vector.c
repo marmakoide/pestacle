@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <assert.h>
-#include <pestacle/vector.h>
+#include <pestacle/math/vector.h>
 
 
 void

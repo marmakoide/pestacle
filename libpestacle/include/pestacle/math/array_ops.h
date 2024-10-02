@@ -1,5 +1,5 @@
-#ifndef PESTACLE_ARRAY_OPS_H
-#define PESTACLE_ARRAY_OPS_H
+#ifndef PESTACLE_MATH_ARRAY_OPS_H
+#define PESTACLE_MATH_ARRAY_OPS_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -8,7 +8,7 @@ extern "C" {
 
 #include <stddef.h>
 #include <stdio.h>
-#include <pestacle/real.h>
+#include <pestacle/math/real.h>
 
 
 extern real_t*
@@ -192,4 +192,4 @@ array_ops_box_filter(
 }
 #endif
 
-#endif /* PESTACLE_ARRAY_OPS_H */
+#endif /* PESTACLE_MATH_ARRAY_OPS_H */

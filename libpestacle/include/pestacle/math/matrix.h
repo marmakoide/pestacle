@@ -1,12 +1,12 @@
-#ifndef PESTACLE_MATRIX_H
-#define PESTACLE_MATRIX_H
+#ifndef PESTACLE_MATH_MATRIX_H
+#define PESTACLE_MATH_MATRIX_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 
-#include <pestacle/vector.h>
+#include <pestacle/math/vector.h>
 
 // row major matrix
 
@@ -172,4 +172,4 @@ Matrix_rowwise_box_filter(
 }
 #endif
 
-#endif /* PESTACLE_MATRIX_H */
+#endif /* PESTACLE_MATH_MATRIX_H */

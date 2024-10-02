@@ -7,10 +7,10 @@ extern "C" {
 
 
 #include <SDL.h>
-#include <pestacle/vector.h>
-#include <pestacle/matrix.h>
 #include <pestacle/scope.h>
 #include <pestacle/graph_profile.h>
+#include <pestacle/math/vector.h>
+#include <pestacle/math/matrix.h>
 
 
 struct s_Graph {

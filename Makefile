@@ -58,15 +58,15 @@ $(BUILD_DIR)/libpestacle/string_list.o \
 $(BUILD_DIR)/libpestacle/input_buffer.o \
 $(BUILD_DIR)/libpestacle/dict.o \
 $(BUILD_DIR)/libpestacle/stack.o \
-$(BUILD_DIR)/libpestacle/array_ops.o \
-$(BUILD_DIR)/libpestacle/vector.o \
-$(BUILD_DIR)/libpestacle/matrix.o \
 $(BUILD_DIR)/libpestacle/parameter.o \
 $(BUILD_DIR)/libpestacle/node.o \
 $(BUILD_DIR)/libpestacle/scope.o \
 $(BUILD_DIR)/libpestacle/graph.o \
 $(BUILD_DIR)/libpestacle/graph_profile.o \
 $(BUILD_DIR)/libpestacle/window_manager.o \
+$(BUILD_DIR)/libpestacle/math/array_ops.o \
+$(BUILD_DIR)/libpestacle/math/vector.o \
+$(BUILD_DIR)/libpestacle/math/matrix.o \
 $(BUILD_DIR)/libpestacle/parser/lexer.o \
 $(BUILD_DIR)/libpestacle/parser/parser.o
 	$(CC) -shared -o $@ $^ $(SDL2_LIBS)
@@ -75,6 +75,10 @@ $(BUILD_DIR)/libpestacle/parser/parser.o
 $(BUILD_DIR)/libpestacle/%.o: libpestacle/src/%.c
 	@mkdir -p $(BUILD_DIR)/libpestacle
 	$(CC) -o $@ -c -fPIC $(CFLAGS) $(LIBPESTACLE_INCLUDES) $<
+
+$(BUILD_DIR)/libpestacle/math/%.o: libpestacle/src/math/%.c
+	@mkdir -p $(BUILD_DIR)/libpestacle/math
+	$(CC) -o $@ -c -fPIC $(CFLAGS) $(SDL2_CFLAGS) $(LIBPESTACLE_INCLUDES) $<
 
 $(BUILD_DIR)/libpestacle/parser/%.o: libpestacle/src/parser/%.c
 	@mkdir -p $(BUILD_DIR)/libpestacle/parser
@@ -85,12 +89,17 @@ $(BUILD_DIR)/libpestacle/%.deps: libpestacle/src/%.c
 	@mkdir -p $(BUILD_DIR)/libpestacle
 	$(CC) $(INCLUDES) -MM -MG -MT$(patsubst libpestacle/src/%.c, $(BUILD_DIR)/%.o, $^) -MF $@ $^
 
+$(BUILD_DIR)/libpestacle/math/%.deps: libpestacle/src/math/%.c
+	@mkdir -p $(BUILD_DIR)/libpestacle/math
+	$(CC) $(INCLUDES) -MM -MG -MT$(patsubst libpestacle/src/math/%.c, $(BUILD_DIR)/libpestacle/math/%.o, $^) -MF $@ $^
+
 $(BUILD_DIR)/libpestacle/parser/%.deps: libpestacle/src/parser/%.c
 	@mkdir -p $(BUILD_DIR)/libpestacle/parser
 	$(CC) $(INCLUDES) -MM -MG -MT$(patsubst libpestacle/src/parser/%.c, $(BUILD_DIR)/libpestacle/parser/%.o, $^) -MF $@ $^
 
 
 -include $(patsubst libpestacle/src/%.c, $(BUILD_DIR)/%.deps, $(wildcard libpestacle/src/*.c))
+-include $(patsubst libpestacle/src/math/%.c, $(BUILD_DIR)/libpestacle/math/%.deps, $(wildcard libpestacle/src/math/*.c))
 -include $(patsubst libpestacle/src/parser/%.c, $(BUILD_DIR)/libpestacle/parser/%.deps, $(wildcard libpestacle/src/parser/*.c))
 
 

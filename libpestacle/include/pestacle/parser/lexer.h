@@ -8,10 +8,10 @@
 
 #include <stdint.h>
 
-#include <pestacle/real.h>
 #include <pestacle/strings.h>
 #include <pestacle/input_buffer.h>
 #include <pestacle/file_location.h>
+#include <pestacle/math/real.h>
 
 
 enum TokenType {

@@ -1,6 +1,6 @@
 #include <math.h>
 #include <stdlib.h>
-#include <pestacle/array_ops.h>
+#include <pestacle/math/array_ops.h>
 #include <pestacle/memory.h>
 
 

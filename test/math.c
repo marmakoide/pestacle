@@ -1,8 +1,8 @@
 #include "minunit.h"
 
 #include <pestacle/macros.h>
-#include <pestacle/vector.h>
-#include <pestacle/matrix.h>
+#include <pestacle/math/vector.h>
+#include <pestacle/math/matrix.h>
 
 
 // --- Vector tests -----------------------------------------------------------

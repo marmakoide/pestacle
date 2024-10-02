@@ -7,8 +7,8 @@ extern "C" {
 
 
 #include <SDL.h>
-#include <pestacle/matrix.h>
 #include <pestacle/parameter.h>
+#include <pestacle/math/matrix.h>
 
 
 // --- Node I/O definitions ---------------------------------------------------

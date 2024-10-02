@@ -1,12 +1,12 @@
-#ifndef PESTACLE_VECTOR_H
-#define PESTACLE_VECTOR_H
+#ifndef PESTACLE_MATH_VECTOR_H
+#define PESTACLE_MATH_VECTOR_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 
-#include <pestacle/array_ops.h>
+#include <pestacle/math/array_ops.h>
 
 
 typedef struct {
@@ -178,4 +178,4 @@ Vector_box_filter(
 }
 #endif
 
-#endif /* PESTACLE_VECTOR_H */
+#endif /* PESTACLE_MATH_VECTOR_H */
