@@ -206,17 +206,17 @@ Vector_dot(
 void
 Vector_add(
 	Vector* self,
-	const Vector* in
+	const Vector* other
 ) {
 	assert(self != 0);
 	assert(self->data != 0);
-	assert(in != 0);
-	assert(in->data != 0);
-	assert(self->len == in->len);
+	assert(other != 0);
+	assert(other->data != 0);
+	assert(self->len == other->len);
 
 	array_ops_add(
 		self->data,
-		in->data,
+		other->data,
 		self->len
 	);
 }
@@ -225,17 +225,17 @@ Vector_add(
 void
 Vector_sub(
 	Vector* self,
-	const Vector* in
+	const Vector* other
 ) {
 	assert(self != 0);
 	assert(self->data != 0);
-	assert(in != 0);
-	assert(in->data != 0);
-	assert(self->len == in->len);
+	assert(other != 0);
+	assert(other->data != 0);
+	assert(self->len == other->len);
 
 	array_ops_sub(
 		self->data,
-		in->data,
+		other->data,
 		self->len
 	);
 }
@@ -244,18 +244,18 @@ Vector_sub(
 void
 Vector_scaled_add(
 	Vector* self,
-	const Vector* in,
+	const Vector* other,
 	real_t value
 ) {
 	assert(self != 0);
 	assert(self->data != 0);
-	assert(in != 0);
-	assert(in->data != 0);
-	assert(self->len == in->len);
+	assert(other != 0);
+	assert(other->data != 0);
+	assert(self->len == other->len);
 
 	array_ops_scaled_add(
 		self->data,
-		in->data,
+		other->data,
 		self->len,
 		value
 	);
@@ -265,17 +265,17 @@ Vector_scaled_add(
 void
 Vector_min(
 	Vector* self,
-	const Vector* in
+	const Vector* other
 ) {
 	assert(self != 0);
 	assert(self->data != 0);
-	assert(in != 0);
-	assert(in->data != 0);
-	assert(self->len == in->len);
+	assert(other != 0);
+	assert(other->data != 0);
+	assert(self->len == other->len);
 
 	array_ops_min(
 		self->data,
-		in->data,
+		other->data,
 		self->len
 	);
 }
@@ -284,18 +284,18 @@ Vector_min(
 void
 Vector_scaled_min(
 	Vector* self,
-	const Vector* in,
+	const Vector* other,
 	real_t value
 ) {
 	assert(self != 0);
 	assert(self->data != 0);
-	assert(in != 0);
-	assert(in->data != 0);
-	assert(self->len == in->len);
+	assert(other != 0);
+	assert(other->data != 0);
+	assert(self->len == other->len);
 
 	array_ops_scaled_min(
 		self->data,
-		in->data,
+		other->data,
 		self->len,
 		value
 	);
@@ -305,17 +305,17 @@ Vector_scaled_min(
 void
 Vector_max(
 	Vector* self,
-	const Vector* in
+	const Vector* other
 ) {
 	assert(self != 0);
 	assert(self->data != 0);
-	assert(in != 0);
-	assert(in->data != 0);
-	assert(self->len == in->len);
+	assert(other != 0);
+	assert(other->data != 0);
+	assert(self->len == other->len);
 
 	array_ops_max(
 		self->data,
-		in->data,
+		other->data,
 		self->len
 	);
 }
@@ -324,18 +324,18 @@ Vector_max(
 void
 Vector_scaled_max(
 	Vector* self,
-	const Vector* in,
+	const Vector* other,
 	real_t value
 ) {
 	assert(self != 0);
 	assert(self->data != 0);
-	assert(in != 0);
-	assert(in->data != 0);
-	assert(self->len == in->len);
+	assert(other != 0);
+	assert(other->data != 0);
+	assert(self->len == other->len);
 
 	array_ops_scaled_max(
 		self->data,
-		in->data,
+		other->data,
 		self->len,
 		value
 	);
@@ -344,21 +344,21 @@ Vector_scaled_max(
 
 void
 Vector_convolution(
-	const Vector* self,
-	const Vector* kernel,
-	Vector* out
+	Vector* self,
+	const Vector* other,
+	const Vector* kernel
 ) {
 	assert(self != 0);
 	assert(self->data != 0);
 	assert(kernel != 0);
 	assert(kernel->data != 0);
-	assert(out != 0);
-	assert(out->data != 0);
-	assert(self->len == out->len);
+	assert(other != 0);
+	assert(other->data != 0);
+	assert(self->len == other->len);
 
 	array_ops_convolution(
-		out->data,
 		self->data,
+		other->data,
 		kernel->data,
 		self->len,
 		kernel->len
@@ -368,20 +368,20 @@ Vector_convolution(
 
 void
 Vector_box_filter(
-	const Vector* self,
-	size_t filter_size,
-	Vector* out
+	Vector* self,
+	const Vector* other,
+	size_t filter_size
 ) {
 	assert(self != 0);
 	assert(self->data != 0);
-	assert(out != 0);
-	assert(out->data != 0);
-	assert(self->len == out->len);
+	assert(other != 0);
+	assert(other->data != 0);
+	assert(self->len == other->len);
 	assert(filter_size % 2 == 1);
 
 	array_ops_box_filter(
-		out->data,
 		self->data,
+		other->data,
 		self->len,
 		filter_size
 	);

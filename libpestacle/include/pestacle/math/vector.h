@@ -109,21 +109,21 @@ Vector_dot(
 extern void
 Vector_add(
 	Vector* self,
-	const Vector* in
+	const Vector* other
 );
 
 
 extern void
 Vector_sub(
 	Vector* self,
-	const Vector* in
+	const Vector* other
 );
 
 
 extern void
 Vector_scaled_add(
 	Vector* self,
-	const Vector* in,
+	const Vector* other,
 	real_t value
 );
 
@@ -131,14 +131,14 @@ Vector_scaled_add(
 extern void
 Vector_min(
 	Vector* self,
-	const Vector* in
+	const Vector* other
 );
 
 
 extern void
-Vector_scaled_fmin(
+Vector_scaled_min(
 	Vector* self,
-	const Vector* in,
+	const Vector* other,
 	real_t value
 );
 
@@ -146,31 +146,31 @@ Vector_scaled_fmin(
 extern void
 Vector_max(
 	Vector* self,
-	const Vector* in
+	const Vector* other
 );
 
 
 extern void
-Vector_scaled_fmax(
+Vector_scaled_max(
 	Vector* self,
-	const Vector* in,
+	const Vector* other,
 	real_t value
 );
 
 
 extern void
 Vector_convolution(
-	const Vector* self,
-	const Vector* kernel,
-	Vector* out
+	Vector* self,
+	const Vector* other,
+	const Vector* kernel
 );
 
 
 extern void
 Vector_box_filter(
-	const Vector* self,
-	size_t filter_size,
-	Vector* out
+	Vector* self,
+	const Vector* other,
+	size_t filter_size
 );
 
 

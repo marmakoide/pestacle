@@ -210,7 +210,7 @@ MU_TEST(test_Vector_convolution) {
 			Vector_init(&W, kernel_len);
 			Vector_set_gaussian_kernel(&W, (real_t)1);
 
-			Vector_convolution(&U, &W, &V);
+			Vector_convolution(&V, &U, &W);
 
 			for(size_t k = 0; k < vector_len; ++k) {
 				real_t sum = (real_t)0;
@@ -247,7 +247,7 @@ MU_TEST(test_Vector_box_filter) {
 		for(size_t i = 1; i < 8; ++i) {
 			size_t kernel_len = 2 * i + 1;
 
-			Vector_box_filter(&U, kernel_len, &V);
+			Vector_box_filter(&V, &U, kernel_len);
 
 			for(size_t k = 0; k < vector_len; ++k) {
 				real_t sum = (real_t)0;
