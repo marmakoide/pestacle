@@ -6,6 +6,7 @@
 #include "nodes/matrix_resize.h"
 #include "nodes/picture.h"
 #include "nodes/surface_blend.h"
+#include "nodes/surface_overlay.h"
 #include "nodes/surface_resize.h"
 #include "nodes/video.h"
 
@@ -31,6 +32,7 @@ node_delegate_list[] = {
 	&matrix_resize_node_delegate,
 	&picture_node_delegate,
 	&surface_blend_node_delegate,
+	&surface_overlay_node_delegate,
 	&surface_resize_node_delegate,
 	&video_node_delegate,
 	NODE_DELEGATE_LIST_END

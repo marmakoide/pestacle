@@ -21,6 +21,7 @@ $(BUILD_DIR)/tools/pestacle/nodes/lightness.o \
 $(BUILD_DIR)/tools/pestacle/nodes/matrix_resize.o \
 $(BUILD_DIR)/tools/pestacle/nodes/picture.o \
 $(BUILD_DIR)/tools/pestacle/nodes/surface_blend.o \
+$(BUILD_DIR)/tools/pestacle/nodes/surface_overlay.o \
 $(BUILD_DIR)/tools/pestacle/nodes/surface_resize.o \
 $(BUILD_DIR)/tools/pestacle/nodes/video.o \
 $(BUILD_DIR)/tools/pestacle/scopes/root.o \
