@@ -111,11 +111,11 @@ Matrix_transpose(
 	assert(self->col_count == other->row_count);
 
 	real_t* u_row_ptr = self->data;
-	real_t* v_col_ptr = other->data;
+	const real_t* v_col_ptr = other->data;
 
 	for(size_t i = 0; i < self->row_count; ++i, u_row_ptr += self->col_count, v_col_ptr += 1) {
 		real_t* u_ptr = u_row_ptr;
-		real_t* v_ptr = v_col_ptr;
+		const real_t* v_ptr = v_col_ptr;
 
 		for(size_t j = 0; j < self->col_count; ++j, ++u_ptr, v_ptr += self->row_count)
 			*u_ptr = *v_ptr;
@@ -178,18 +178,18 @@ Matrix_scale(
 void
 Matrix_add(
 	Matrix* self,
-	const Matrix* in
+	const Matrix* other
 ) {
 	assert(self != 0);
 	assert(self->data != 0);
-	assert(in != 0);
-	assert(in->data != 0);
-	assert(self->row_count == in->row_count);
-	assert(self->col_count == in->col_count);
+	assert(other != 0);
+	assert(other->data != 0);
+	assert(self->row_count == other->row_count);
+	assert(self->col_count == other->col_count);
 
 	array_ops_add(
 		self->data,
-		in->data,
+		other->data,
 		self->data_len
 	);
 }
@@ -198,18 +198,18 @@ Matrix_add(
 void
 Matrix_sub(
 	Matrix* self,
-	const Matrix* in
+	const Matrix* other
 ) {
 	assert(self != 0);
 	assert(self->data != 0);
-	assert(in != 0);
-	assert(in->data != 0);
-	assert(self->row_count == in->row_count);
-	assert(self->col_count == in->col_count);
+	assert(other != 0);
+	assert(other->data != 0);
+	assert(self->row_count == other->row_count);
+	assert(self->col_count == other->col_count);
 
 	array_ops_sub(
 		self->data,
-		in->data,
+		other->data,
 		self->data_len
 	);
 }
@@ -218,19 +218,19 @@ Matrix_sub(
 void
 Matrix_scaled_add(
 	Matrix* self,
-	const Matrix* in,
+	const Matrix* other,
 	real_t value
 ) {
 	assert(self != 0);
 	assert(self->data != 0);
-	assert(in != 0);
-	assert(in->data != 0);
-	assert(self->row_count == in->row_count);
-	assert(self->col_count == in->col_count);
+	assert(other != 0);
+	assert(other->data != 0);
+	assert(self->row_count == other->row_count);
+	assert(self->col_count == other->col_count);
 
 	array_ops_scaled_add(
 		self->data,
-		in->data,
+		other->data,
 		self->data_len,
 		value
 	);
@@ -240,18 +240,18 @@ Matrix_scaled_add(
 void
 Matrix_min(
 	Matrix* self,
-	const Matrix* in
+	const Matrix* other
 ) {
 	assert(self != 0);
 	assert(self->data != 0);
-	assert(in != 0);
-	assert(in->data != 0);
-	assert(self->row_count == in->row_count);
-	assert(self->col_count == in->col_count);
+	assert(other != 0);
+	assert(other->data != 0);
+	assert(self->row_count == other->row_count);
+	assert(self->col_count == other->col_count);
 
 	array_ops_min(
 		self->data,
-		in->data,
+		other->data,
 		self->data_len
 	);
 }
@@ -260,19 +260,19 @@ Matrix_min(
 void
 Matrix_scaled_min(
 	Matrix* self,
-	const Matrix* in,
+	const Matrix* other,
 	real_t value
 ) {
 	assert(self != 0);
 	assert(self->data != 0);
-	assert(in != 0);
-	assert(in->data != 0);
-	assert(self->row_count == in->row_count);
-	assert(self->col_count == in->col_count);
+	assert(other != 0);
+	assert(other->data != 0);
+	assert(self->row_count == other->row_count);
+	assert(self->col_count == other->col_count);
 
 	array_ops_scaled_min(
 		self->data,
-		in->data,
+		other->data,
 		self->data_len,
 		value
 	);
@@ -282,18 +282,18 @@ Matrix_scaled_min(
 void
 Matrix_max(
 	Matrix* self,
-	const Matrix* in
+	const Matrix* other
 ) {
 	assert(self != 0);
 	assert(self->data != 0);
-	assert(in != 0);
-	assert(in->data != 0);
-	assert(self->row_count == in->row_count);
-	assert(self->col_count == in->col_count);
+	assert(other != 0);
+	assert(other->data != 0);
+	assert(self->row_count == other->row_count);
+	assert(self->col_count == other->col_count);
 
 	array_ops_max(
 		self->data,
-		in->data,
+		other->data,
 		self->data_len
 	);
 }
@@ -302,19 +302,19 @@ Matrix_max(
 void
 Matrix_scaled_max(
 	Matrix* self,
-	const Matrix* in,
+	const Matrix* other,
 	real_t value
 ) {
 	assert(self != 0);
 	assert(self->data != 0);
-	assert(in != 0);
-	assert(in->data != 0);
-	assert(self->row_count == in->row_count);
-	assert(self->col_count == in->col_count);
+	assert(other != 0);
+	assert(other->data != 0);
+	assert(self->row_count == other->row_count);
+	assert(self->col_count == other->col_count);
 
 	array_ops_scaled_max(
 		self->data,
-		in->data,
+		other->data,
 		self->data_len,
 		value
 	);
@@ -324,21 +324,21 @@ Matrix_scaled_max(
 void
 Matrix_resample_nearest(
 	Matrix* self,
-	const Matrix* in
+	const Matrix* other
 ) {
 	assert(self != 0);
 	assert(self->data != 0);
-	assert(in != 0);
-	assert(in->data != 0);
+	assert(other != 0);
+	assert(other->data != 0);
 
-	real_t row_scaling_factor = ((real_t)in->row_count) / ((real_t)self->row_count);
-	real_t col_scaling_factor = ((real_t)in->col_count) / ((real_t)self->col_count);
+	real_t row_scaling_factor = ((real_t)other->row_count) / ((real_t)self->row_count);
+	real_t col_scaling_factor = ((real_t)other->col_count) / ((real_t)self->col_count);
 
 	real_t* dst_row = self->data;
 	
 	for(size_t i = 0; i < self->row_count; ++i, dst_row += self->col_count) {
 		size_t u = (size_t)floorf(row_scaling_factor * (i + ((real_t).5)));
-		const real_t* src_row = in->data + u * in->col_count;
+		const real_t* src_row = other->data + u * other->col_count;
 		
 		for(size_t j = 0; j < self->col_count; ++j) {
 			size_t v = (size_t)floorf(col_scaling_factor * (j + ((real_t).5)));
@@ -351,27 +351,27 @@ Matrix_resample_nearest(
 
 void
 Matrix_rowwise_convolution(
-	const Matrix* self,
-	const Vector* kernel,
-	Matrix* out
+	Matrix* self,
+	const Matrix* other,
+	const Vector* kernel
 ) {
 	assert(self != 0);
 	assert(self->data != 0);
+	assert(other != 0);
+	assert(other->data != 0);
 	assert(kernel != 0);
 	assert(kernel->data != 0);
-	assert(out != 0);
-	assert(out->data != 0);
-	assert(self->row_count == out->row_count);
-	assert(self->col_count == out->col_count);
+	assert(self->row_count == other->row_count);
+	assert(self->col_count == other->col_count);
 
-	const real_t* src = self->data;
-	real_t* dst = out->data;
-	for(size_t i = self->row_count; i != 0; --i, src += self->col_count, dst += self->col_count)
+	const real_t* src = other->data;
+	real_t* dst = self->data;
+	for(size_t i = other->row_count; i != 0; --i, src += other->col_count, dst += other->col_count)
 		array_ops_convolution(
 			dst,
 			src,
 			kernel->data,
-			self->col_count,
+			other->col_count,
 			kernel->len
 		);
 }
@@ -379,55 +379,55 @@ Matrix_rowwise_convolution(
 
 void
 Matrix_colwise_convolution(
-	const Matrix* self,
-	const Vector* kernel,
-	Matrix* out
+	Matrix* self,
+	const Matrix* other,
+	const Vector* kernel
 ) {
 	assert(self != 0);
 	assert(self->data != 0);
+	assert(other != 0);
+	assert(other->data != 0);
 	assert(kernel != 0);
 	assert(kernel->data != 0);
-	assert(out != 0);
-	assert(out->data != 0);
-	assert(self->row_count == out->row_count);
-	assert(self->col_count == out->col_count);
+	assert(self->row_count == other->row_count);
+	assert(self->col_count == other->col_count);
 
-	const real_t* src = self->data;
-	real_t* dst = out->data;
-	for(size_t i = self->col_count; i != 0; --i, ++src, ++dst)
+	const real_t* src = other->data;
+	real_t* dst = self->data;
+	for(size_t i = other->col_count; i != 0; --i, ++src, ++dst)
 		array_ops_strided_convolution(
 			dst,
 			src,
 			kernel->data,
-			self->row_count,
+			other->row_count,
 			kernel->len,
-			self->col_count,
-			self->col_count
+			other->col_count,
+			other->col_count
 		);
 }
 
 
 void
 Matrix_rowwise_box_filter(
-	const Matrix* self,
-	size_t filter_size,
-	Matrix* out
+	Matrix* self,
+	const Matrix* other,
+	size_t filter_size
 ) {
 	assert(self != 0);
 	assert(self->data != 0);
-	assert(out != 0);
-	assert(out->data != 0);
+	assert(other != 0);
+	assert(other->data != 0);
 	assert(filter_size % 2 == 1);
-	assert(self->row_count == out->row_count);
-	assert(self->col_count == out->col_count);
+	assert(self->row_count == other->row_count);
+	assert(self->col_count == other->col_count);
 
-	const real_t* src = self->data;
-	real_t* dst = out->data;
-	for(size_t i = self->row_count; i != 0; --i, src += self->col_count, dst += self->col_count)
+	const real_t* src = other->data;
+	real_t* dst = self->data;
+	for(size_t i = other->row_count; i != 0; --i, src += other->col_count, dst += other->col_count)
 		array_ops_box_filter(
 			dst,
 			src,
-			self->col_count,
+			other->col_count,
 			filter_size
 		);
 }

@@ -198,61 +198,61 @@ matrix_resize_node_update(
 	const Matrix* src =
 		Node_output(self->inputs[SOURCE_INPUT]).matrix;
 
-	// box-filter src => A
-	Matrix_rowwise_box_filter(
-		src,
-		data->box_filter_size_x,
-		&(data->A)
-	);
-
-	// box-filter A => B
+	// A = box-filter(src)
 	Matrix_rowwise_box_filter(
 		&(data->A),
-		data->box_filter_size_x,
-		&(data->B)
+		src,
+		data->box_filter_size_x
 	);
 
-	// box-filter B => A
+	// B = box-filter(A)
 	Matrix_rowwise_box_filter(
 		&(data->B),
-		data->box_filter_size_x,
-		&(data->A)
+		&(data->A),
+		data->box_filter_size_x
 	);
 
-	// Transposition A => C
+	// A = box-filter(B)
+	Matrix_rowwise_box_filter(
+		&(data->A),
+		&(data->B),
+		data->box_filter_size_x
+	);
+
+	// C = transpose(A)
 	Matrix_transpose(
 		&(data->C),
 		&(data->A)
 	);
 
-	// box-filter C => D
-	Matrix_rowwise_box_filter(
-		&(data->C),
-		data->box_filter_size_y,
-		&(data->D)
-	);
-
-	// box-filter D => C
+	// D = box-filter(C)
 	Matrix_rowwise_box_filter(
 		&(data->D),
-		data->box_filter_size_y,
-		&(data->C)
+		&(data->C),
+		data->box_filter_size_y
 	);
 
-	// box-filter C => D
+	// C = box-filter(D)
 	Matrix_rowwise_box_filter(
 		&(data->C),
-		data->box_filter_size_y,
-		&(data->D)
+		&(data->D),
+		data->box_filter_size_y
 	);
 
-	// Transposition D => A
+	// D = box-filterC)
+	Matrix_rowwise_box_filter(
+		&(data->D),
+		&(data->C),
+		data->box_filter_size_y
+	);
+
+	// A = transpose(D)
 	Matrix_transpose(
 		&(data->A),
 		&(data->D)
 	);
 
-	// Resample A => out
+	// out = resample(A)
 	Matrix_resample_nearest(
 		&(data->out),
 		&(data->A)

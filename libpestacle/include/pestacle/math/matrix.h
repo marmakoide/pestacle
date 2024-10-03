@@ -88,21 +88,21 @@ Matrix_scale(
 extern void
 Matrix_add(
 	Matrix* self,
-	const Matrix* in
+	const Matrix* other
 );
 
 
 extern void
 Matrix_sub(
 	Matrix* self,
-	const Matrix* in
+	const Matrix* other
 );
 
 
 extern void
 Matrix_scaled_add(
 	Matrix* self,
-	const Matrix* in,
+	const Matrix* other,
 	real_t value
 );
 
@@ -110,14 +110,14 @@ Matrix_scaled_add(
 extern void
 Matrix_min(
 	Matrix* self,
-	const Matrix* in
+	const Matrix* other
 );
 
 
 extern void
 Matrix_scaled_min(
 	Matrix* self,
-	const Matrix* in,
+	const Matrix* other,
 	real_t value
 );
 
@@ -132,39 +132,39 @@ Matrix_resample_nearest(
 extern void
 Matrix_max(
 	Matrix* self,
-	const Matrix* in
+	const Matrix* other
 );
 
 
 extern void
 Matrix_scaled_max(
 	Matrix* self,
-	const Matrix* in,
+	const Matrix* other,
 	real_t value
 );
 
 
 extern void
 Matrix_rowwise_convolution(
-	const Matrix* self,
-	const Vector* kernel,
-	Matrix* out
+	Matrix* self,
+	const Matrix* other,
+	const Vector* kernel
 );
 
 
 extern void
 Matrix_colwise_convolution(
-	const Matrix* self,
-	const Vector* kernel,
-	Matrix* out
+	Matrix* self,
+	const Matrix* other,
+	const Vector* kernel
 );
 
 
 extern void
 Matrix_rowwise_box_filter(
-	const Matrix* self,
-	size_t filter_size,
-	Matrix* out
+	Matrix* self,
+	const Matrix* other,
+	size_t filter_size
 );
 
 
