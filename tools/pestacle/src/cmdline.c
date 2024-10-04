@@ -47,7 +47,7 @@ CmdParameters_parse(
 		help              = arg_litn( NULL,       "help",    0, 1,   "display this help and exit"),
 		dry_run           = arg_litn( NULL,       "dry-run", 0, 1,   "load but do not execute the script"),
 		profile_mode      = arg_litn( NULL,       "profile", 0, 1,   "enable profiling of the executed script"),
-		frames_per_second = arg_intn( NULL,       "fps",     "<n>", 1, 240, "frames per seconds"),
+		frames_per_second = arg_intn( NULL,       "fps",     "<n>", 0, 1, "frames per seconds"),
 		file              = arg_filen(NULL, NULL, "<file>",  1, 1,   "input script"),
 		end               = arg_end(20),
 	};
