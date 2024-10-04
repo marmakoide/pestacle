@@ -3,10 +3,10 @@
 
 #include "nodes/matrix_resize.h"
 
-
-#ifndef M_PI
-#   define M_PI 3.1415926535897932384626433832
-#endif
+/*
+  See "Fast Almost-Gaussian Filtering" by Peter Kovesi for the Gaussian 
+  filtering approximation
+ */
 
 
 // --- Interface --------------------------------------------------------------
@@ -101,10 +101,60 @@ typedef struct {
 	Matrix C;
 	Matrix D;
 	Matrix out;
-	size_t box_filter_size_x;
-	size_t box_filter_size_y;
+	size_t lo_filter_size_x;
+	size_t hi_filter_size_x;
+	size_t lo_filter_size_y;
+	size_t hi_filter_size_y;
 } MatrixResizeData;
 
+
+#define PASS_COUNT 3
+
+static float
+get_ideal_filter_size(
+	float sigma,
+	int pass_count
+) {
+	return sqrtf(((real_t)1) + (((real_t)12) * (sigma * sigma)) / pass_count);
+}
+
+
+static size_t
+get_lo_filter_size(
+	float ideal_filter_size
+) {
+	size_t ret = floorf(ideal_filter_size);
+	if (ret % 2 == 0)
+		ret -= 1;
+	return ret;
+}
+
+
+static size_t
+get_hi_filter_size(
+	float ideal_filter_size
+) {
+	size_t ret = ceilf(ideal_filter_size);
+	if (ret % 2 == 0)
+		ret += 1;
+	return ret;
+}
+
+/*
+static int
+get_lo_pass_count(
+	size_t lo_filter_size,
+	float sigma,
+	int pass_count
+) {
+	float k = 12 * sigma * sigma;
+	k -= pass_count * lo_filter_size * lo_filter_size;
+	k -= 4 * pass_count * lo_filter_size;
+	k -= 3 * pass_count;
+	k /= -4 * (lo_filter_size + 1);
+	return (int)floorf(k);
+}
+*/
 
 static void
 matrix_resize_data_init(
@@ -127,8 +177,16 @@ matrix_resize_data_init(
 	float kernel_x_sigma = (x_factor - 1) / 2;
 	float kernel_y_sigma = (y_factor - 1) / 2;
 
-	self->box_filter_size_x = (size_t)floorf(kernel_x_sigma * 3 * sqrtf(2 * M_PI) / 4 + ((real_t)0.5));
-	self->box_filter_size_y = (size_t)floorf(kernel_y_sigma * 3 * sqrtf(2 * M_PI) / 4 + ((real_t)0.5));
+	float ideal_filter_size_x = get_ideal_filter_size(kernel_x_sigma, PASS_COUNT);
+	float ideal_filter_size_y = get_ideal_filter_size(kernel_y_sigma, PASS_COUNT);
+
+	self->lo_filter_size_x = get_lo_filter_size(ideal_filter_size_x);
+	self->lo_filter_size_y = get_lo_filter_size(ideal_filter_size_y);
+	self->hi_filter_size_x = get_hi_filter_size(ideal_filter_size_x);
+	self->hi_filter_size_y = get_hi_filter_size(ideal_filter_size_y);
+
+	//int k = get_lo_pass_count(self->lo_filter_size_x, kernel_x_sigma, PASS_COUNT);
+	//printf("ideal size = %f, lo size = %zu, hi size = %zu, k = %d\n",  ideal_filter_size_x, self->lo_filter_size_x,  self->hi_filter_size_y, k);
 }
 
 
@@ -202,21 +260,21 @@ matrix_resize_node_update(
 	Matrix_rowwise_box_filter(
 		&(data->A),
 		src,
-		data->box_filter_size_x
+		data->lo_filter_size_x
 	);
 
 	// B = box-filter(A)
 	Matrix_rowwise_box_filter(
 		&(data->B),
 		&(data->A),
-		data->box_filter_size_x
+		data->hi_filter_size_x
 	);
 
 	// A = box-filter(B)
 	Matrix_rowwise_box_filter(
 		&(data->A),
 		&(data->B),
-		data->box_filter_size_x
+		data->hi_filter_size_x
 	);
 
 	// C = transpose(A)
@@ -229,21 +287,21 @@ matrix_resize_node_update(
 	Matrix_rowwise_box_filter(
 		&(data->D),
 		&(data->C),
-		data->box_filter_size_y
+		data->lo_filter_size_y
 	);
 
 	// C = box-filter(D)
 	Matrix_rowwise_box_filter(
 		&(data->C),
 		&(data->D),
-		data->box_filter_size_y
+		data->hi_filter_size_y
 	);
 
 	// D = box-filterC)
 	Matrix_rowwise_box_filter(
 		&(data->D),
 		&(data->C),
-		data->box_filter_size_y
+		data->hi_filter_size_y
 	);
 
 	// A = transpose(D)

@@ -1,5 +1,5 @@
 # build mode, dbg=debug rls=release
-MODE=dbg
+MODE=rls
 
 # Build directory
 BUILD_DIR=build
