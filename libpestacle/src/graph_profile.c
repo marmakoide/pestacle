@@ -24,7 +24,7 @@ NodeProfile_update(
 	float time_interval,
 	size_t update_count
 ) {
-	assert(self ! = 0);
+	assert(self != 0);
 	assert(time_interval >= 0);
 
 	// Welford's online algorithm

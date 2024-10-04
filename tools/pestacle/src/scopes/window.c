@@ -151,7 +151,7 @@ static bool
 mouse_motion_node_setup(
 	Node* self
 ) {
-	assert(self->parent->data);
+	assert(self->delegate_scope->data);
 
 	// Retrieve the window
 	Window* window = (Window*)self->delegate_scope->data;

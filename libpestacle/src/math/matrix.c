@@ -45,7 +45,7 @@ Matrix_print(
 ) {
 	assert(self != 0);
 	assert(self->data != 0);
-	assert(f != 0);
+	assert(fp != 0);
 	assert(format != 0);
 
 	const real_t* src = self->data;

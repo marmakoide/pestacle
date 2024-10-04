@@ -204,7 +204,7 @@ void
 Graph_update(
 	Graph* self
 ) {
-	assert(graph != 0);
+	assert(self != 0);
 
 	// Update the nodes in topological order
 	Node** node_ptr = self->sorted_nodes;
@@ -218,7 +218,7 @@ Graph_update_with_profile(
 	Graph* self,
 	GraphProfile* profile
 ) {
-	assert(graph != 0);
+	assert(self != 0);
 	assert(profile != 0);
 
 	// Update the number of updates
