@@ -12,6 +12,122 @@
 #include "scopes/root.h"
 
 
+static void
+initialization_log() {
+	static const char* bool_str[2] = {
+		"no", "yes"
+	};
+
+	// SDL version information
+	SDL_version sdl_version_data;
+
+	SDL_GetVersion(&sdl_version_data);
+	SDL_Log(
+		"current SDL version %u.%u.%u",
+		sdl_version_data.major,
+		sdl_version_data.minor,
+		sdl_version_data.patch
+	);
+
+	SDL_VERSION(&sdl_version_data);
+	SDL_Log(
+		"targeted SDL version %u.%u.%u",
+		sdl_version_data.major,
+		sdl_version_data.minor,
+		sdl_version_data.patch
+	);
+
+	// Platform informations
+	SDL_Log(
+		"%s platform",
+		SDL_GetPlatform()
+	);
+
+	// CPU informations
+	SDL_Log(
+		"%d CPU(s) detected",
+		SDL_GetCPUCount()
+	);
+
+	SDL_Log(
+		"  MMX     => %s",
+		bool_str[SDL_HasMMX()]
+	);
+
+	SDL_Log(
+		"  3DNow   => %s",
+		bool_str[SDL_Has3DNow()]
+	);
+
+	SDL_Log(
+		"  SSE     => %s",
+		bool_str[SDL_HasSSE()]
+	);
+
+	SDL_Log(
+		"  SSE2    => %s",
+		bool_str[SDL_HasSSE2()]
+	);
+
+	SDL_Log(
+		"  SSE3    => %s",
+		bool_str[SDL_HasSSE3()]
+	);
+
+	SDL_Log(
+		"  SSE41   => %s",
+		bool_str[SDL_HasSSE41()]
+	);
+
+	SDL_Log(
+		"  SSE42   => %s",
+		bool_str[SDL_HasSSE42()]
+	);
+
+	SDL_Log(
+		"  AVX     => %s",
+		bool_str[SDL_HasAVX()]
+	);
+
+	SDL_Log(
+		"  AVX2    => %s",
+		bool_str[SDL_HasAVX2()]
+	);
+
+	SDL_Log(
+		"  AVX512F => %s",
+		bool_str[SDL_HasAVX512F()]
+	);
+
+	SDL_Log(
+		"  NEON    => %s",
+		bool_str[SDL_HasNEON()]
+	);
+
+	// Display informations
+	int display_count = SDL_GetNumVideoDisplays();
+	SDL_Log(
+		"%d display(s) found",
+		display_count
+	);
+
+	for(int i = 0; i < display_count; ++i) {
+		SDL_DisplayMode mode;
+		SDL_GetDesktopDisplayMode(i, &mode);
+		
+		SDL_Log(
+			"display #%d => %dx%d %dsbpp %dHz",
+			i,
+			mode.w,
+			mode.h,
+			SDL_BITSPERPIXEL(mode.format),
+			mode.refresh_rate
+		);
+		
+	}
+}
+
+
 static bool
 load_script(
 	const char* path,
@@ -64,6 +180,9 @@ main(int argc, char* argv[]) {
 		SDL_LogError(SDL_LOG_CATEGORY_SYSTEM, "Unable to initialize SDL: %s", SDL_GetError());
 		return EXIT_FAILURE;
 	}
+
+	// Log initialization infos
+	initialization_log();
 
 	// Initialize the window manager
 	window_manager = (WindowManager*)checked_malloc(sizeof(WindowManager));
