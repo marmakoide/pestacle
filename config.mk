@@ -18,27 +18,35 @@ ifeq ($(detected_OS),Windows)
 
 	LIBPESTACLE := pestacle
 	LIBPESTACLE_FILENAME := lib$(LIBPESTACLE).dll
+
+	PESTACLE_FFMPEG_PLUGIN := ffmpeg
+	PESTACLE_FFMPEG_PLUGIN_FILENAME := ffmpeg.dll
 else
 	PESTACLE := pestacle
 	PESTACLE_FILENAME := $(PESTACLE)
 
 	LIBPESTACLE := pestacle
 	LIBPESTACLE_FILENAME := lib$(LIBPESTACLE).so
+
+	PESTACLE_FFMPEG_PLUGIN := ffmpeg
+	PESTACLE_FFMPEG_PLUGIN_FILENAME := ffmpeg.so
 endif
 
 # Libraries paths
 LIBPESTACLE_LIBS=-L./$(BUILD_DIR) -l$(LIBPESTACLE)
 
+SDL2_INCLUDES := $(shell sdl2-config --cflags)
 SDL2_LIBS := $(shell sdl2-config --libs)
 
-LIBS += $(LIBPESTACLE_LIBS)
-LIBS += $(shell pkg-config --libs libavcodec)
-LIBS += $(shell pkg-config --libs libavformat)
-LIBS += $(shell pkg-config --libs libavutil)
-LIBS += $(shell pkg-config --libs libpng)
-LIBS += $(shell sdl2-config --libs)
-LIBS += $(shell pkg-config --libs zlib)
-LIBS += -lm
+PESTACLE_LIBS  = $(LIBPESTACLE_LIBS)
+PESTACLE_LIBS += $(shell pkg-config --libs libpng)
+PESTACLE_LIBS += $(shell sdl2-config --libs)
+PESTACLE_LIBS += $(shell pkg-config --libs zlib)
+PESTACLE_LIBS += -lm
+
+PESTACLE_FFMPEG_PLUGIN_LIBS = $(shell pkg-config --libs libavcodec)
+PESTACLE_FFMPEG_PLUGIN_LIBS += $(shell pkg-config --libs libavformat)
+PESTACLE_FFMPEG_PLUGIN_LIBS += $(shell pkg-config --libs libavutil)
 
 # Flags setup
 CFLAGS += -std=c11 -Wall -Wextra -Werror -Wno-deprecated-declarations
@@ -56,11 +64,15 @@ endif
 TEST_INCLUDES=-I./test
 
 LIBPESTACLE_INCLUDES=-I./libpestacle/include
-LIBPESTACLE_INCLUDES += $(shell sdl2-config --cflags)
+LIBPESTACLE_INCLUDES += $(SDL2_INCLUDES)
 
 PESTACLE_INCLUDES=-I./tools/pestacle/include
-PESTACLE_INCLUDES += $(shell pkg-config --cflags libavcodec)
-PESTACLE_INCLUDES += $(shell pkg-config --cflags libavformat)
-PESTACLE_INCLUDES += $(shell pkg-config --cflags libavutil)
 PESTACLE_INCLUDES += $(shell pkg-config --cflags libpng)
 PESTACLE_INCLUDES += $(shell pkg-config --cflags zlib)
+
+PESTACLE_FFMPEG_PLUGIN_INCLUDES=-I./plugins/ffmpeg/include
+PESTACLE_FFMPEG_PLUGIN_INCLUDES += -I./libpestacle/include
+PESTACLE_FFMPEG_PLUGIN_INCLUDES += $(SDL2_INCLUDES)
+PESTACLE_FFMPEG_PLUGIN_INCLUDES += $(shell pkg-config --cflags libavcodec)
+PESTACLE_FFMPEG_PLUGIN_INCLUDES += $(shell pkg-config --cflags libavformat)
+PESTACLE_FFMPEG_PLUGIN_INCLUDES += $(shell pkg-config --cflags libavutil)

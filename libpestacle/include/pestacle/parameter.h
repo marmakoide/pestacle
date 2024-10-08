@@ -42,6 +42,12 @@ typedef struct {
 	{ .int64_value = 0 } \
 }
 
+extern bool
+ParameterDefinition_has_parameters(
+	const ParameterDefinition* array
+);
+
+
 extern void
 ParameterValue_copy(
 	ParameterValue* dst,

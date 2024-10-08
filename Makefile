@@ -2,7 +2,8 @@ include config.mk
 
 TARGETS = \
 $(BUILD_DIR)/$(LIBPESTACLE_FILENAME) \
-$(BUILD_DIR)/$(PESTACLE_FILENAME)
+$(BUILD_DIR)/$(PESTACLE_FILENAME) \
+$(BUILD_DIR)/plugins/$(PESTACLE_FFMPEG_PLUGIN_FILENAME)
 
 
 all: $(TARGETS)
@@ -23,12 +24,11 @@ $(BUILD_DIR)/tools/pestacle/nodes/picture.o \
 $(BUILD_DIR)/tools/pestacle/nodes/surface_blend.o \
 $(BUILD_DIR)/tools/pestacle/nodes/surface_overlay.o \
 $(BUILD_DIR)/tools/pestacle/nodes/surface_resize.o \
-$(BUILD_DIR)/tools/pestacle/nodes/video.o \
 $(BUILD_DIR)/tools/pestacle/scopes/root.o \
 $(BUILD_DIR)/tools/pestacle/scopes/window.o
 
 $(BUILD_DIR)/$(PESTACLE_FILENAME): $(PESTACLE_OBJS) $(BUILD_DIR)/$(LIBPESTACLE_FILENAME)
-	$(CC) -o $@ $(PESTACLE_OBJS) $(LIBS)
+	$(CC) -o $@ $(PESTACLE_OBJS) $(PESTACLE_LIBS)
 
 
 $(BUILD_DIR)/tools/pestacle/%.o: tools/pestacle/src/%.c
@@ -104,6 +104,22 @@ $(BUILD_DIR)/libpestacle/parser/%.deps: libpestacle/src/parser/%.c
 -include $(patsubst libpestacle/src/parser/%.c, $(BUILD_DIR)/libpestacle/parser/%.deps, $(wildcard libpestacle/src/parser/*.c))
 
 
+# ------ ffmpeg plugin --------------------------------------------------------
+
+$(BUILD_DIR)/plugins/$(PESTACLE_FFMPEG_PLUGIN_FILENAME): \
+$(BUILD_DIR)/plugins/ffmpeg/input_stream.o \
+$(BUILD_DIR)/plugins/ffmpeg/scope.o
+	@mkdir -p $(BUILD_DIR)/plugins
+	$(CC) -shared -o $@ $^ $(PESTACLE_FFMPEG_PLUGIN_LIBS)
+
+
+$(BUILD_DIR)/plugins/ffmpeg/%.o: plugins/ffmpeg/src/%.c
+	@mkdir -p $(BUILD_DIR)/plugins/ffmpeg
+	$(CC) -o $@ -c -fPIC $(CFLAGS) $(PESTACLE_FFMPEG_PLUGIN_INCLUDES) $<
+
+-include $(patsubst plugins/ffmpeg/src/%.c, $(BUILD_DIR)/plugins/ffmpeg/%.deps, $(wildcard plugins/ffmpeg/src/*.c))
+
+
 # ------ Unit testing ---------------------------------------------------------
 
 test: \
@@ -111,7 +127,7 @@ $(BUILD_DIR)/test_math
 
 $(BUILD_DIR)/test_math: $(BUILD_DIR)/test/math.o $(BUILD_DIR)/$(LIBPESTACLE_FILENAME)
 	@mkdir -p $(BUILD_DIR)/test
-	$(CC) -o $@ $< $(LIBS)
+	$(CC) -o $@ $< $(PESTACLE_LIBS)
 
 $(BUILD_DIR)/test/%.o: test/%.c
 	@mkdir -p $(BUILD_DIR)/test

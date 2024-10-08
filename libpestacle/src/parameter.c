@@ -33,7 +33,7 @@ ParameterValue_copy(
 }
 
 
-static bool
+bool
 ParameterDefinition_has_parameters(
 	const ParameterDefinition* array
 ) {

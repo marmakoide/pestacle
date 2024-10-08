@@ -4,37 +4,37 @@
 #include <libavformat/avformat.h>
 #include <libavutil/avutil.h>
 
-#include "nodes/video.h"
+#include "input_stream.h"
 
 
 // --- Interface --------------------------------------------------------------
 
 static bool
-video_node_setup(
+input_stream_node_setup(
 	Node* self
 );
 
 
 static void
-video_node_destroy(
+input_stream_node_destroy(
 	Node* self
 );
 
 
 static void
-video_node_update(
+input_stream_node_update(
 	Node* self
 );
 
 
 static NodeOutput
-video_node_output(
+input_stream_node_output(
 	const Node* self
 );
 
 
 static const NodeInputDefinition
-video_inputs[] = {
+input_stream_inputs[] = {
 	NODE_INPUT_DEFINITION_END
 };
 
@@ -42,7 +42,7 @@ video_inputs[] = {
 #define PATH_PARAMETER 0
 
 static const ParameterDefinition
-video_parameters[] = {
+input_stream_parameters[] = {
 	{
 		ParameterType__string,
 		{ "path", 5 },
@@ -53,16 +53,16 @@ video_parameters[] = {
 
 
 const NodeDelegate
-video_node_delegate = {
-	{ "video", 6 },
+input_stream_node_delegate = {
+	{ "input-stream", 13 },
 	NodeType__rgb_surface,
-	video_inputs,
-	video_parameters,
+	input_stream_inputs,
+	input_stream_parameters,
 	{
-		video_node_setup,
-		video_node_destroy,
-		video_node_update,
-		video_node_output
+		input_stream_node_setup,
+		input_stream_node_destroy,
+		input_stream_node_update,
+		input_stream_node_output
 	},
 };
 
@@ -81,12 +81,12 @@ typedef struct {
 	SDL_Surface* surface;
 	SDL_Renderer* renderer;
 	SDL_Texture* texture;
-} VideoData;
+} InputStreamData;
 
 
 static bool
-VideoData_init(
-	VideoData* self,
+InputStreamData_init(
+	InputStreamData* self,
 	const char* path
 ) {
 	self->format_ctx = 0;
@@ -231,8 +231,8 @@ VideoData_init(
 
 
 static void
-VideoData_destroy(
-	VideoData* self
+InputStreamData_destroy(
+	InputStreamData* self
 ) {
 	if (self->packet)
     	av_packet_free(&(self->packet));
@@ -260,8 +260,8 @@ VideoData_destroy(
 
 
 static void
-VideoData_update(
-	VideoData* self
+InputStreamData_update(
+	InputStreamData* self
 ) {
 	// Attempt to read one frame
 	int ret = av_read_frame(self->format_ctx, self->packet);
@@ -325,19 +325,19 @@ VideoData_update(
 
 
 static bool
-video_node_setup(
+input_stream_node_setup(
 	Node* self
 ) {
 	// Retrieve path to video file
 	const String* path = &(self->parameters[PATH_PARAMETER].string_value);
 
 	// Allocate data
-	VideoData* data = (VideoData*)checked_malloc(sizeof(VideoData));
+	InputStreamData* data = (InputStreamData*)checked_malloc(sizeof(InputStreamData));
 	if (!data)
 		return false;
 
 	// Initialise data
-	if (!VideoData_init(data, path->data)) {
+	if (!InputStreamData_init(data, path->data)) {
 		free(data);
 		return false;
 	}
@@ -349,31 +349,31 @@ video_node_setup(
 
 
 static void
-video_node_destroy(
+input_stream_node_destroy(
 	Node* self
 ) {
-	VideoData* data = (VideoData*)self->data;
+	InputStreamData* data = (InputStreamData*)self->data;
 	if (data) {
-		VideoData_destroy(data);
+		InputStreamData_destroy(data);
 		free(data);
 	}
 }
 
 
 static void
-video_node_update(
+input_stream_node_update(
 	Node* self
 ) {
-	VideoData* data = (VideoData*)self->data;
-	VideoData_update(data);
+	InputStreamData* data = (InputStreamData*)self->data;
+	InputStreamData_update(data);
 }
 
 
 static NodeOutput
-video_node_output(
+input_stream_node_output(
 	const Node* self
 ) {
-	VideoData* data = (VideoData*)self->data;
+	InputStreamData* data = (InputStreamData*)self->data;
 	NodeOutput ret = { .rgb_surface = data->surface };
 	return ret;
 }
