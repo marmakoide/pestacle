@@ -65,6 +65,7 @@ $(BUILD_DIR)/libpestacle/scope.o \
 $(BUILD_DIR)/libpestacle/graph.o \
 $(BUILD_DIR)/libpestacle/graph_profile.o \
 $(BUILD_DIR)/libpestacle/window_manager.o \
+$(BUILD_DIR)/libpestacle/plugin_manager.o \
 $(BUILD_DIR)/libpestacle/math/array_ops.o \
 $(BUILD_DIR)/libpestacle/math/vector.o \
 $(BUILD_DIR)/libpestacle/math/matrix.o \

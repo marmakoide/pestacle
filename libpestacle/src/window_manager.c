@@ -23,7 +23,7 @@ static void
 Window_destroy(
 	Window* self
 ) {
-	assert(self != 0);
+	assert(self);
 
 	#ifdef DEBUG
 	self->next = 0;
@@ -67,8 +67,8 @@ Window_init(
 	int width,
 	int height
 ) {
-	assert(self != 0);
-	assert(title != 0);
+	assert(self);
+	assert(title);
 
 	self->next = 0;
 	self->window = 0;
@@ -114,8 +114,8 @@ static void
 Window_update(
 	Window* self
 ) {
-	assert(self != 0);
-	assert(self->window != 0);
+	assert(self);
+	assert(self->window);
 
 	SDL_UpdateWindowSurface(self->window);
 }
@@ -126,7 +126,7 @@ Window_set_bordered(
 	Window* self,
 	bool bordered
 ) {
-	assert(self != 0);
+	assert(self);
 
 	SDL_SetWindowBordered(self->window, bordered);
 }
@@ -138,7 +138,7 @@ Window_add_event_listener(
 	void* caller,
 	WindowEventListener__on_event callback
 ) {
-	assert(self != 0);
+	assert(self);
 
 	// Allocation
 	WindowEventListener* listener =
@@ -158,7 +158,7 @@ Window_dispatch_event(
 	Window* self,
 	SDL_Event* event
 ) {
-	assert(self != 0);
+	assert(self);
 
 	// Select the event
 	Uint32 windowID = SDL_GetWindowID(self->window);
@@ -268,8 +268,8 @@ WindowManager_add_window(
 	int width,
 	int height
 ) {
-	assert(self != 0);
-	assert(title != 0);
+	assert(self);
+	assert(title);
 
 	// Allocate
 	Window* ret = (Window*)checked_malloc(sizeof(Window));
@@ -296,8 +296,8 @@ WindowManager_remove_window(
 	WindowManager* self,
 	Window* window
 ) {
-	assert(self != 0);
-	assert(window != 0);
+	assert(self);
+	assert(window);
 
 	// Look for the window linked before window of interest
 	Window* before_window;
@@ -325,7 +325,7 @@ void
 WindowManager_update_windows(
 	WindowManager* self
 ) {
-	assert(self != 0);
+	assert(self);
 
 	for(Window* window = self->head; window != 0; window = window->next)
 		Window_update(window);
@@ -337,8 +337,8 @@ WindowManager_dispatch_event(
 	WindowManager* self,
 	SDL_Event* event
 ) {
-	assert(self != 0);
-	assert(event != 0);
+	assert(self);
+	assert(event);
 
 	for(Window* window = self->head; window != 0; window = window->next)
 		Window_dispatch_event(window, event);

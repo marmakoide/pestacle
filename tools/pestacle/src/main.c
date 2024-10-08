@@ -274,6 +274,7 @@ main(int argc, char* argv[]) {
 	Scope* root_scope = 0;
 	Graph* graph = 0;
 	GraphProfile* graph_profile = 0;
+	PluginManager* plugin_manager = 0;
 	WindowManager* window_manager = 0;
 
 	CmdParameters params;
@@ -295,6 +296,10 @@ main(int argc, char* argv[]) {
 
 	// Log initialization infos
 	initialization_log();
+
+	// Initialize the plugin manager
+	plugin_manager = (PluginManager*)checked_malloc(sizeof(PluginManager));
+	PluginManager_init(plugin_manager);
 
 	// Initialize the window manager
 	window_manager = (WindowManager*)checked_malloc(sizeof(WindowManager));
@@ -403,6 +408,11 @@ termination:
 	if (params.profile_mode && graph_profile) {
 		GraphProfile_destroy(graph_profile);
 		free(graph_profile);
+	}
+
+	if (plugin_manager) {
+		PluginManager_destroy(plugin_manager);
+		free(plugin_manager);
 	}
 
 	if (window_manager) {
