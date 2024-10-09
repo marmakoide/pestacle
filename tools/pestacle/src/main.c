@@ -131,78 +131,24 @@ initialization_log() {
 
 static bool
 load_plugins(
+	PluginManager* plugin_manager,
 	Scope* root_scope,
 	WindowManager* window_manager
 ) {
 	bool ret = true;
-	char* base_path = 0;
-	void* shared_obj = 0;
 	Scope* scope = 0;
 
-	// Retrieve the base path
-	base_path = SDL_GetBasePath();
-	if (!base_path) {
-		SDL_LogError(
-			SDL_LOG_CATEGORY_SYSTEM,
-			"Unable to retrieve base path: %s",
-			SDL_GetError()
-		);
+	// Load the plugin
+	Plugin* plugin = 
+		PluginManager_add_plugin(plugin_manager, "ffmpeg.so");
+
+	if (!plugin) {
 		ret = false;
 		goto termination;
 	}
-
-	// Build the plugin path
-	char plugin_path[1024];
-	ssize_t len = snprintf(plugin_path, sizeof(plugin_path), "%splugins/ffmpeg.so", base_path);
-	if ((len < 0) || (len >= (ssize_t)sizeof(plugin_path))) {
-		SDL_LogError(
-			SDL_LOG_CATEGORY_SYSTEM,
-			"Unable to build plugin path"
-		);
-		ret = false;
-		goto termination;
-	}
-
-	// Load the dynamic library
-	shared_obj = SDL_LoadObject(plugin_path);
-	if (!shared_obj) {
-		SDL_LogError(
-			SDL_LOG_CATEGORY_SYSTEM,
-			"Unable to load plugin %s : %s",
-			plugin_path,
-			SDL_GetError()
-		);
-		ret = false;
-		goto termination;
-	}
-
-	// Retrieve the "get_scope_delegate" function
-	PluginEntryPoint entry_point = SDL_LoadFunction(shared_obj, "get_scope_delegate");
-	if (!entry_point) {
-		SDL_LogError(
-			SDL_LOG_CATEGORY_SYSTEM,
-			"Unable to find plugin %s entry point: %s",
-			plugin_path,
-			SDL_GetError()
-		);
-		ret = false;
-		goto termination;
-	}
-
-	// Check that scope delegate does not have parameters
-	const ScopeDelegate* delegate = entry_point();
-	if (ParameterDefinition_has_parameters(delegate->parameter_defs)) {
-		SDL_LogError(
-			SDL_LOG_CATEGORY_SYSTEM,
-			"plugin %s is invalid: scope delegate with parameters",
-			plugin_path
-		);
-		ret = false;
-		goto termination;
-	}
-
+	
 	// Build the scope
-	scope = Scope_new(&(delegate->name), delegate, 0);
+	scope = Scope_new(&(plugin->delegate->name), plugin->delegate, 0);
 	if (!scope) {
 		ret = false;
 		goto termination;
@@ -221,7 +167,7 @@ load_plugins(
 	}
 
 	// Log on the success
-	SDL_Log("loaded plugin %s from %s", scope->name.data, plugin_path);
+	SDL_Log("loaded plugin %s", scope->name.data);
 
 	// Job done
 termination:
@@ -229,12 +175,6 @@ termination:
 		Scope_destroy(scope);
 		free(scope);
 	}
-
-	if ((shared_obj) && (!ret))
-		SDL_UnloadObject(shared_obj);
-
-	if (base_path)
-		free(base_path);
 
 	return ret;
 }
@@ -318,7 +258,7 @@ main(int argc, char* argv[]) {
 	}
 
 	// Load the plugins
-	if (!load_plugins(root_scope, window_manager)) {
+	if (!load_plugins(plugin_manager, root_scope, window_manager)) {
 		exit_code = EXIT_FAILURE;
 		goto termination;
 	}

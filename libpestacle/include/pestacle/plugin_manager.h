@@ -21,7 +21,7 @@ typedef struct s_Plugin Plugin;
 struct s_Plugin {
 	Plugin* next;
 	void* shared_obj;
-	PluginEntryPoint entry_point;
+	const ScopeDelegate* delegate;
 }; // struct s_Plugin
 
 
