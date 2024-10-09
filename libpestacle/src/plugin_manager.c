@@ -226,6 +226,14 @@ PluginManager_load_plugins(
 ) {
 	assert(self);
 
+	#if defined(__linux__)
+	static const char* plugin_name_suffix = ".so";
+	#elif defined(__MINGW32__)
+	static const char* plugin_name_suffix = ".dll";
+	#endif
+ 
+	size_t plugin_name_suffix_len = strlen(plugin_name_suffix);
+
 	bool exit_code = true;
 	DIR* dir = 0;
 
@@ -239,9 +247,13 @@ PluginManager_load_plugins(
 	// Scan the directory
 	struct dirent* entry = readdir(dir);
 	for( ; entry != NULL; entry = readdir(dir)) {
-		// Track names that end by ".so"
+		// Track names that end with proper suffix
 		size_t entry_name_len = strlen(entry->d_name);
-		if ((entry_name_len > 3) && (strcmp(entry->d_name + entry_name_len - 3, ".so") == 0)) {
+		
+		if (
+			(entry_name_len > plugin_name_suffix_len) && 
+			(strcmp(entry->d_name + entry_name_len - plugin_name_suffix_len, plugin_name_suffix) == 0)
+			) {
 			if (PluginManager_add_plugin(self, entry->d_name))
 				SDL_Log("loaded plugin %s", entry->d_name);
 			else

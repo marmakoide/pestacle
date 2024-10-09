@@ -44,7 +44,9 @@ PESTACLE_LIBS += $(shell sdl2-config --libs)
 PESTACLE_LIBS += $(shell pkg-config --libs zlib)
 PESTACLE_LIBS += -lm
 
-PESTACLE_FFMPEG_PLUGIN_LIBS = $(shell pkg-config --libs libavcodec)
+PESTACLE_FFMPEG_PLUGIN_LIBS = $(LIBPESTACLE_LIBS)
+PESTACLE_FFMPEG_PLUGIN_LIBS += $(shell sdl2-config --libs)
+PESTACLE_FFMPEG_PLUGIN_LIBS += $(shell pkg-config --libs libavcodec)
 PESTACLE_FFMPEG_PLUGIN_LIBS += $(shell pkg-config --libs libavformat)
 PESTACLE_FFMPEG_PLUGIN_LIBS += $(shell pkg-config --libs libavutil)
 
