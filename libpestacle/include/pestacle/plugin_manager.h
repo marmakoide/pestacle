@@ -45,10 +45,9 @@ PluginManager_destroy(
 );
 
 
-extern Plugin*
-PluginManager_add_plugin(
-	PluginManager* self,
-	const char* relative_path
+extern bool
+PluginManager_load_plugins(
+	PluginManager* self
 );
 
 

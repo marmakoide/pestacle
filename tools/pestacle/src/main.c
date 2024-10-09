@@ -138,37 +138,32 @@ load_plugins(
 	bool ret = true;
 	Scope* scope = 0;
 
-	// Load the plugin
-	Plugin* plugin = 
-		PluginManager_add_plugin(plugin_manager, "ffmpeg.so");
+	// Load the plugins
+	if (!PluginManager_load_plugins(plugin_manager))
+		return false;
+	
+	// For each plugin
+	for(Plugin* plugin = plugin_manager->head; plugin != 0; plugin = plugin->next) {
+		// Build the scope
+		scope = Scope_new(&(plugin->delegate->name), plugin->delegate, 0);
+		if (!scope) {
+			ret = false;
+			goto termination;
+		}
 
-	if (!plugin) {
-		ret = false;
-		goto termination;
+		// Setup the scope
+		if (!Scope_setup(scope, window_manager)) {
+			ret = false;
+			goto termination;
+		}
+
+		// Add the scope to the root scope
+		if (!Scope_add_scope(root_scope, scope)) {
+			ret = false;
+			goto termination;
+		}
 	}
 	
-	// Build the scope
-	scope = Scope_new(&(plugin->delegate->name), plugin->delegate, 0);
-	if (!scope) {
-		ret = false;
-		goto termination;
-	}
-
-	// Setup the scope
-	if (!Scope_setup(scope, window_manager)) {
-		ret = false;
-		goto termination;
-	}
-
-	// Add the scope to the root scope
-	if (!Scope_add_scope(root_scope, scope)) {
-		ret = false;
-		goto termination;
-	}
-
-	// Log on the success
-	SDL_Log("loaded plugin %s", scope->name.data);
-
 	// Job done
 termination:
 	if ((scope) && (!ret)) {

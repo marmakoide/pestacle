@@ -1,3 +1,6 @@
+#include <errno.h>
+#include <dirent.h>
+
 #include <SDL.h>
 #include <assert.h>
 #include <pestacle/memory.h>
@@ -163,7 +166,7 @@ PluginManager_destroy(
 }
 
 
-Plugin*
+static Plugin*
 PluginManager_add_plugin(
 	PluginManager* self,
 	const char* relative_path
@@ -214,4 +217,49 @@ termination:
 
 	// Job done
 	return ret;
+}
+
+
+bool
+PluginManager_load_plugins(
+	PluginManager* self
+) {
+	assert(self);
+
+	bool exit_code = true;
+	DIR* dir = 0;
+
+	// Open the plugin directory
+	dir = opendir(self->plugin_path);
+	if (!dir) {
+		exit_code = false;
+		goto termination;
+	}
+
+	// Scan the directory
+	struct dirent* entry = readdir(dir);
+	for( ; entry != NULL; entry = readdir(dir)) {
+		// Track names that end by ".so"
+		size_t entry_name_len = strlen(entry->d_name);
+		if ((entry_name_len > 3) && (strcmp(entry->d_name + entry_name_len - 3, ".so") == 0)) {
+			if (PluginManager_add_plugin(self, entry->d_name))
+				SDL_Log("loaded plugin %s", entry->d_name);
+			else
+				exit_code = false;
+		}
+	}
+
+	// Job done
+termination:
+	if (dir) {
+		if (closedir(dir))
+			SDL_LogError(
+				SDL_LOG_CATEGORY_SYSTEM,
+				"Unable to close directory entry %s: %s",
+				self->plugin_path,
+				strerror(errno)
+			);
+	}
+
+	return exit_code;
 }
