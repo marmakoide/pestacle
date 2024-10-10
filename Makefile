@@ -19,27 +19,17 @@ $(BUILD_DIR)/$(PESTACLE_FILENAME): $(PESTACLE_OBJS) $(BUILD_DIR)/$(LIBPESTACLE_F
 	$(CC) -o $@ $(PESTACLE_OBJS) $(PESTACLE_LIBS)
 
 
-$(BUILD_DIR)/tools/pestacle/%.o: tools/pestacle/%.c
-	@mkdir -p $(shell basename $(dir $(abspath $(dir $@))))
+$(BUILD_DIR)/tools/pestacle/src/%.o: tools/pestacle/src/%.c
+	@mkdir -p $(dir $@)
 	$(CC) -o $@ -c $(CFLAGS) $(PESTACLE_INCLUDES) $(LIBPESTACLE_INCLUDES) $<
 
 
 $(BUILD_DIR)/tools/pestacle/src/%.deps: tools/pestacle/src/%.c
-	@mkdir -p $(BUILD_DIR)/tools/pestacle/src
-	$(CC) $(PESTACLE_INCLUDES) -MM -MG -MT$(patsubst tools/pestacle/src/%.c, $(BUILD_DIR)/tools/pestacle/src/%.o, $^) -MF $@ $^
-
-$(BUILD_DIR)/tools/pestacle/src/nodes/%.deps: tools/pestacle/src/nodes/%.c
-	@mkdir -p $(BUILD_DIR)/tools/pestacle/src/nodes
-	$(CC) $(PESTACLE_INCLUDES) -MM -MG -MT$(patsubst tools/pestacle/src/nodes/%.c, $(BUILD_DIR)/tools/pestacle/src/nodes/%.o, $^) -MF $@ $^
-
-$(BUILD_DIR)/tools/pestacle/src/scopes/%.deps: tools/pestacle/src/scopes/%.c
-	@mkdir -p $(BUILD_DIR)/tools/pestacle/src/scopes
-	$(CC) $(PESTACLE_INCLUDES) -MM -MG -MT$(patsubst tools/pestacle/src/scopes/%.c, $(BUILD_DIR)/tools/pestacle/src/scopes/%.o, $^) -MF $@ $^
+	@mkdir -p $(dir $@) 
+	$(CC) $(PESTACLE_INCLUDES) -MM -MG -MT$(patsubst %.c, $(BUILD_DIR)/%.o, $^) -MF $@ $^
 
 
--include $(patsubst tools/pestacle/src/%.c, $(BUILD_DIR)/%.deps, $(wildcard tools/pestacle/src/*.c))
--include $(patsubst tools/pestacle/src/nodes/%.c, $(BUILD_DIR)/tools/pestacle/src/nodes/%.deps, $(wildcard tools/pestacle/src/nodes/*.c))
--include $(patsubst tools/pestacle/src/scopes/%.c, $(BUILD_DIR)/tools/pestacle/src/scopes/%.deps, $(wildcard tools/pestacle/src/scopes/*.c))
+-include $(patsubst %.c, $(BUILD_DIR)/%.deps, $(PESTACLE_SOURCES))
 
 
 # ------ libpestacle ---------------------------------------------------------
@@ -53,26 +43,16 @@ $(BUILD_DIR)/$(LIBPESTACLE_FILENAME): $(LIBPESTACLE_OBJS)
 
 
 $(BUILD_DIR)/libpestacle/src/%.o: libpestacle/src/%.c
-	@mkdir -p $(shell basename $(dir $(abspath $(dir $@))))
+	@mkdir -p $(dir $@)
 	$(CC) -o $@ -c -fPIC $(CFLAGS) $(LIBPESTACLE_INCLUDES) $<
 
 
 $(BUILD_DIR)/libpestacle/src/%.deps: libpestacle/src/%.c
-	@mkdir -p $(BUILD_DIR)/libpestacle/src
-	$(CC) $(LIBPESTACLE_INCLUDES) -MM -MG -MT$(patsubst libpestacle/src/%.c, $(BUILD_DIR)/libpestacle/src/%.o, $^) -MF $@ $^
-
-$(BUILD_DIR)/libpestacle/src/math/%.deps: libpestacle/src/math/%.c
-	@mkdir -p $(BUILD_DIR)/libpestacle/src/math
-	$(CC) $(LIBPESTACLE_INCLUDES) -MM -MG -MT$(patsubst libpestacle/src/math/%.c, $(BUILD_DIR)/libpestacle/src/math/%.o, $^) -MF $@ $^
-
-$(BUILD_DIR)/libpestacle/src/parser/%.deps: libpestacle/src/parser/%.c
-	@mkdir -p $(BUILD_DIR)/libpestacle/src/parser
-	$(CC) $(LIBPESTACLE_INCLUDES) -MM -MG -MT$(patsubst libpestacle/src/parser/%.c, $(BUILD_DIR)/libpestacle/src/parser/%.o, $^) -MF $@ $^
+	@mkdir -p $(dir $@)
+	$(CC) $(LIBPESTACLE_INCLUDES) -MM -MG -MT$(patsubst %.c, $(BUILD_DIR)/%.o, $^) -MF $@ $^
 
 
--include $(patsubst libpestacle/src/%.c, $(BUILD_DIR)/libpestacle/src/%.deps, $(wildcard libpestacle/src/*.c))
--include $(patsubst libpestacle/src/math/%.c, $(BUILD_DIR)/libpestacle/src/math/%.deps, $(wildcard libpestacle/src/math/*.c))
--include $(patsubst libpestacle/src/parser/%.c, $(BUILD_DIR)/libpestacle/src/parser/%.deps, $(wildcard libpestacle/src/parser/*.c))
+-include $(patsubst %.c, $(BUILD_DIR)/%.deps, $(LIBPESTACLE_SOURCES))
 
 
 # ------ ffmpeg plugin --------------------------------------------------------
@@ -82,21 +62,21 @@ PESTACLE_FFMPEG_PLUGIN_OBJS := $(addprefix $(BUILD_DIR)/,$(PESTACLE_FFMPEG_PLUGI
 
 
 $(BUILD_DIR)/plugins/$(PESTACLE_FFMPEG_PLUGIN_FILENAME): $(PESTACLE_FFMPEG_PLUGIN_OBJS)
-	@mkdir -p $(BUILD_DIR)/plugins
+	@mkdir -p $(dir $@)
 	$(CC) -shared -o $@ $^ $(PESTACLE_FFMPEG_PLUGIN_LIBS)
 
 
-$(BUILD_DIR)/plugins/ffmpeg/%.o: plugins/ffmpeg/%.c
-	@mkdir -p $(shell basename $(dir $(abspath $(dir $@))))
+$(BUILD_DIR)/plugins/ffmpeg/src/%.o: plugins/ffmpeg/src/%.c
+	@mkdir -p $(dir $@)
 	$(CC) -o $@ -c -fPIC $(CFLAGS) $(PESTACLE_FFMPEG_PLUGIN_INCLUDES) $<
 
 
 $(BUILD_DIR)/plugins/ffmpeg/src/%.deps: plugins/ffmpeg/src/%.c
-	@mkdir -p $(BUILD_DIR)/plugins/ffmpeg/src
-	$(CC) $(PESTACLE_FFMPEG_PLUGIN_INCLUDES) -MM -MG -MT$(patsubst plugins/ffmpeg/src/%.c, $(BUILD_DIR)/plugins/ffmpeg/src/%.o, $^) -MF $@ $^
+	@mkdir -p $(dir $@)
+	$(CC) $(PESTACLE_FFMPEG_PLUGIN_INCLUDES) -MM -MG -MT$(patsubst %.c, $(BUILD_DIR)/%.o, $^) -MF $@ $^
 
 
--include $(patsubst plugins/ffmpeg/src/%.c, $(BUILD_DIR)/plugins/ffmpeg/src/%.deps, $(wildcard plugins/ffmpeg/src/*.c))
+-include $(patsubst %.c, $(BUILD_DIR)/%.deps, $(PESTACLE_FFMPEG_PLUGIN_SOURCES))
 
 
 # ------ Unit testing ---------------------------------------------------------
@@ -109,12 +89,11 @@ $(BUILD_DIR)/test_math: $(BUILD_DIR)/test/math.o $(BUILD_DIR)/$(LIBPESTACLE_FILE
 	$(CC) -o $@ $< $(PESTACLE_LIBS)
 
 $(BUILD_DIR)/test/%.o: test/%.c
-	@mkdir -p $(BUILD_DIR)/test
+	@mkdir -p $(dir $@)
 	$(CC) -o $@ -c $(CFLAGS) $(LIBPESTACLE_INCLUDES) $(TEST_INCLUDES) $<
 
-
 $(BUILD_DIR)/test/%.deps: test/%.c
-	@mkdir -p $(BUILD_DIR)/test
+	@mkdir -p $(dir $@)
 	$(CC) $(INCLUDES) -MM -MG -MT$(patsubst test/%.c, $(BUILD_DIR)/%.o, $^) -MF $@ $^
 
 -include $(patsubst test/%.c, $(BUILD_DIR)/test/%.deps, $(wildcard test/*.c))
