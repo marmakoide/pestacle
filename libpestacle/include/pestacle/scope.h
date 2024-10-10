@@ -9,7 +9,6 @@ extern "C" {
 #include <pestacle/dict.h>
 #include <pestacle/node.h>
 #include <pestacle/stack.h>
-#include <pestacle/window_manager.h>
 
 
 struct s_Scope;
@@ -44,8 +43,7 @@ typedef struct {
 
 typedef struct {
 	bool (*setup)(   // setup method (optional, can be 0)
-		Scope*,
-		WindowManager*
+		Scope*
 	);
 
 	void (*destroy)( // destroy method (optional, can be 0)
@@ -90,8 +88,7 @@ Scope_new(
 
 extern bool
 Scope_setup(
-	Scope* self,
-	WindowManager* window_manager
+	Scope* self
 );
 
 

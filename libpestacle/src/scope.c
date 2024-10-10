@@ -224,14 +224,13 @@ Scope_destroy(
 
 bool
 Scope_setup(
-	Scope* self,
-	WindowManager* window_manager
+	Scope* self
 ) {
 	assert(self != 0);
 	assert(self->delegate != 0);
 
 	if (self->delegate->methods.setup)
-		return self->delegate->methods.setup(self, window_manager);
+		return self->delegate->methods.setup(self);
 
 	return true;
 }

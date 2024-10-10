@@ -1,5 +1,3 @@
-#include <pestacle/macros.h>
-
 #include "scope.h"
 #include "input_stream.h"
 
@@ -8,8 +6,7 @@
 
 static bool
 scope_setup(
-	Scope* self,
-	WindowManager* window_manager
+	Scope* self
 );
 
 
@@ -43,8 +40,7 @@ scope_delegate = {
 
 bool
 scope_setup(
-	Scope* self,
-	ATTRIBUTE_UNUSED WindowManager* window_manager
+	Scope* self
 ) {
 	const NodeDelegate** node_delegate_ptr = node_delegate_list;
 	for( ; *node_delegate_ptr != NODE_DELEGATE_LIST_END; ++node_delegate_ptr)

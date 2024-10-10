@@ -2,6 +2,7 @@
 
 #include <pestacle/macros.h>
 #include <pestacle/memory.h>
+#include <pestacle/window_manager.h>
 
 #include "scopes/window.h"
 
@@ -234,12 +235,12 @@ mouse_motion_node_output(
 	return ret;
 }
 
+
 // --- window Scope interface ------------------------------------------------
 
 static bool
 window_scope_setup(
-	Scope* self,
-	WindowManager* window_manager
+	Scope* self
 );
 
 
@@ -250,7 +251,6 @@ window_scope_destroy(
 
 
 // --- window Scope implementation -------------------------------------------
-
 
 #define WIDTH_PARAMETER    0
 #define HEIGHT_PARAMETER   1
@@ -296,14 +296,17 @@ window_scope_delegate = {
 
 static bool
 window_scope_setup(
-	Scope* self,
-	WindowManager* window_manager
+	Scope* self
 ) {
 	// Retrieve the parameters
 	size_t width = (size_t)self->parameters[WIDTH_PARAMETER].int64_value;
 	size_t height = (size_t)self->parameters[HEIGHT_PARAMETER].int64_value;
 	const String* title = &(self->parameters[TITLE_PARAMETER].string_value);
 	bool bordered = self->parameters[BORDERED_PARAMETER].bool_value;
+
+	// Retried the window manager
+	WindowManager* window_manager =
+		(WindowManager*)self->delegate_scope->data;
 
 	// Create the window
 	Window* window = 

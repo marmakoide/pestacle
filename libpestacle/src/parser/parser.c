@@ -11,7 +11,6 @@
 typedef struct {
 	Lexer* lexer;
 	Scope* scope;
-	WindowManager* window_manager;
 } ParseContext;
 
 
@@ -19,17 +18,14 @@ static void
 ParseContext_init(
 	ParseContext* self,
 	Lexer* lexer,
-	Scope* scope,
-	WindowManager* window_manager
+	Scope* scope
 ) {
-	assert(self != 0);
-	assert(lexer != 0);
-	assert(scope != 0);
-	assert(window_manager != 0);
+	assert(self);
+	assert(lexer);
+	assert(scope);
 
 	self->lexer = lexer;
 	self->scope = scope;
-	self->window_manager = window_manager;
 }
 
 
@@ -38,11 +34,10 @@ static void
 ParseContext_destroy(
 	ParseContext* self
 ) {
-	assert(self != 0);
+	assert(self);
 
 	self->lexer = 0;
 	self->scope = 0;
-	self->window_manager = 0;
 }
 #endif
 
@@ -391,7 +386,7 @@ Parser_parse_scope_delegate_instanciation(
 		return false;
 
 	// Add the newly build scope
-	if (!Scope_setup(scope, context->window_manager))
+	if (!Scope_setup(scope))
 		return false;
 
 	Scope_add_scope(context->scope, scope);
@@ -643,11 +638,10 @@ Parser_parse_statement_list(
 bool
 Parser_parse(
 	Lexer* lexer,
-	Scope* scope,
-	WindowManager* window_manager
+	Scope* scope
 ) {
 	ParseContext context;
-	ParseContext_init(&context, lexer, scope, window_manager);
+	ParseContext_init(&context, lexer, scope);
 
 	bool ret = Parser_parse_statement_list(&context);
 

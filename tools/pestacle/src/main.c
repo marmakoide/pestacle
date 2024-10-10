@@ -132,8 +132,7 @@ initialization_log() {
 static bool
 load_plugins(
 	PluginManager* plugin_manager,
-	Scope* root_scope,
-	WindowManager* window_manager
+	Scope* root_scope
 ) {
 	bool ret = true;
 	Scope* scope = 0;
@@ -152,7 +151,7 @@ load_plugins(
 		}
 
 		// Setup the scope
-		if (!Scope_setup(scope, window_manager)) {
+		if (!Scope_setup(scope)) {
 			ret = false;
 			goto termination;
 		}
@@ -178,8 +177,7 @@ termination:
 static bool
 load_script(
 	const char* path,
-	Scope* root_scope,
-	WindowManager* window_manager
+	Scope* root_scope
 ) {
 	// Open input file
 	FILE* fp = fopen(path, "r");
@@ -196,7 +194,7 @@ load_script(
 	// Parse the file
 	Lexer lexer;
 	Lexer_init(&lexer, fp);
-	bool ret = Parser_parse(&lexer, root_scope, window_manager);
+	bool ret = Parser_parse(&lexer, root_scope);
 
 	// Job done
 	fclose(fp);
@@ -246,20 +244,21 @@ main(int argc, char* argv[]) {
 		&root_scope_delegate,
 		0
 	);
+	root_scope->data = window_manager;
 
-	if (!Scope_setup(root_scope, window_manager)) {
+	if (!Scope_setup(root_scope)) {
 		exit_code = EXIT_FAILURE;
 		goto termination;
 	}
 
 	// Load the plugins
-	if (!load_plugins(plugin_manager, root_scope, window_manager)) {
+	if (!load_plugins(plugin_manager, root_scope)) {
 		exit_code = EXIT_FAILURE;
 		goto termination;
 	}
 
 	// Load script
-	if (!load_script(params.input_path, root_scope, window_manager)) {
+	if (!load_script(params.input_path, root_scope)) {
 		exit_code = EXIT_FAILURE;
 		goto termination;
 	}

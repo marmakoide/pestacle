@@ -1,5 +1,3 @@
-#include <pestacle/macros.h>
-
 #include "nodes/gradient_map.h"
 #include "nodes/heat_diffusion.h"
 #include "nodes/lightness.h"
@@ -16,8 +14,7 @@
 
 static bool
 root_scope_setup(
-	Scope* self,
-	WindowManager* window_manager
+	Scope* self
 );
 
 
@@ -66,8 +63,7 @@ const ScopeDelegate root_scope_delegate = {
 
 bool
 root_scope_setup(
-	Scope* self,
-	ATTRIBUTE_UNUSED WindowManager* window_manager
+	Scope* self
 ) {
 	const NodeDelegate** node_delegate_ptr = node_delegate_list;
 	for( ; *node_delegate_ptr != NODE_DELEGATE_LIST_END; ++node_delegate_ptr)
@@ -79,5 +75,5 @@ root_scope_setup(
 		if (!Scope_add_scope_delegate(self, *scope_delegate_ptr))
 			return false;
 
-	return true;	
+	return true;
 }
