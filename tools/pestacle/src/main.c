@@ -7,11 +7,11 @@
 #include <pestacle/scope.h>
 #include <pestacle/memory.h>
 #include <pestacle/plugin_manager.h>
-#include <pestacle/window_manager.h>
 #include <pestacle/parser/parser.h>
 
 #include "cmdline.h"
 #include "scopes/root.h"
+#include "window_manager.h"
 
 
 static void

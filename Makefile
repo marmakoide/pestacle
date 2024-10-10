@@ -25,7 +25,9 @@ $(BUILD_DIR)/tools/pestacle/nodes/surface_blend.o \
 $(BUILD_DIR)/tools/pestacle/nodes/surface_overlay.o \
 $(BUILD_DIR)/tools/pestacle/nodes/surface_resize.o \
 $(BUILD_DIR)/tools/pestacle/scopes/root.o \
-$(BUILD_DIR)/tools/pestacle/scopes/window.o
+$(BUILD_DIR)/tools/pestacle/scopes/window.o \
+$(BUILD_DIR)/tools/pestacle/window_manager.o
+
 
 $(BUILD_DIR)/$(PESTACLE_FILENAME): $(PESTACLE_OBJS) $(BUILD_DIR)/$(LIBPESTACLE_FILENAME)
 	$(CC) -o $@ $(PESTACLE_OBJS) $(PESTACLE_LIBS)
@@ -64,7 +66,6 @@ $(BUILD_DIR)/libpestacle/node.o \
 $(BUILD_DIR)/libpestacle/scope.o \
 $(BUILD_DIR)/libpestacle/graph.o \
 $(BUILD_DIR)/libpestacle/graph_profile.o \
-$(BUILD_DIR)/libpestacle/window_manager.o \
 $(BUILD_DIR)/libpestacle/plugin_manager.o \
 $(BUILD_DIR)/libpestacle/math/array_ops.o \
 $(BUILD_DIR)/libpestacle/math/vector.o \

@@ -1,6 +1,6 @@
 #include <assert.h>
 #include <pestacle/memory.h>
-#include <pestacle/window_manager.h>
+#include "window_manager.h"
 
 
 // --- WindowEventListener implementation -------------------------------------

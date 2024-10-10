@@ -2,9 +2,9 @@
 
 #include <pestacle/macros.h>
 #include <pestacle/memory.h>
-#include <pestacle/window_manager.h>
 
 #include "scopes/window.h"
+#include "window_manager.h"
 
 
 // --- display Node interface & implementation --------------------------------
