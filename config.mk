@@ -12,24 +12,18 @@ else
 endif
 
 # Plateform dependent configuration
+PESTACLE := pestacle
+LIBPESTACLE := pestacle
+PESTACLE_FFMPEG_PLUGIN := ffmpeg
+
 ifeq ($(detected_OS),Windows)
-	PESTACLE := pestacle
     PESTACLE_FILENAME := $(PESTACLE).exe
-
-	LIBPESTACLE := pestacle
 	LIBPESTACLE_FILENAME := lib$(LIBPESTACLE).dll
-
-	PESTACLE_FFMPEG_PLUGIN := ffmpeg
-	PESTACLE_FFMPEG_PLUGIN_FILENAME := ffmpeg.dll
+	PESTACLE_FFMPEG_PLUGIN_FILENAME := $(PESTACLE_FFMPEG_PLUGIN).dll
 else
-	PESTACLE := pestacle
 	PESTACLE_FILENAME := $(PESTACLE)
-
-	LIBPESTACLE := pestacle
 	LIBPESTACLE_FILENAME := lib$(LIBPESTACLE).so
-
-	PESTACLE_FFMPEG_PLUGIN := ffmpeg
-	PESTACLE_FFMPEG_PLUGIN_FILENAME := ffmpeg.so
+	PESTACLE_FFMPEG_PLUGIN_FILENAME := $(PESTACLE_FFMPEG_PLUGIN).so
 endif
 
 # Libraries paths
