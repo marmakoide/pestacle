@@ -41,7 +41,7 @@ static const NodeInputDefinition
 matrix_resize_inputs[] = {
 	{
 		NodeType__matrix,
-		{ "source", 7 }
+		"source"
 	},
 	NODE_INPUT_DEFINITION_END
 };
@@ -56,22 +56,22 @@ static const ParameterDefinition
 matrix_resize_parameters[] = {
 	{
 		ParameterType__integer,
-		{ "input-width", 12 },
+		"input-width",
 		{ .int64_value = 32 }
 	},
 	{
 		ParameterType__integer,
-		{ "input-height", 13 },
+		"input-height",
 		{ .int64_value = 32 }
 	},
 	{
 		ParameterType__integer,
-		{ "output-width", 13 },
+		"output-width",
 		{ .int64_value = 32 }
 	},
 	{
 		ParameterType__integer,
-		{ "output-height", 14 },
+		"output-height",
 		{ .int64_value = 32 }
 	},
 	PARAMETER_DEFINITION_END
@@ -80,7 +80,7 @@ matrix_resize_parameters[] = {
 
 const NodeDelegate
 matrix_resize_node_delegate = {
-	{ "matrix-resize", 14 },
+	"matrix-resize",
 	NodeType__matrix,
 	matrix_resize_inputs,
 	matrix_resize_parameters,

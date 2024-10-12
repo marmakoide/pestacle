@@ -5,21 +5,20 @@
 extern "C" {
 #endif
 
-
 #include <stdio.h>
-#include <pestacle/strings.h>
+#include <stdbool.h>
 
 
 typedef struct {
 	size_t logical_len;
 	size_t physical_len;
-	String* items;
+	char** items;
 } StringList;
 
 
 extern void
 StringList_print(
-	StringList* self,
+	const StringList* self,
 	FILE* out
 );
 
@@ -54,13 +53,13 @@ StringList_length(
 );
 
 
-extern const String*
+extern const char**
 StringList_items(
 	const StringList* self
 );
 
 
-extern const String*
+extern const char*
 StringList_at(
 	const StringList* self,
 	size_t i
@@ -70,7 +69,7 @@ StringList_at(
 extern void
 StringList_append(
 	StringList* self,
-	const String* str
+	const char* str
 );
 
 

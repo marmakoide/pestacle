@@ -34,8 +34,8 @@ static const ParameterDefinition
 picture_parameters[] = {
 	{
 		ParameterType__string,
-		{ "path", 5 },
-		{ .string_value = { "", 1 } }
+		"path",
+		{ .string_value = "" }
 	},
 	PARAMETER_DEFINITION_END
 };
@@ -43,7 +43,7 @@ picture_parameters[] = {
 
 const NodeDelegate
 picture_node_delegate = {
-	{ "picture", 8 },
+	"picture",
 	NodeType__rgb_surface,
 	picture_inputs,
 	picture_parameters,
@@ -62,10 +62,10 @@ static bool
 picture_node_setup(
 	Node* self
 ) {
-	const String* path = &(self->parameters[PATH_PARAMETER].string_value);
+	const char* path = self->parameters[PATH_PARAMETER].string_value;
 
 	// Load the picture
-	SDL_Surface* rgb_surface = load_png(path->data);
+	SDL_Surface* rgb_surface = load_png(path);
 	if (!rgb_surface)
 		return false;
 

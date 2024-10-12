@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <pestacle/memory.h>
+#include <pestacle/strings.h>
 #include <pestacle/string_list.h>
 
 #define INITIAL_PHYSICAL_LEN 8
@@ -12,11 +13,9 @@ static void
 StringList_fill_with_null(
 	StringList* self
 ) {
-	String* ptr = self->items;
-	for(size_t i = self->physical_len; i != 0; --i, ++ptr) {
-		ptr->data = 0;
-		ptr->len = 0;
-	}
+	char** ptr = self->items;
+	for(size_t i = self->physical_len; i != 0; --i, ++ptr)
+		*ptr = 0;
 }
 #endif
 
@@ -25,9 +24,9 @@ static void
 StringList_destroy_items(
 	StringList* self
 ) {
-	String* ptr = self->items;
+	char** ptr = self->items;
 	for(size_t i = self->logical_len; i != 0; --i, ++ptr)
-		String_destroy(ptr);
+		free(*ptr);
 }
 
 
@@ -38,7 +37,7 @@ StringList_init(
 
 	self->logical_len = 0;
 	self->physical_len = INITIAL_PHYSICAL_LEN;
-	self->items = (String*)checked_malloc(self->physical_len * sizeof(String));
+	self->items = (char**)checked_malloc(self->physical_len * sizeof(char*));
 
 	#ifdef DEBUG
 	StringList_fill_with_null(self);
@@ -65,8 +64,8 @@ void
 StringList_clear(
 	StringList* self
 ) {
-	assert(self != 0);
-	assert(self->items != 0);
+	assert(self);
+	assert(self->items);
 
 	StringList_destroy_items(self);
 	self->logical_len = 0;
@@ -77,8 +76,8 @@ bool
 StringList_empty(
 	const StringList* self
 ) {
-	assert(self != 0);
-	assert(self->items != 0);
+	assert(self);
+	assert(self->items);
 
 	return self->logical_len == 0;
 }
@@ -88,70 +87,72 @@ size_t
 StringList_length(
 	const StringList* self
 ) {
-	assert(self != 0);
-	assert(self->items != 0);
+	assert(self);
+	assert(self->items);
 
 	return self->logical_len;
 }
 
 
-extern const String*
+extern const char**
 StringList_items(
 	const StringList* self
 ) {
-	assert(self != 0);
-	assert(self->items != 0);
+	assert(self);
+	assert(self->items);
 
-	return self->items;
+	return (const char**)self->items;
 }
 
 
-const String*
+const char*
 StringList_at(
 	const StringList* self,
 	size_t i
 ) {
-	assert(self != 0);
+	assert(self);
 	assert(i < self->logical_len);
 
-	return self->items + i;
+	return self->items[i];
 }
 
 
 void
 StringList_append(
 	StringList* self,
-	const String* str
+	const char* str
 ) {
-	assert(self != 0);
-	assert(str != 0);
+	assert(self);
+	assert(str);
 
 	// Extend the stack storage if required
 	if (self->physical_len == self->logical_len) {
-		String* new_items= (String*)checked_malloc(2 * self->physical_len * sizeof(String));
-		memcpy(new_items, self->items, self->physical_len * sizeof(String));
+		char** new_items= (char**)checked_malloc(2 * self->physical_len * sizeof(char*));
+		memcpy(new_items, self->items, self->physical_len * sizeof(char*));
 		self->physical_len *= 2;
 		free(self->items);
 		self->items = new_items;
 	}
 
 	// Append the new item
-	String_clone(self->items + self->logical_len, str);
+	self->items[self->logical_len] = strclone(str);
+
+	
 	self->logical_len += 1;
 }
 
 
 void
 StringList_print(
-	StringList* self,
+	const StringList* self,
 	FILE* out
 ) {
-	assert(self != 0);
-	assert(out != 0);
+	assert(self);
+	assert(out);
 
-	const String* str = self->items;
+	const char** str = (const char**)self->items;
 	for(size_t i = self->logical_len; i != 0; --i, ++str) {
-		fputs(str->data, out);
+		fputs(*str, out);
 		if (i > 1)
 			fputc('.', out);
 	}

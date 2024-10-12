@@ -38,15 +38,15 @@ static const NodeInputDefinition
 surface_blend_inputs[] = {
 	{
 		NodeType__rgb_surface,
-		{ "source-a", 9 }
+		"source-a"
 	},
 	{
 		NodeType__rgb_surface,
-		{ "source-b", 9 }
+		"source-b"
 	},
 	{
 		NodeType__matrix,
-		{ "mask", 5 }
+		"mask"
 	},
 	NODE_INPUT_DEFINITION_END
 };
@@ -59,12 +59,12 @@ static const ParameterDefinition
 surface_blend_parameters[] = {
 	{
 		ParameterType__integer,
-		{ "width", 6 },
+		"width",
 		{ .int64_value = 32 }
 	},
 	{
 		ParameterType__integer,
-		{ "height", 7 },
+		"height",
 		{ .int64_value = 32 }
 	},
 	PARAMETER_DEFINITION_END
@@ -73,7 +73,7 @@ surface_blend_parameters[] = {
 
 const NodeDelegate
 surface_blend_node_delegate = {
-	{ "surface-blend", 14 },
+	"surface-blend",
 	NodeType__rgb_surface,
 	surface_blend_inputs,
 	surface_blend_parameters,

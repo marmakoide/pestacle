@@ -45,8 +45,8 @@ static const ParameterDefinition
 input_stream_parameters[] = {
 	{
 		ParameterType__string,
-		{ "path", 5 },
-		{ .string_value = { "", 1 } }
+		"path",
+		{ .string_value = "" }
 	},
 	PARAMETER_DEFINITION_END
 };
@@ -54,7 +54,7 @@ input_stream_parameters[] = {
 
 const NodeDelegate
 input_stream_node_delegate = {
-	{ "input-stream", 13 },
+	"input-stream",
 	NodeType__rgb_surface,
 	input_stream_inputs,
 	input_stream_parameters,
@@ -329,7 +329,7 @@ input_stream_node_setup(
 	Node* self
 ) {
 	// Retrieve path to video file
-	const String* path = &(self->parameters[PATH_PARAMETER].string_value);
+	const char* path = self->parameters[PATH_PARAMETER].string_value;
 
 	// Allocate data
 	InputStreamData* data = (InputStreamData*)checked_malloc(sizeof(InputStreamData));
@@ -337,7 +337,7 @@ input_stream_node_setup(
 		return false;
 
 	// Initialise data
-	if (!InputStreamData_init(data, path->data)) {
+	if (!InputStreamData_init(data, path)) {
 		free(data);
 		return false;
 	}

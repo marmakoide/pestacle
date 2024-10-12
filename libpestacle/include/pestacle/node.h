@@ -24,14 +24,14 @@ enum NodeType {
 
 typedef struct {
 	enum NodeType type;
-	String name;
+	const char* name;
 } NodeInputDefinition;
 
 
 #define NODE_INPUT_DEFINITION_END \
 { \
 	NodeType__last, \
-	{ 0, 0 }, \
+	0, \
 }
 
 
@@ -87,7 +87,7 @@ typedef struct {
 
 
 typedef struct {
-	String name;
+	const char* name;
 	enum NodeType type;
 	const NodeInputDefinition* input_defs;
 	const ParameterDefinition* parameter_defs;
@@ -97,7 +97,7 @@ typedef struct {
 
 struct s_Node {
 	void* data;
-	String name;
+	char* name;
 
 	const NodeDelegate* delegate;
 	struct s_Scope* delegate_scope; // Scope owning the delegate
@@ -110,14 +110,14 @@ struct s_Node {
 
 /*
  * Creates a new node instance
- *   name : name of the instance, will make a copy of the string instance
+ *   name : name of the instance, will make a copy of the string
  *   delegate : delegate for this node
   *  delegate_scope : scope owning the delegate
  */
 
 extern Node*
 Node_new(
-	const String* name,
+	const char* name,
 	const NodeDelegate* delegate,
 	struct s_Scope* delegate_scope
 );
@@ -136,7 +136,7 @@ Node_new(
 extern bool
 Node_set_input_by_name(
 	Node* self,
-	const String* name,
+	const char* name,
 	Node* other
 );
 
@@ -156,7 +156,7 @@ Node_set_input_by_name(
 bool
 Node_get_parameter_by_name(
 	Node* self,
-	const String* name,
+	const char* name,
 	const ParameterDefinition** param_def_ptr,
 	ParameterValue** param_value_ptr
 );

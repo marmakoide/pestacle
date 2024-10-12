@@ -29,8 +29,8 @@ Lexer_init(
 
 	self->token.location.line = 0;
 	self->token.type = TokenType__invalid;
-	self->token.text.data = self->token.text_data;
-	self->token.text.len = 0;
+	self->token.text = self->token.text_data;
+	self->token.text_len = 0;
 	self->token.value.int64_value = 0;
 
 	// Initialize the token text buffer
@@ -45,10 +45,10 @@ Lexer_token_text_len(const Lexer* self) {
 }
 
 
-const String*
+const char*
 Lexer_token_text(Lexer* self) {
-	self->token.text.len = Lexer_token_text_len(self);
-	return &(self->token.text);
+	self->token.text_len = Lexer_token_text_len(self);
+	return self->token.text;
 }
 
 

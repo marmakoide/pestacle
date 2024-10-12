@@ -144,7 +144,7 @@ load_plugins(
 	// For each plugin
 	for(Plugin* plugin = plugin_manager->head; plugin != 0; plugin = plugin->next) {
 		// Build the scope
-		scope = Scope_new(&(plugin->delegate->name), plugin->delegate, 0);
+		scope = Scope_new(plugin->delegate->name, plugin->delegate, 0);
 		if (!scope) {
 			ret = false;
 			goto termination;
@@ -240,7 +240,7 @@ main(int argc, char* argv[]) {
 
 	// Initialize root scope
 	root_scope = Scope_new(
-		&(root_scope_delegate.name),
+		root_scope_delegate.name,
 		&root_scope_delegate,
 		0
 	);

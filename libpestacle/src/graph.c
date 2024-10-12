@@ -5,9 +5,11 @@
 
 
 static bool
-Graph_check_graph_is_complete(Graph* self) {
-	assert(self != 0);
-	assert(self->sorted_nodes != 0);
+Graph_check_graph_is_complete(
+	Graph* self
+) {
+	assert(self);
+	assert(self->sorted_nodes);
 
 	Node** node_ptr = self->sorted_nodes;
 	for(size_t i = self->sorted_node_count; i != 0; --i, ++node_ptr)
@@ -15,7 +17,7 @@ Graph_check_graph_is_complete(Graph* self) {
 			SDL_LogError(
 				SDL_LOG_CATEGORY_SYSTEM,
 				"node '%s' is not complete\n",
-				(*node_ptr)->name.data
+				(*node_ptr)->name
 			);
 			return false;
 		}
@@ -25,7 +27,10 @@ Graph_check_graph_is_complete(Graph* self) {
 
 
 static void
-push_node_inputs(Stack* stack, Node* node) {
+push_node_inputs(
+	Stack* stack, 
+	Node* node
+) {
 	Node** input_ptr = node->inputs;
 	const NodeInputDefinition* input_def = node->delegate->input_defs;
 	for(; input_def->type != NodeType__last; ++input_ptr, ++input_def)
@@ -95,8 +100,8 @@ Graph_topological_sort(
 	while(!Stack_empty(&stack)) {
 		Node* node = (Node*)Stack_pop(&stack);
 
-		if (!Dict_find(&visited, &(node->name))) {
-			Dict_insert(&visited, &(node->name));
+		if (!Dict_find(&visited, node->name)) {
+			Dict_insert(&visited, node->name);
 
 			component_size += 1;
 			push_node_inputs(&stack, node);
@@ -115,8 +120,8 @@ Graph_topological_sort(
 	while(!Stack_empty(&stack)) {
 		Node* node = (Node*)Stack_pop(&stack);
 
-		if (!Dict_find(&visited, &(node->name))) {
-			Dict_insert(&visited, &(node->name));
+		if (!Dict_find(&visited, node->name)) {
+			Dict_insert(&visited, node->name);
 
 			*sorted_node_ptr = node;
 			sorted_node_ptr += 1;
@@ -136,7 +141,7 @@ Graph_init(
 	Graph* self,
 	Scope* scope
 ) {
-	assert(self != 0);
+	assert(self);
 
 	// Initialize members
 	self->sorted_node_count = 0;
@@ -170,7 +175,7 @@ void
 Graph_destroy(
 	Graph* self
 ) {
-	assert(self != 0);
+	assert(self);
 
 	if (self->sorted_nodes) {
 		free(self->sorted_nodes);
@@ -187,7 +192,7 @@ bool
 Graph_setup(
 	Graph* self
 ) {
-	assert(self != 0);
+	assert(self);
 
 	// Setup the nodes in reverse topological order
 	Node** node_ptr = self->sorted_nodes + self->sorted_node_count - 1;
@@ -204,7 +209,7 @@ void
 Graph_update(
 	Graph* self
 ) {
-	assert(self != 0);
+	assert(self);
 
 	// Update the nodes in topological order
 	Node** node_ptr = self->sorted_nodes;
@@ -218,8 +223,8 @@ Graph_update_with_profile(
 	Graph* self,
 	GraphProfile* profile
 ) {
-	assert(self != 0);
-	assert(profile != 0);
+	assert(self);
+	assert(profile);
 
 	// Update the number of updates
 	profile->update_count += 1;

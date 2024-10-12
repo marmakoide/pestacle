@@ -37,11 +37,11 @@ static const NodeInputDefinition
 surface_overlay_inputs[] = {
 	{
 		NodeType__rgb_surface,
-		{ "source-a", 9 }
+		"source-a"
 	},
 	{
 		NodeType__rgb_surface,
-		{ "source-b", 9 }
+		"source-b"
 	},
 	NODE_INPUT_DEFINITION_END
 };
@@ -54,12 +54,12 @@ static const ParameterDefinition
 surface_overlay_parameters[] = {
 	{
 		ParameterType__integer,
-		{ "width", 6 },
+		"width",
 		{ .int64_value = 32 }
 	},
 	{
 		ParameterType__integer,
-		{ "height", 7 },
+		"height",
 		{ .int64_value = 32 }
 	},
 	PARAMETER_DEFINITION_END
@@ -68,7 +68,7 @@ surface_overlay_parameters[] = {
 
 const NodeDelegate
 surface_overlay_node_delegate = {
-	{ "surface-overlay", 16 },
+	"surface-overlay",
 	NodeType__rgb_surface,
 	surface_overlay_inputs,
 	surface_overlay_parameters,

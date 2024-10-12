@@ -27,7 +27,7 @@ scope_parameters[] = {
 
 static const ScopeDelegate
 scope_delegate = {
-	{ "ffmpeg", 7 },
+	"ffmpeg",
 	scope_parameters,
 	{
 		scope_setup,

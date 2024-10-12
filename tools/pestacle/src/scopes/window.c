@@ -22,7 +22,7 @@ static const NodeInputDefinition
 display_inputs[] = {
 	{
 		NodeType__rgb_surface,
-		{ "source", 7 }
+		"source"
 	},
 	NODE_INPUT_DEFINITION_END
 }; // display_inputs
@@ -36,7 +36,7 @@ display_parameters[] = {
 
 const NodeDelegate
 display_node_delegate = {
-	{ "display", 8 },
+	"display",
 	NodeType__void,
 	display_inputs,
 	display_parameters,
@@ -102,7 +102,7 @@ static const ParameterDefinition
 mouse_motion_parameters[] = {
 	{
 		ParameterType__real,
-		{ "value", 6 },
+		"value",
 		{ .real_value = (real_t)1 }
 	},
 	PARAMETER_DEFINITION_END
@@ -111,7 +111,7 @@ mouse_motion_parameters[] = {
 
 const NodeDelegate
 mouse_motion_node_delegate = {
-	{ "mouse-motion", 13 },
+	"mouse-motion",
 	NodeType__matrix,
 	mouse_motion_inputs,
 	mouse_motion_parameters,
@@ -261,22 +261,22 @@ static const ParameterDefinition
 window_scope_parameters[] = {
 	{
 		ParameterType__integer,
-		{ "width", 6 },
+		"width",
 		{ .int64_value = 320 }
 	},
 	{
 		ParameterType__integer,
-		{ "height", 7 },
+		"height",
 		{ .int64_value = 240 }
 	},
 	{
 		ParameterType__string,
-		{ "title", 6 },
-		{ .string_value = { "pestacle", 9 } }
+		"title",
+		{ .string_value = "pestacle" }
 	},
 	{
 		ParameterType__bool,
-		{ "bordered", 9 },
+		"bordered",
 		{ .bool_value = true }
 	},
 	PARAMETER_DEFINITION_END
@@ -285,7 +285,7 @@ window_scope_parameters[] = {
 
 const ScopeDelegate
 window_scope_delegate = {
-	{ "window", 7 },
+	"window",
 	window_scope_parameters,
 	{
 		window_scope_setup,
@@ -301,7 +301,7 @@ window_scope_setup(
 	// Retrieve the parameters
 	size_t width = (size_t)self->parameters[WIDTH_PARAMETER].int64_value;
 	size_t height = (size_t)self->parameters[HEIGHT_PARAMETER].int64_value;
-	const String* title = &(self->parameters[TITLE_PARAMETER].string_value);
+	const char* title = self->parameters[TITLE_PARAMETER].string_value;
 	bool bordered = self->parameters[BORDERED_PARAMETER].bool_value;
 
 	// Retried the window manager
@@ -312,7 +312,7 @@ window_scope_setup(
 	Window* window = 
 		WindowManager_add_window(
 			window_manager,
-			title->data,
+			title,
 			width,
 			height
 		);
@@ -327,7 +327,7 @@ window_scope_setup(
 
 	// Add the 'display' node
 	Node* display_node = 
-		Node_new(&(display_node_delegate.name), &display_node_delegate, self);
+		Node_new(display_node_delegate.name, &display_node_delegate, self);
 
 	if ((!display_node) || (!Scope_add_node(self, display_node)))
 		goto failure;

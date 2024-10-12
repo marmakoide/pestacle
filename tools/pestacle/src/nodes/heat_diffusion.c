@@ -35,7 +35,7 @@ static const NodeInputDefinition
 heat_diffusion_inputs[] = {
 	{
 		NodeType__matrix,
-		{ "source", 7 }
+		"source"
 	},
 	NODE_INPUT_DEFINITION_END
 };
@@ -49,17 +49,17 @@ static const ParameterDefinition
 heat_diffusion_parameters[] = {
 	{
 		ParameterType__integer,
-		{ "width", 6 },
+		"width",
 		{ .int64_value = 32 }
 	},
 	{
 		ParameterType__integer,
-		{ "height", 7 },
+		"height",
 		{ .int64_value = 32 }
 	},
 	{
 		ParameterType__real,
-		{ "decay", 6 },
+		"decay",
 		{ .real_value = 1e-2f }
 	},
 	PARAMETER_DEFINITION_END
@@ -68,7 +68,7 @@ heat_diffusion_parameters[] = {
 
 const NodeDelegate
 heat_diffusion_node_delegate = {
-	{ "heat-diffusion", 15 },
+	"heat-diffusion",
 	NodeType__matrix,
 	heat_diffusion_inputs,
 	heat_diffusion_parameters,

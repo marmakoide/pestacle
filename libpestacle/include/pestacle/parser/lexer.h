@@ -7,6 +7,7 @@
 
 
 #include <stdint.h>
+#include <stdbool.h>
 
 #include <pestacle/strings.h>
 #include <pestacle/input_buffer.h>
@@ -44,7 +45,8 @@ typedef struct {
 	FileLocation location;
 	char text_data[LEXER_TOKEN_TEXT_MAX_SIZE];
 	char* text_end;
-	String text;
+	char* text;
+	size_t text_len;
 	TokenValue value;
 } TokenData;
 
@@ -62,7 +64,7 @@ Lexer_next_token(
 );
 
 
-extern const String*
+extern const char*
 Lexer_token_text(
 	Lexer* self
 );

@@ -3,13 +3,16 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <pestacle/strings.h>
 #include <pestacle/memory.h>
 #include <pestacle/dict.h>
 
 
 void
-DictIterator_next(DictIterator* self) {
-	assert(self != 0);
+DictIterator_next(
+	DictIterator* self
+) {
+	assert(self);
 	
 	if (self->key_count == 0)
 		self->entry = 0;
@@ -21,10 +24,12 @@ DictIterator_next(DictIterator* self) {
 
 
 void
-DictIterator_init(DictIterator* self,
-                  Dict* dict) {
-	assert(self != 0);
-	assert(dict != 0);
+DictIterator_init(
+	DictIterator* self,
+    Dict* dict
+) {
+	assert(self);
+	assert(dict);
     
 	self->key_count = dict->key_count;
 
@@ -38,16 +43,20 @@ DictIterator_init(DictIterator* self,
 
 
 bool
-DictIterator_has_next(const DictIterator* self) {
-	assert(self != 0);
+DictIterator_has_next(
+	const DictIterator* self
+) {
+	assert(self);
 	
 	return (self->key_count != 0) || (self->entry != 0);
 }
 
 
 void
-DictEntry_init(DictEntry* self) {
-	assert(self != 0);
+DictEntry_init(
+	DictEntry* self
+) {
+	assert(self);
 	
 	self->key = 0;
 	self->value = 0;
@@ -55,13 +64,16 @@ DictEntry_init(DictEntry* self) {
 
 
 void
-Dict_init(Dict* self) {
-	assert(self != 0);
+Dict_init(
+	Dict* self
+) {
+	assert(self);
 
 	self->size = 16;
 	self->key_count = 0;
 
-	self->entries = (DictEntry*)checked_calloc(self->size, sizeof(DictEntry));
+	self->entries =
+		(DictEntry*)checked_calloc(self->size, sizeof(DictEntry));
 
 	DictEntry* entry = self->entries;
 	for(size_t i = self->size; i != 0; --i, ++entry)
@@ -70,8 +82,10 @@ Dict_init(Dict* self) {
 
 
 void
-Dict_clear(Dict* self) {
-	assert(self != 0);
+Dict_clear(
+	Dict* self
+) {
+	assert(self);
 
 	self->key_count = 0;
 
@@ -82,10 +96,12 @@ Dict_clear(Dict* self) {
 
 
 void
-Dict_clone(Dict* dst,
-           Dict* src) {
-	assert(dst != 0);
-	assert(src != 0);
+Dict_clone(
+	Dict* dst,
+    Dict* src
+) {
+	assert(dst);
+	assert(src);
 
 	dst->size = src->size;
 	dst->key_count = src->key_count;
@@ -96,8 +112,10 @@ Dict_clone(Dict* dst,
 
 
 void
-Dict_destroy(Dict* self) {
-	assert(self != 0);
+Dict_destroy(
+	Dict* self
+) {
+	assert(self);
 	
 	self->size = 0;
 	self->key_count = 0;
@@ -110,13 +128,15 @@ Dict_destroy(Dict* self) {
 
 
 static DictEntry*
-Dict_probe(Dict *restrict self,
-           const String *restrict key) {
-	assert(self != 0);
-	assert(key != 0);
+Dict_probe(
+	Dict* self,
+    const char* key
+) {
+	assert(self);
+	assert(key);
 
 	// Initial search locus
-	size_t i = String_djb_hash(key);
+	size_t i = (size_t)djb_hash(key);
 
 	// Linear search
 	for(size_t j = 0; j < self->size; ++j) {
@@ -125,7 +145,7 @@ Dict_probe(Dict *restrict self,
 		// If the entry is not a tombstome
 		if (entry->value != DICT_ENTRY_TOMBSTONE_VALUE)
 			// Check if the entry is unused or matching the key
-			if ((entry->key == 0) || String_equals(entry->key, key))
+			if ((entry->key == 0) || (strcmp(entry->key, key) == 0))
 				return entry;
 	}
 
@@ -135,9 +155,11 @@ Dict_probe(Dict *restrict self,
 
 
 static void
-Dict_resize(Dict* self,
-            size_t new_size) {
-	assert(self != 0);
+Dict_resize(
+	Dict* self,
+    size_t new_size
+) {
+	assert(self);
 
 	DictEntry* entry;
 
@@ -168,8 +190,10 @@ Dict_resize(Dict* self,
 
 
 DictEntry*
-Dict_pick(Dict *restrict self) {
-	assert(self != 0);
+Dict_pick(
+	Dict* self
+) {
+	assert(self);
 
 	DictEntry* entry = self->entries;
 	for(size_t i = self->size; i != 0; --i, ++entry)
@@ -181,10 +205,12 @@ Dict_pick(Dict *restrict self) {
 
 
 DictEntry*
-Dict_find(Dict *restrict self,
-          const String *restrict key) {
-	assert(self != 0);
-	assert(key != 0);
+Dict_find(
+	Dict* self,
+    const char* key
+) {
+	assert(self);
+	assert(key);
 
 	DictEntry* entry = Dict_probe(self, key);
 
@@ -196,10 +222,12 @@ Dict_find(Dict *restrict self,
 
 
 DictEntry*
-Dict_insert(Dict* self,
-            const String *restrict key) {
-	assert(self != 0);
-	assert(key != 0);
+Dict_insert(
+	Dict* self,
+    const char* key
+) {
+	assert(self);
+	assert(key);
 
 	// Stretch the dictionary to enforce the load factor
 	size_t new_size = self->size;
@@ -236,10 +264,12 @@ Dict_insert(Dict* self,
 
 
 void
-Dict_erase(Dict* self,
-           DictEntry* entry) {
-	assert(self != 0);
-	assert(entry != 0);
+Dict_erase(
+	Dict* self,
+    DictEntry* entry
+) {
+	assert(self);
+	assert(entry);
 	assert(self->key_count > 0);
 
 	self->key_count -= 1;

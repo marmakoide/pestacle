@@ -50,7 +50,7 @@ root_scope_parameters[] = {
 
 
 const ScopeDelegate root_scope_delegate = {
-	{ "root", 5 },
+	"root",
 	root_scope_parameters,
 	{
 		root_scope_setup,

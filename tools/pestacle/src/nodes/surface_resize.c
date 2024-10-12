@@ -33,7 +33,7 @@ static const NodeInputDefinition
 surface_resize_inputs[] = {
 	{
 		NodeType__rgb_surface,
-		{ "source", 7 }
+		"source",
 	},
 	NODE_INPUT_DEFINITION_END
 };
@@ -48,22 +48,22 @@ static const ParameterDefinition
 surface_resize_parameters[] = {
 	{
 		ParameterType__integer,
-		{ "input-width", 12 },
+		"input-width",
 		{ .int64_value = 32 }
 	},
 	{
 		ParameterType__integer,
-		{ "input-height", 13 },
+		"input-height",
 		{ .int64_value = 32 }
 	},
 	{
 		ParameterType__integer,
-		{ "output-width", 13 },
+		"output-width",
 		{ .int64_value = 32 }
 	},
 	{
 		ParameterType__integer,
-		{ "output-height", 14 },
+		"output-height",
 		{ .int64_value = 32 }
 	},
 	PARAMETER_DEFINITION_END
@@ -72,7 +72,7 @@ surface_resize_parameters[] = {
 
 const NodeDelegate
 surface_resize_node_delegate = {
-	{ "surface-resize", 15 },
+	"surface-resize",
 	NodeType__rgb_surface,
 	surface_resize_inputs,
 	surface_resize_parameters,

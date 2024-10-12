@@ -53,7 +53,7 @@ typedef struct {
 
 
 struct s_ScopeDelegate {
-	String name;
+	const char* name;
 	const ParameterDefinition* parameter_defs;
 	ScopeDelegateMethods methods;
 }; // struct s_ScopeDelegate
@@ -61,7 +61,7 @@ struct s_ScopeDelegate {
 
 struct s_Scope {
 	void* data;
-	String name;
+	char* name;
 
 	const ScopeDelegate* delegate;
 	struct s_Scope* delegate_scope; // Scope owning the delegate
@@ -80,7 +80,7 @@ Scope_print(
 
 extern Scope*
 Scope_new(
-	const String* name,
+	const char* name,
 	const ScopeDelegate* delegate,
 	Scope* delegate_scope
 );
@@ -101,7 +101,7 @@ Scope_destroy(
 extern bool
 Scope_get_parameter_by_name(
 	Scope* self,
-	const String* name,
+	const char* name,
 	const ParameterDefinition** param_def_ptr,
 	ParameterValue** param_value_ptr
 );
@@ -110,7 +110,7 @@ Scope_get_parameter_by_name(
 extern ScopeMember*
 Scope_get_member(
 	Scope* self,
-	const String* path,
+	const char** path,
 	size_t path_len
 );
 

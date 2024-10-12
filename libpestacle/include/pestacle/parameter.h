@@ -5,9 +5,9 @@
 extern "C" {
 #endif
 
-
+#include <stdint.h>
+#include <stdbool.h>
 #include <pestacle/math/real.h>
-#include <pestacle/strings.h>
 
 
 enum ParameterType {
@@ -24,13 +24,13 @@ typedef union {
 	bool bool_value;
 	int64_t int64_value;
 	real_t real_value;
-	String string_value;
+	char* string_value;
 } ParameterValue;
 
 
 typedef struct {
 	enum ParameterType type;
-	String name;
+	const char* name;
 	ParameterValue default_value;
 } ParameterDefinition;
 
@@ -38,7 +38,7 @@ typedef struct {
 #define PARAMETER_DEFINITION_END \
 { \
 	ParameterType__last, \
-	{ 0, 0 }, \
+	0, \
 	{ .int64_value = 0 } \
 }
 

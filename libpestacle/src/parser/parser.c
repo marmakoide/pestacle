@@ -47,7 +47,7 @@ ParseContext_destroy(
 static ScopeMember*
 Parser_get_scope_member(
 	ParseContext* context,
-	const String* path,
+	const char** path,
 	size_t path_len
 ) {
 	ScopeMember* member =
@@ -67,7 +67,7 @@ Parser_get_scope_member(
 static Node*
 Parser_get_node(
 	ParseContext* context,
-	const String* path,
+	const char** path,
 	size_t path_len
 ) {
 	ScopeMember* member =
@@ -114,8 +114,7 @@ Parser_parse_parameter(
 			context->lexer->token.text
 		);
 
-	String name_str;
-	String_clone(&name_str, Lexer_token_text(context->lexer));
+	char* name_str = strclone(Lexer_token_text(context->lexer));
 
 	// Fetch the parameter 
 	ParameterValue* param_value = 0;
@@ -123,13 +122,13 @@ Parser_parse_parameter(
 
 	if (member->type == ScopeMemberType__node) {
 		Node* node = member->node;
-		if (!Node_get_parameter_by_name(node, &name_str, &param_def, &param_value)) {
+		if (!Node_get_parameter_by_name(node, name_str, &param_def, &param_value)) {
 			SDL_LogError(
 				SDL_LOG_CATEGORY_SYSTEM,
 				"line %d : node '%s' does not have a '%s' parameter\n",
 				context->lexer->token.location.line + 1,
-				node->name.data,
-				name_str.data
+				node->name,
+				name_str
 			);
 			ret = false;
 			goto termination;
@@ -137,13 +136,13 @@ Parser_parse_parameter(
 	}
 	else if (member->type == ScopeMemberType__scope) {
 		Scope* scope = member->scope;
-		if (!Scope_get_parameter_by_name(scope, &name_str, &param_def, &param_value)) {
+		if (!Scope_get_parameter_by_name(scope, name_str, &param_def, &param_value)) {
 			SDL_LogError(
 				SDL_LOG_CATEGORY_SYSTEM,
 				"line %d : scope '%s' does not have a '%s' parameter\n",
 				context->lexer->token.location.line + 1,
-				scope->name.data,
-				name_str.data
+				scope->name,
+				name_str
 			);
 			ret = false;
 			goto termination;
@@ -206,8 +205,8 @@ Parser_parse_parameter(
 
 		case ParameterType__string:
 			if (context->lexer->token.type == TokenType__string) {
-				String_destroy(&(param_value->string_value));
-				String_clone(&(param_value->string_value), Lexer_token_text(context->lexer));
+				free(param_value->string_value);
+				param_value->string_value = strclone(Lexer_token_text(context->lexer));
 			}
 			else {
 				ret = false;
@@ -226,7 +225,7 @@ Parser_parse_parameter(
 
 termination:
 	// Free ressources
-	String_destroy(&name_str);
+	free(name_str);
 
 	// Job done
 	return ret;
@@ -330,7 +329,7 @@ Parser_parse_identifier_path(
 static bool
 Parser_parse_node_delegate_instanciation(
 	ParseContext* context,
-	const String* name,
+	const char* name,
 	ScopeMember* member
 ) {
 	// Build the node
@@ -362,7 +361,7 @@ Parser_parse_node_delegate_instanciation(
 static bool
 Parser_parse_scope_delegate_instanciation(
 	ParseContext* context,
-	const String* name,
+	const char* name,
 	const ScopeMember* member
 ) {
 	// Build the scope
@@ -525,7 +524,7 @@ Parser_parse_input_assignment(
 	}
 
 	// Assign the input to the dst node
-	const String* dst_param_name =
+	const char* dst_param_name =
 		StringList_at(
 			left_path,
 			StringList_length(left_path) - 1
@@ -539,8 +538,8 @@ Parser_parse_input_assignment(
 			SDL_LOG_CATEGORY_SYSTEM,
 			"line %d : node '%s' does not have an input '%s' with matching type\n",
 			context->lexer->token.location.line + 1,
-			dst_node->name.data,
-			dst_param_name->data
+			dst_node->name,
+			dst_param_name
 		);
 		ret = false;
 		goto termination;

@@ -23,7 +23,7 @@ void
 Stack_init(
 	Stack* self
 ) {
-	assert(self != 0);
+	assert(self);
 
 	self->logical_len = 0;
 	self->physical_len = INITIAL_PHYSICAL_LEN;
@@ -38,8 +38,8 @@ void
 Stack_destroy(
 	Stack* self
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
+	assert(self);
+	assert(self->data);
 
 	#ifdef DEBUG
 	Stack_fill_stack_with_null(self);
@@ -60,10 +60,10 @@ Stack_copy(
 	Stack* self,
 	Stack* other
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
-	assert(other != 0);
-	assert(other->data != 0);
+	assert(self);
+	assert(self->data);
+	assert(other);
+	assert(other->data);
 
 	// Extend the stack storage if required
 	if (self->physical_len < other->logical_len) {
@@ -87,8 +87,8 @@ void
 Stack_clear(
 	Stack* self
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
+	assert(self);
+	assert(self->data);
 
 	self->logical_len = 0;
 
@@ -103,8 +103,8 @@ Stack_push(
 	Stack* self,
 	void* item
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
+	assert(self);
+	assert(self->data);
 
 	// Extend the stack storage if required
 	if (self->physical_len == self->logical_len) {
@@ -125,9 +125,9 @@ void*
 Stack_pop(
 	Stack* self
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
-	assert(self->logical_len != 0);
+	assert(self);
+	assert(self->data);
+	assert(self->logical_len);
 
 	self->logical_len -= 1;
 	void* ret = self->data[self->logical_len];
@@ -144,9 +144,9 @@ void*
 Stack_top(
 	Stack* self
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
-	assert(self->logical_len != 0);
+	assert(self);
+	assert(self->data);
+	assert(self->logical_len);
 
 	return self->data[self->logical_len - 1];
 }
@@ -156,8 +156,8 @@ bool
 Stack_empty(
 	const Stack* self
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
+	assert(self);
+	assert(self->data);
 
 	return self->logical_len == 0;
 }
@@ -167,8 +167,8 @@ size_t
 Stack_length(
 	const Stack* self
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
+	assert(self);
+	assert(self->data);
 
 	return self->logical_len;
 }

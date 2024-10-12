@@ -36,7 +36,7 @@ static const NodeInputDefinition
 gradient_map_inputs[] = {
 	{
 		NodeType__matrix,
-		{ "source", 7 }
+		"source"
 	},
 	NODE_INPUT_DEFINITION_END
 };
@@ -49,12 +49,12 @@ static const ParameterDefinition
 gradient_map_parameters[] = {
 	{
 		ParameterType__integer,
-		{ "width", 6 },
+		"width",
 		{ .int64_value = 32 }
 	},
 	{
 		ParameterType__integer,
-		{ "height", 7 },
+		"height",
 		{ .int64_value = 32 }
 	},
 	PARAMETER_DEFINITION_END
@@ -63,7 +63,7 @@ gradient_map_parameters[] = {
 
 const NodeDelegate
 gradient_map_node_delegate = {
-	{ "gradient-map", 13 },
+	"gradient-map",
 	NodeType__rgb_surface,
 	gradient_map_inputs,
 	gradient_map_parameters,
@@ -97,7 +97,11 @@ gradient_map_node_setup(
 		);
 
 	if (!rgb_surface) {
-		SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Could not create SDL surface : %s\n", SDL_GetError());
+		SDL_LogError(
+			SDL_LOG_CATEGORY_VIDEO,
+			"Could not create SDL surface : %s\n",
+			SDL_GetError()
+		);
 		return false;
 	}
 

@@ -13,14 +13,13 @@ extern "C" {
     - Lazy deletion
  *****************************************************************************/
 
-
+#include <stddef.h>
 #include <stdbool.h>
-#include <pestacle/strings.h>
 
 #define DICT_ENTRY_TOMBSTONE_VALUE ((void*)-1)
 
 typedef struct {
-    const String* key;
+    const char* key;
     void* value;
 } DictEntry;
 
@@ -84,21 +83,21 @@ Dict_clone(
 
 extern DictEntry*
 Dict_pick(
-	Dict *restrict self
+	Dict* self
 );
 
 
 extern DictEntry*
 Dict_find(
-	Dict *restrict self,
-	const String *restrict key
+	Dict* self,
+	const char* key
 );
 
 
 extern DictEntry*
 Dict_insert(
 	Dict* self,
-	const String *restrict key
+	const char* key
 );
 
 

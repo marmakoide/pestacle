@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <pestacle/memory.h>
+#include <pestacle/strings.h>
 #include <pestacle/scope.h>
 
 
@@ -9,7 +10,7 @@ static void
 ScopeMember_destroy(
 	ScopeMember* self
 ) {
-	assert(self != 0);
+	assert(self);
 
 	switch(self->type) {
 		case ScopeMemberType__node:
@@ -42,7 +43,7 @@ ScopeMember_print_node_delegate(
 	fprintf(
 		out,
 		": node-delegate %s",
-		node_delegate->name.data
+		node_delegate->name
 	);
 }
 
@@ -57,7 +58,7 @@ ScopeMember_print_scope_delegate(
 	fprintf(
 		out,
 		": scope-delegate %s",
-		scope_delegate->name.data
+		scope_delegate->name
 	);
 }
 
@@ -72,8 +73,8 @@ ScopeMember_print_node(
 	fprintf(
 		out,
 		": node %s (node-delegate %s)",
-		node->name.data,
-		node->delegate->name.data
+		node->name,
+		node->delegate->name
 	);
 }
 
@@ -104,7 +105,7 @@ ScopeMember_print_scope(
 		fprintf(
 			out,
 			"- %s",
-			it.entry->key->data
+			it.entry->key
 		);
 
 		if (member->type == ScopeMemberType__scope)
@@ -124,7 +125,7 @@ ScopeMember_print(
 	FILE* out,
 	size_t i
 ) {
-	assert(self != 0);
+	assert(self);
 
 	switch(self->type) {
 		case ScopeMemberType__node:
@@ -154,19 +155,19 @@ ScopeMember_print(
 
 Scope*
 Scope_new(
-	const String* name,
+	const char* name,
 	const ScopeDelegate* delegate,
 	Scope* delegate_scope
 ) {
-	assert(name != 0);
-	assert(delegate != 0);
+	assert(name);
+	assert(delegate);
 
 	// Allocate
 	Scope* ret = (Scope*)checked_malloc(sizeof(Scope));
 
 	// Setup
 	ret->data = 0;
-	String_clone(&(ret->name), name);
+	ret->name = strclone(name);
 	ret->delegate = delegate;
 	ret->delegate_scope = delegate_scope;
 
@@ -185,8 +186,8 @@ void
 Scope_destroy(
 	Scope* self
 ) {
-	assert(self != 0);
-	assert(self->delegate != 0);
+	assert(self);
+	assert(self->delegate);
 	
 	if (self->delegate->methods.destroy)
 		self->delegate->methods.destroy(self);
@@ -209,12 +210,12 @@ Scope_destroy(
 		free(self->parameters);
 	}
 
-	// Destroy name
-	String_destroy(&(self->name));
+	// Deallocate the name name
+	free(self->name);
 
 	#ifdef DEBUG
 	self->data = 0;
-	self->name.data = 0;
+	self->name = 0;
 	self->delegate = 0;
 	self->delegate_scope = 0;	
 	self->parameters = 0;
@@ -226,8 +227,8 @@ bool
 Scope_setup(
 	Scope* self
 ) {
-	assert(self != 0);
-	assert(self->delegate != 0);
+	assert(self);
+	assert(self->delegate);
 
 	if (self->delegate->methods.setup)
 		return self->delegate->methods.setup(self);
@@ -239,19 +240,19 @@ Scope_setup(
 bool
 Scope_get_parameter_by_name(
 	Scope* self,
-	const String* name,
+	const char* name,
 	const ParameterDefinition** param_def_ptr,
 	ParameterValue** param_value_ptr
 ) {
-	assert(self != 0);
-	assert(name != 0);
-	assert(name->data != 0);
+	assert(self);
+	assert(name);
+	assert(name->data);
 
 	ParameterValue* param_value = self->parameters;
 	const ParameterDefinition* param_def = self->delegate->parameter_defs;
 	
 	for( ; param_def->type != ParameterType__last; ++param_value, ++param_def)
-		if (String_equals(name, &(param_def->name))) {
+		if (strcmp(name, param_def->name) == 0) {
 			if (param_def_ptr)
 				*param_def_ptr = param_def;
 
@@ -268,17 +269,17 @@ Scope_get_parameter_by_name(
 extern ScopeMember*
 Scope_get_member(
 	Scope* self,
-	const String* path,
+	const char** path,
 	size_t path_len
 ) {
-	assert(self != 0);
-	assert(path != 0);
+	assert(self);
+	assert(path);
 
 	Scope* current = self;
 	ScopeMember* member = 0;
-	const String* name_ptr = path;
+	const char** name_ptr = path;
 	for(size_t i = path_len; i != 0; --i, ++name_ptr) {
-		DictEntry* entry = Dict_find(&(current->members), name_ptr);
+		DictEntry* entry = Dict_find(&(current->members), *name_ptr);
 		if (!entry)
 			return 0;
 			
@@ -297,12 +298,12 @@ Scope_get_member(
 static bool
 Scope_add_member(
 	Scope* self,
-	const String* name,
+	const char* name,
 	const ScopeMember* member
 ) {
-	assert(self != 0);
-	assert(name != 0);
-	assert(member != 0);
+	assert(self);
+	assert(name);
+	assert(member);
 
 	// Insert the new entry
 	DictEntry* entry = Dict_insert(&(self->members), name);
@@ -310,8 +311,8 @@ Scope_add_member(
 		SDL_LogError(
 			SDL_LOG_CATEGORY_SYSTEM,
 			"scope '%s' already have a member named '%s'",
-			self->name.data,
-			name->data
+			self->name,
+			name
 		);
 		return false;
 	}
@@ -332,8 +333,8 @@ Scope_add_node(
 	Scope* self,
 	Node* node
 ) {
-	assert(self != 0);
-	assert(node != 0);
+	assert(self);
+	assert(node);
 
 	ScopeMember member = {
 		ScopeMemberType__node,
@@ -341,7 +342,7 @@ Scope_add_node(
 		self
 	};
 
-	if (!Scope_add_member(self, &(node->name), &member))
+	if (!Scope_add_member(self, node->name, &member))
 		return false;
 
 	return true;
@@ -353,8 +354,8 @@ Scope_add_scope(
 	Scope* self,
 	Scope* scope
 ) {
-	assert(self != 0);
-	assert(scope != 0);
+	assert(self);
+	assert(scope);
 
 	ScopeMember member = {
 
@@ -363,7 +364,7 @@ Scope_add_scope(
 		self
 	};
 
-	if (!Scope_add_member(self, &(scope->name), &member))
+	if (!Scope_add_member(self, scope->name, &member))
 		return false;
 
 	return true;
@@ -375,7 +376,7 @@ Scope_add_node_delegate(
 	Scope* self,
 	const NodeDelegate* node_delegate
 ) {
-	assert(self != 0);
+	assert(self);
 
 	ScopeMember member = {
 		ScopeMemberType__node_delegate,
@@ -384,7 +385,7 @@ Scope_add_node_delegate(
 	};
 
 	return
-		Scope_add_member(self, &(node_delegate->name), &member);
+		Scope_add_member(self, node_delegate->name, &member);
 }
 
 
@@ -393,7 +394,7 @@ Scope_add_scope_delegate(
 	Scope* self,
 	const ScopeDelegate* scope_delegate
 ) {
-	assert(self != 0);
+	assert(self);
 
 	ScopeMember member = {
 		ScopeMemberType__scope_delegate,
@@ -402,7 +403,7 @@ Scope_add_scope_delegate(
 	};
 
 	return
-		Scope_add_member(self, &(scope_delegate->name), &member);
+		Scope_add_member(self, scope_delegate->name, &member);
 }
 
 
@@ -411,7 +412,7 @@ Scope_print(
 	Scope* self,
 	FILE* out
 ) {
-	assert(self != 0);
+	assert(self);
 
 	ScopeMember root = {
 		ScopeMemberType__scope,

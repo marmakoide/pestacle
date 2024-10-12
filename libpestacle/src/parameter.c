@@ -1,5 +1,7 @@
 #include <assert.h>
+#include <stdlib.h>
 #include <pestacle/memory.h>
+#include <pestacle/strings.h>
 #include <pestacle/parameter.h>
 
 
@@ -9,8 +11,8 @@ ParameterValue_copy(
 	const ParameterValue* src,
 	enum ParameterType type
 ) {
-	assert(dst != 0);
-	assert(src != 0);
+	assert(dst);
+	assert(src);
 
 	switch(type) {
 		case ParameterType__invalid:
@@ -27,7 +29,7 @@ ParameterValue_copy(
 			dst->real_value = src->real_value;
 			break;
 		case ParameterType__string:
-			String_clone(&(dst->string_value), &(src->string_value));
+			dst->string_value = strclone(src->string_value);
 			break;
 	}
 }
@@ -37,7 +39,7 @@ bool
 ParameterDefinition_has_parameters(
 	const ParameterDefinition* array
 ) {
-	assert(array != 0);
+	assert(array);
 
 	return array->type != ParameterType__last;
 }
@@ -47,7 +49,7 @@ static size_t
 ParameterDefinition_parameter_count(
 	const ParameterDefinition* array
 ) {
-	assert(array != 0);
+	assert(array);
 
 	size_t count = 0;
 	for( ; array->type != ParameterType__last; ++array, ++count);
@@ -60,7 +62,7 @@ ParameterValue*
 ParameterValue_new(
 	const ParameterDefinition* param_defs
 ) {
-	assert(param_defs != 0);
+	assert(param_defs);
 
 	if (!ParameterDefinition_has_parameters(param_defs))
 		return 0;
@@ -87,10 +89,12 @@ ParameterValue_destroy(
 	ParameterValue* self,
 	const ParameterDefinition* param_defs
 ) {
-	assert(self != 0);
-	assert(param_defs != 0);
+	assert(self);
+	assert(param_defs);
 
 	for( ; param_defs->type != ParameterType__last; ++self, ++param_defs)
-		if (param_defs->type == ParameterType__string)
-			String_destroy(&(self->string_value));
+		if (param_defs->type == ParameterType__string) {
+			free(self->string_value);
+			self->string_value = 0;
+		}
 }

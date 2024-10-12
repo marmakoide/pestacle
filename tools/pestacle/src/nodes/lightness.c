@@ -36,7 +36,7 @@ static const NodeInputDefinition
 lightness_inputs[] = {
 	{
 		NodeType__rgb_surface,
-		{ "source", 7 }
+		"source",
 	},
 	NODE_INPUT_DEFINITION_END
 };
@@ -49,12 +49,12 @@ static const ParameterDefinition
 lightness_parameters[] = {
 	{
 		ParameterType__integer,
-		{ "width", 6 },
+		"width",
 		{ .int64_value = 32 }
 	},
 	{
 		ParameterType__integer,
-		{ "height", 7 },
+		"height",
 		{ .int64_value = 32 }
 	},
 	PARAMETER_DEFINITION_END
@@ -63,7 +63,7 @@ lightness_parameters[] = {
 
 const NodeDelegate
 lightness_node_delegate = {
-	{ "lightness", 10 },
+	"lightness",
 	NodeType__matrix,
 	lightness_inputs,
 	lightness_parameters,
