@@ -246,7 +246,6 @@ Scope_get_parameter_by_name(
 ) {
 	assert(self);
 	assert(name);
-	assert(name->data);
 
 	ParameterValue* param_value = self->parameters;
 	const ParameterDefinition* param_def = self->delegate->parameter_defs;

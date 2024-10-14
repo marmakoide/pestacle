@@ -3,8 +3,8 @@ include config.mk
 TARGETS = \
 $(BUILD_DIR)/$(LIBPESTACLE_FILENAME) \
 $(BUILD_DIR)/$(PESTACLE_FILENAME) \
-$(BUILD_DIR)/plugins/$(PESTACLE_FFMPEG_PLUGIN_FILENAME)
-
+$(BUILD_DIR)/plugins/$(PESTACLE_FFMPEG_PLUGIN_FILENAME) \
+$(BUILD_DIR)/plugins/$(PESTACLE_ARDUCAM_PLUGIN_FILENAME)
 
 all: $(TARGETS)
 
@@ -80,6 +80,31 @@ $(BUILD_DIR)/$(PESTACLE_FFMPEG_PLUGIN_DIR)/%.deps: $(PESTACLE_FFMPEG_PLUGIN_DIR)
 
 
 -include $(patsubst %.c, $(BUILD_DIR)/%.deps, $(PESTACLE_FFMPEG_PLUGIN_SOURCES))
+
+
+# ------ arducam plugin -------------------------------------------------------
+
+PESTACLE_ARDUCAM_PLUGIN_DIR := plugins/arducam/src
+PESTACLE_ARDUCAM_PLUGIN_SOURCES := $(shell find $(PESTACLE_ARDUCAM_PLUGIN_DIR) -name '*.cpp')
+PESTACLE_ARDUCAM_PLUGIN_OBJS := $(addprefix $(BUILD_DIR)/,$(PESTACLE_ARDUCAM_PLUGIN_SOURCES:%.cpp=%.o))
+
+
+$(BUILD_DIR)/plugins/$(PESTACLE_ARDUCAM_PLUGIN_FILENAME): $(PESTACLE_ARDUCAM_PLUGIN_OBJS)
+	@mkdir -p $(dir $@)
+	$(CXX) -shared -o $@ $^ $(PESTACLE_ARDUCAM_PLUGIN_LIBS)
+
+
+$(BUILD_DIR)/$(PESTACLE_ARDUCAM_PLUGIN_DIR)/%.o: $(PESTACLE_ARDUCAM_PLUGIN_DIR)/%.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) -o $@ -c -fPIC $(CXXFLAGS) $(PESTACLE_ARDUCAM_PLUGIN_INCLUDES) $<
+
+
+$(BUILD_DIR)/$(PESTACLE_ARDUCAM_PLUGIN_DIR)/%.deps: $(PESTACLE_ARDUCAM_PLUGIN_DIR)/%.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) $(PESTACLE_ARDUCAM_PLUGIN_INCLUDES) -MM -MG -MT$(patsubst %.cpp, $(BUILD_DIR)/%.o, $^) -MF $@ $^
+
+
+-include $(patsubst %.cpp, $(BUILD_DIR)/%.deps, $(PESTACLE_ARDUCAM_PLUGIN_SOURCES))
 
 
 # ------ Unit testing ---------------------------------------------------------

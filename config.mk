@@ -1,5 +1,5 @@
 # build mode, dbg=debug rls=release
-MODE=rls
+MODE=dbg
 
 # Build directory
 BUILD_DIR=build
@@ -15,15 +15,18 @@ endif
 PESTACLE := pestacle
 LIBPESTACLE := pestacle
 PESTACLE_FFMPEG_PLUGIN := ffmpeg
+PESTACLE_ARDUCAM_PLUGIN := arducam
 
 ifeq ($(detected_OS),Windows)
     PESTACLE_FILENAME := $(PESTACLE).exe
 	LIBPESTACLE_FILENAME := lib$(LIBPESTACLE).dll
 	PESTACLE_FFMPEG_PLUGIN_FILENAME := $(PESTACLE_FFMPEG_PLUGIN).dll
+	PESTACLE_ARDUCAM_PLUGIN_FILENAME := $(PESTACLE_ARDUCAM_PLUGIN).dll	
 else
 	PESTACLE_FILENAME := $(PESTACLE)
 	LIBPESTACLE_FILENAME := lib$(LIBPESTACLE).so
 	PESTACLE_FFMPEG_PLUGIN_FILENAME := $(PESTACLE_FFMPEG_PLUGIN).so
+	PESTACLE_ARDUCAM_PLUGIN_FILENAME := $(PESTACLE_ARDUCAM_PLUGIN).so	
 endif
 
 # Libraries paths
@@ -33,27 +36,37 @@ SDL2_INCLUDES := $(shell sdl2-config --cflags)
 SDL2_LIBS := $(shell sdl2-config --libs)
 
 PESTACLE_LIBS  = $(LIBPESTACLE_LIBS)
+PESTACLE_LIBS += $(SDL2_LIBS)
 PESTACLE_LIBS += $(shell pkg-config --libs libpng)
-PESTACLE_LIBS += $(shell sdl2-config --libs)
 PESTACLE_LIBS += $(shell pkg-config --libs zlib)
 PESTACLE_LIBS += -lm
 
 PESTACLE_FFMPEG_PLUGIN_LIBS = $(LIBPESTACLE_LIBS)
-PESTACLE_FFMPEG_PLUGIN_LIBS += $(shell sdl2-config --libs)
+PESTACLE_FFMPEG_PLUGIN_LIBS += $(SDL2_LIBS)
 PESTACLE_FFMPEG_PLUGIN_LIBS += $(shell pkg-config --libs libavcodec)
 PESTACLE_FFMPEG_PLUGIN_LIBS += $(shell pkg-config --libs libavformat)
 PESTACLE_FFMPEG_PLUGIN_LIBS += $(shell pkg-config --libs libavutil)
 
+PESTACLE_ARDUCAM_PLUGIN_LIBS = $(LIBPESTACLE_LIBS)
+PESTACLE_ARDUCAM_PLUGIN_LIBS += $(SDL2_LIBS)
+PESTACLE_ARDUCAM_PLUGIN_LIBS += $(shell pkg-config --libs ArducamDepthCamera)
+
 # Flags setup
 CFLAGS += -std=c11 -Wall -Wextra -Werror -Wno-deprecated-declarations
+CXXFLAGS += -std=c++17 -Wall -Wextra -Werror -Wno-deprecated-declarations
 
 ifeq ($(MODE), rls)
 CFLAGS += -flto
 CFLAGS += -DNDEBUG -Os -fomit-frame-pointer -mtune=generic -fno-align-functions -fno-align-jumps -fno-align-labels -fno-align-loops -fno-exceptions -fno-unwind-tables -fno-asynchronous-unwind-tables 
+
+CXXFLAGS += -flto
+CXXFLAGS += -DNDEBUG -Os -fomit-frame-pointer -mtune=generic -fno-align-functions -fno-align-jumps -fno-align-labels -fno-align-loops -fno-exceptions -fno-unwind-tables -fno-asynchronous-unwind-tables 
 endif
 
 ifeq ($(MODE), dbg)
 CFLAGS += -DDEBUG -O0 -g -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer
+
+CXXFLAGS += -DDEBUG -O0 -g -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer
 endif
 
 # Include paths
@@ -72,3 +85,8 @@ PESTACLE_FFMPEG_PLUGIN_INCLUDES += $(SDL2_INCLUDES)
 PESTACLE_FFMPEG_PLUGIN_INCLUDES += $(shell pkg-config --cflags libavcodec)
 PESTACLE_FFMPEG_PLUGIN_INCLUDES += $(shell pkg-config --cflags libavformat)
 PESTACLE_FFMPEG_PLUGIN_INCLUDES += $(shell pkg-config --cflags libavutil)
+
+PESTACLE_ARDUCAM_PLUGIN_INCLUDES=-I./plugins/arducam/include
+PESTACLE_ARDUCAM_PLUGIN_INCLUDES += -I./libpestacle/include
+PESTACLE_ARDUCAM_PLUGIN_INCLUDES += $(SDL2_INCLUDES)
+PESTACLE_ARDUCAM_PLUGIN_INCLUDES += $(shell pkg-config --cflags ArducamDepthCamera)

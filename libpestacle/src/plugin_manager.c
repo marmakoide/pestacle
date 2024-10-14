@@ -15,7 +15,7 @@ Plugin_init(
 	const char* absolute_path
 ) {
 	assert(self);
-	assert(self->absolute);
+	assert(absolute_path);
 
 	bool ret = true;
 
