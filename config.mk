@@ -1,5 +1,8 @@
 # build mode, dbg=debug rls=release
-MODE=dbg
+MODE=rls
+
+# Plugins build list
+PLUGINS_BUILD_LIST := ffmpeg
 
 # Build directory
 BUILD_DIR=build
@@ -41,16 +44,6 @@ PESTACLE_LIBS += $(shell pkg-config --libs libpng)
 PESTACLE_LIBS += $(shell pkg-config --libs zlib)
 PESTACLE_LIBS += -lm
 
-PESTACLE_FFMPEG_PLUGIN_LIBS = $(LIBPESTACLE_LIBS)
-PESTACLE_FFMPEG_PLUGIN_LIBS += $(SDL2_LIBS)
-PESTACLE_FFMPEG_PLUGIN_LIBS += $(shell pkg-config --libs libavcodec)
-PESTACLE_FFMPEG_PLUGIN_LIBS += $(shell pkg-config --libs libavformat)
-PESTACLE_FFMPEG_PLUGIN_LIBS += $(shell pkg-config --libs libavutil)
-
-PESTACLE_ARDUCAM_PLUGIN_LIBS = $(LIBPESTACLE_LIBS)
-PESTACLE_ARDUCAM_PLUGIN_LIBS += $(SDL2_LIBS)
-PESTACLE_ARDUCAM_PLUGIN_LIBS += $(shell pkg-config --libs ArducamDepthCamera)
-
 # Flags setup
 CFLAGS += -std=c11 -Wall -Wextra -Werror -Wno-deprecated-declarations
 CXXFLAGS += -std=c++17 -Wall -Wextra -Werror -Wno-deprecated-declarations
@@ -79,6 +72,11 @@ PESTACLE_INCLUDES=-I./tools/pestacle/include
 PESTACLE_INCLUDES += $(shell pkg-config --cflags libpng)
 PESTACLE_INCLUDES += $(shell pkg-config --cflags zlib)
 
+#
+# Plugins setup
+# 
+
+ifeq (ffmpeg, $(filter ffmpeg, $(PLUGINS_BUILD_LIST)))
 PESTACLE_FFMPEG_PLUGIN_INCLUDES=-I./plugins/ffmpeg/include
 PESTACLE_FFMPEG_PLUGIN_INCLUDES += -I./libpestacle/include
 PESTACLE_FFMPEG_PLUGIN_INCLUDES += $(SDL2_INCLUDES)
@@ -86,7 +84,20 @@ PESTACLE_FFMPEG_PLUGIN_INCLUDES += $(shell pkg-config --cflags libavcodec)
 PESTACLE_FFMPEG_PLUGIN_INCLUDES += $(shell pkg-config --cflags libavformat)
 PESTACLE_FFMPEG_PLUGIN_INCLUDES += $(shell pkg-config --cflags libavutil)
 
+PESTACLE_FFMPEG_PLUGIN_LIBS = $(LIBPESTACLE_LIBS)
+PESTACLE_FFMPEG_PLUGIN_LIBS += $(SDL2_LIBS)
+PESTACLE_FFMPEG_PLUGIN_LIBS += $(shell pkg-config --libs libavcodec)
+PESTACLE_FFMPEG_PLUGIN_LIBS += $(shell pkg-config --libs libavformat)
+PESTACLE_FFMPEG_PLUGIN_LIBS += $(shell pkg-config --libs libavutil)
+endif
+
+ifeq (arducam, $(filter arducam, $(PLUGINS_BUILD_LIST)))
 PESTACLE_ARDUCAM_PLUGIN_INCLUDES=-I./plugins/arducam/include
 PESTACLE_ARDUCAM_PLUGIN_INCLUDES += -I./libpestacle/include
 PESTACLE_ARDUCAM_PLUGIN_INCLUDES += $(SDL2_INCLUDES)
 PESTACLE_ARDUCAM_PLUGIN_INCLUDES += $(shell pkg-config --cflags ArducamDepthCamera)
+
+PESTACLE_ARDUCAM_PLUGIN_LIBS = $(LIBPESTACLE_LIBS)
+PESTACLE_ARDUCAM_PLUGIN_LIBS += $(SDL2_LIBS)
+PESTACLE_ARDUCAM_PLUGIN_LIBS += $(shell pkg-config --libs ArducamDepthCamera)
+endif

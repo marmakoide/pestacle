@@ -1,10 +1,17 @@
 include config.mk
 
+# ------ List of the targets --------------------------------------------------
 TARGETS = \
 $(BUILD_DIR)/$(LIBPESTACLE_FILENAME) \
-$(BUILD_DIR)/$(PESTACLE_FILENAME) \
-$(BUILD_DIR)/plugins/$(PESTACLE_FFMPEG_PLUGIN_FILENAME) \
-$(BUILD_DIR)/plugins/$(PESTACLE_ARDUCAM_PLUGIN_FILENAME)
+$(BUILD_DIR)/$(PESTACLE_FILENAME)
+
+ifeq (ffmpeg, $(filter ffmpeg, $(PLUGINS_BUILD_LIST)))
+TARGETS += $(BUILD_DIR)/plugins/$(PESTACLE_FFMPEG_PLUGIN_FILENAME)
+endif
+
+ifeq (arducam, $(filter arducam, $(PLUGINS_BUILD_LIST)))
+TARGETS += $(BUILD_DIR)/plugins/$(PESTACLE_ARDUCAM_PLUGIN_FILENAME)
+endif
 
 all: $(TARGETS)
 
@@ -59,6 +66,8 @@ $(BUILD_DIR)/$(LIBPESTACLE_DIR)/%.deps: $(LIBPESTACLE_DIR)/%.c
 
 # ------ ffmpeg plugin --------------------------------------------------------
 
+ifeq (ffmpeg, $(filter ffmpeg, $(PLUGINS_BUILD_LIST)))
+
 PESTACLE_FFMPEG_PLUGIN_DIR := plugins/ffmpeg/src
 PESTACLE_FFMPEG_PLUGIN_SOURCES := $(shell find $(PESTACLE_FFMPEG_PLUGIN_DIR) -name '*.c')
 PESTACLE_FFMPEG_PLUGIN_OBJS := $(addprefix $(BUILD_DIR)/,$(PESTACLE_FFMPEG_PLUGIN_SOURCES:%.c=%.o))
@@ -81,8 +90,12 @@ $(BUILD_DIR)/$(PESTACLE_FFMPEG_PLUGIN_DIR)/%.deps: $(PESTACLE_FFMPEG_PLUGIN_DIR)
 
 -include $(patsubst %.c, $(BUILD_DIR)/%.deps, $(PESTACLE_FFMPEG_PLUGIN_SOURCES))
 
+endif
+
 
 # ------ arducam plugin -------------------------------------------------------
+
+ifeq (arducam, $(filter arducam, $(PLUGINS_BUILD_LIST)))
 
 PESTACLE_ARDUCAM_PLUGIN_DIR := plugins/arducam/src
 PESTACLE_ARDUCAM_PLUGIN_SOURCES := $(shell find $(PESTACLE_ARDUCAM_PLUGIN_DIR) -name '*.cpp')
@@ -105,6 +118,8 @@ $(BUILD_DIR)/$(PESTACLE_ARDUCAM_PLUGIN_DIR)/%.deps: $(PESTACLE_ARDUCAM_PLUGIN_DI
 
 
 -include $(patsubst %.cpp, $(BUILD_DIR)/%.deps, $(PESTACLE_ARDUCAM_PLUGIN_SOURCES))
+
+endif
 
 
 # ------ Unit testing ---------------------------------------------------------
