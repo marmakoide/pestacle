@@ -1,3 +1,6 @@
 [submodule "third-party/cnpy"]
 	path = third-party/cnpy
 	url = https://git.sr.ht/~quf/cnpy
+[submodule "third-party/argtable3"]
+	path = third-party/argtable3
+	url = https://github.com/argtable/argtable3

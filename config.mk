@@ -4,14 +4,15 @@ MODE=rls
 # Names
 PESTACLE := pestacle
 LIBPESTACLE := pestacle
+ARGTABLE3 := argtable3
 PESTACLE_FFMPEG_PLUGIN := ffmpeg
 PESTACLE_ARDUCAM_PLUGIN := arducam
 PESTACLE_MATRIX_IO_PLUGIN := matrix-io
 
 # Plugins build list
 PLUGINS_BUILD_LIST := \
-$(PESTACLE_FFMPEG_PLUGIN) \
-$(PESTACLE_MATRIX_IO_PLUGIN)
+$(PESTACLE_FFMPEG_PLUGIN)
+#$(PESTACLE_MATRIX_IO_PLUGIN)
 
 # Build directory
 BUILD_DIR=build
@@ -38,18 +39,6 @@ else
 	PESTACLE_ARDUCAM_PLUGIN_FILENAME := $(PESTACLE_ARDUCAM_PLUGIN).so	
 endif
 
-# Libraries paths
-LIBPESTACLE_LIBS=-L./$(BUILD_DIR) -l$(LIBPESTACLE)
-
-SDL2_INCLUDES := $(shell sdl2-config --cflags)
-SDL2_LIBS := $(shell sdl2-config --libs)
-
-PESTACLE_LIBS  = $(LIBPESTACLE_LIBS)
-PESTACLE_LIBS += $(SDL2_LIBS)
-PESTACLE_LIBS += $(shell pkg-config --libs libpng)
-PESTACLE_LIBS += $(shell pkg-config --libs zlib)
-PESTACLE_LIBS += -lm
-
 # Flags setup
 CFLAGS += -std=c11 -Wall -Wextra -Werror -Wno-deprecated-declarations
 CXXFLAGS += -std=c++17 -Wall -Wextra -Werror -Wno-deprecated-declarations
@@ -64,23 +53,51 @@ endif
 
 ifeq ($(MODE), dbg)
 CFLAGS += -DDEBUG -O0 -g -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer
-
 CXXFLAGS += -DDEBUG -O0 -g -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer
 endif
 
 # Include paths
 TEST_INCLUDES=-I./test
 
+# --- SDL2 -------------------------------------------------------------------
+
+SDL2_INCLUDES := $(shell sdl2-config --cflags)
+SDL2_LIBS := $(shell sdl2-config --libs)
+
+# --- libpestacle ------------------------------------------------------------
+
 LIBPESTACLE_INCLUDES=-I./libpestacle/include
 LIBPESTACLE_INCLUDES += $(SDL2_INCLUDES)
 
+LIBPESTACLE_LIBS=-L./$(BUILD_DIR) -l$(LIBPESTACLE)
+
+# --- argtable3 --------------------------------------------------------------
+
+ARGTABLE3_DIR := third-party/argtable3
+
+ARGTABLE3_FILENAME := lib$(ARGTABLE3).a
+
+ARGTABLE3_INCLUDES := -I$(ARGTABLE3_DIR)/src
+
+ARGTABLE3_LIBS :=-L./$(BUILD_DIR) -Wl,-Bstatic -l$(ARGTABLE3)
+
+# --- pestacle executable ----------------------------------------------------
+
 PESTACLE_INCLUDES=-I./tools/pestacle/include
+PESTACLE_INCLUDES += $(ARGTABLE3_INCLUDES)
+PESTACLE_INCLUDES += $(LIBPESTACLE_INCLUDES)
 PESTACLE_INCLUDES += $(shell pkg-config --cflags libpng)
 PESTACLE_INCLUDES += $(shell pkg-config --cflags zlib)
 
-#
-# Plugins setup
-# 
+PESTACLE_LIBS  = $(LIBPESTACLE_LIBS)
+PESTACLE_LIBS += $(SDL2_LIBS)
+PESTACLE_LIBS += $(ARGTABLE3_LIBS)
+PESTACLE_LIBS += $(shell pkg-config --libs libpng)
+PESTACLE_LIBS += $(shell pkg-config --libs zlib)
+PESTACLE_LIBS += -lm
+
+
+# --- ffmpeg plugin ----------------------------------------------------------
 
 ifeq ($(PESTACLE_FFMPEG_PLUGIN), $(filter $(PESTACLE_FFMPEG_PLUGIN), $(PLUGINS_BUILD_LIST)))
 PESTACLE_FFMPEG_PLUGIN_INCLUDES=-I./plugins/ffmpeg/include
@@ -97,6 +114,9 @@ PESTACLE_FFMPEG_PLUGIN_LIBS += $(shell pkg-config --libs libavformat)
 PESTACLE_FFMPEG_PLUGIN_LIBS += $(shell pkg-config --libs libavutil)
 endif
 
+
+# --- matrix-io plugin -------------------------------------------------------
+
 ifeq ($(PESTACLE_MATRIX_IO_PLUGIN), $(filter $(PESTACLE_MATRIX_IO_PLUGIN), $(PLUGINS_BUILD_LIST)))
 PESTACLE_MATRIX_IO_PLUGIN_INCLUDES=-I./plugins/matrix-io/include
 PESTACLE_MATRIX_IO_PLUGIN_INCLUDES += -I./libpestacle/include
@@ -112,6 +132,9 @@ PESTACLE_MATRIX_IO_PLUGIN_INCLUDES += -Wno-error=unused-function
 PESTACLE_MATRIX_IO_PLUGIN_LIBS = $(LIBPESTACLE_LIBS)
 PESTACLE_MATRIX_IO_PLUGIN_LIBS += $(SDL2_LIBS)
 endif
+
+
+# --- arducam plugin ---------------------------------------------------------
 
 ifeq ($(PESTACLE_ARDUCAM_PLUGIN), $(filter $(PESTACLE_ARDUCAM_PLUGIN), $(PLUGINS_BUILD_LIST)))
 PESTACLE_ARDUCAM_PLUGIN_INCLUDES=-I./plugins/arducam/include
