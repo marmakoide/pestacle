@@ -12,6 +12,7 @@ typedef struct {
 	bool dry_run;
 	bool profile_mode;
 	int frames_per_second;
+	int timeout;
 	char* input_path;
 } CmdParameters;
 

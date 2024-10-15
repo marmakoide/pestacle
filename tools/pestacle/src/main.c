@@ -289,9 +289,19 @@ main(int argc, char* argv[]) {
 	// Main processing loop
 	Uint64 performance_refresh_period =
 		SDL_GetPerformanceFrequency() / params.frames_per_second;
-	
-	for(bool quit = false; !quit; ) {
+
+	size_t timeout_frame_count =
+		params.timeout * params.frames_per_second;
+
+	size_t frame_count = 0;
+	for(bool quit = false; !quit; frame_count += 1) {
 		Uint64 start_time = SDL_GetPerformanceCounter();
+
+		// Check if timeout reached
+		if ((params.timeout > 0) && (frame_count == timeout_frame_count)) {
+			quit = true;
+			continue;
+		}
 
 		// Event processing
 		SDL_Event event;
