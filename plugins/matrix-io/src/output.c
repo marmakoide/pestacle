@@ -1,6 +1,6 @@
 #include <pestacle/memory.h>
 
-#include "cnpy.h"
+#include <cnpy.h>
 #include "output.h"
 
 
