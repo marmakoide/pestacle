@@ -5,11 +5,15 @@ TARGETS = \
 $(BUILD_DIR)/$(LIBPESTACLE_FILENAME) \
 $(BUILD_DIR)/$(PESTACLE_FILENAME)
 
-ifeq (ffmpeg, $(filter ffmpeg, $(PLUGINS_BUILD_LIST)))
+ifeq ($(PESTACLE_FFMPEG_PLUGIN), $(filter $(PESTACLE_FFMPEG_PLUGIN), $(PLUGINS_BUILD_LIST)))
 TARGETS += $(BUILD_DIR)/plugins/$(PESTACLE_FFMPEG_PLUGIN_FILENAME)
 endif
 
-ifeq (arducam, $(filter arducam, $(PLUGINS_BUILD_LIST)))
+ifeq ($(PESTACLE_MATRIX_IO_PLUGIN), $(filter $(PESTACLE_MATRIX_IO_PLUGIN), $(PLUGINS_BUILD_LIST)))
+TARGETS += $(BUILD_DIR)/plugins/$(PESTACLE_MATRIX_IO_PLUGIN_FILENAME)
+endif
+
+ifeq ($(PESTACLE_ARDUCAM_PLUGIN), $(filter $(PESTACLE_ARDUCAM_PLUGIN), $(PLUGINS_BUILD_LIST)))
 TARGETS += $(BUILD_DIR)/plugins/$(PESTACLE_ARDUCAM_PLUGIN_FILENAME)
 endif
 
@@ -66,7 +70,7 @@ $(BUILD_DIR)/$(LIBPESTACLE_DIR)/%.deps: $(LIBPESTACLE_DIR)/%.c
 
 # ------ ffmpeg plugin --------------------------------------------------------
 
-ifeq (ffmpeg, $(filter ffmpeg, $(PLUGINS_BUILD_LIST)))
+ifeq ($(PESTACLE_FFMPEG_PLUGIN), $(filter $(PESTACLE_FFMPEG_PLUGIN), $(PLUGINS_BUILD_LIST)))
 
 PESTACLE_FFMPEG_PLUGIN_DIR := plugins/ffmpeg/src
 PESTACLE_FFMPEG_PLUGIN_SOURCES := $(shell find $(PESTACLE_FFMPEG_PLUGIN_DIR) -name '*.c')
@@ -93,9 +97,38 @@ $(BUILD_DIR)/$(PESTACLE_FFMPEG_PLUGIN_DIR)/%.deps: $(PESTACLE_FFMPEG_PLUGIN_DIR)
 endif
 
 
+# ------ matrix-io plugin ------------------------------------------------------
+
+ifeq ($(PESTACLE_MATRIX_IO_PLUGIN), $(filter $(PESTACLE_MATRIX_IO_PLUGIN), $(PLUGINS_BUILD_LIST)))
+
+PESTACLE_MATRIX_IO_PLUGIN_DIR := plugins/matrix-io/src
+PESTACLE_MATRIX_IO_PLUGIN_SOURCES := $(shell find $(PESTACLE_MATRIX_IO_PLUGIN_DIR) -name '*.c')
+PESTACLE_MATRIX_IO_PLUGIN_OBJS := $(addprefix $(BUILD_DIR)/,$(PESTACLE_MATRIX_IO_PLUGIN_SOURCES:%.c=%.o))
+
+
+$(BUILD_DIR)/plugins/$(PESTACLE_MATRIX_IO_PLUGIN_FILENAME): $(PESTACLE_MATRIX_IO_PLUGIN_OBJS)
+	@mkdir -p $(dir $@)
+	$(CC) -shared -o $@ $^ $(PESTACLE_MATRIX_IO_PLUGIN_LIBS)
+
+
+$(BUILD_DIR)/$(PESTACLE_MATRIX_IO_PLUGIN_DIR)/%.o: $(PESTACLE_MATRIX_IO_PLUGIN_DIR)/%.c
+	@mkdir -p $(dir $@)
+	$(CC) -o $@ -c -fPIC $(CFLAGS) $(PESTACLE_MATRIX_IO_PLUGIN_INCLUDES) $<
+
+
+$(BUILD_DIR)/$(PESTACLE_MATRIX_IO_PLUGIN_DIR)/%.deps: $(PESTACLE_MATRIX_IO_PLUGIN_DIR)/%.c
+	@mkdir -p $(dir $@)
+	$(CC) $(PESTACLE_MATRIX_IO_PLUGIN_INCLUDES) -MM -MG -MT$(patsubst %.c, $(BUILD_DIR)/%.o, $^) -MF $@ $^
+
+
+-include $(patsubst %.c, $(BUILD_DIR)/%.deps, $(PESTACLE_MATRIX_IO_PLUGIN_SOURCES))
+
+endif
+
+
 # ------ arducam plugin -------------------------------------------------------
 
-ifeq (arducam, $(filter arducam, $(PLUGINS_BUILD_LIST)))
+ifeq ($(PESTACLE_ARDUCAM_PLUGIN), $(filter $(PESTACLE_ARDUCAM_PLUGIN), $(PLUGINS_BUILD_LIST)))
 
 PESTACLE_ARDUCAM_PLUGIN_DIR := plugins/arducam/src
 PESTACLE_ARDUCAM_PLUGIN_SOURCES := $(shell find $(PESTACLE_ARDUCAM_PLUGIN_DIR) -name '*.cpp')
