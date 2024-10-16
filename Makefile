@@ -1,6 +1,7 @@
 include config.mk
 
 # ------ List of the targets --------------------------------------------------
+
 TARGETS = \
 $(BUILD_DIR)/$(LIBPESTACLE_FILENAME) \
 $(BUILD_DIR)/$(PESTACLE_FILENAME)

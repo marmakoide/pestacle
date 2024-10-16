@@ -79,7 +79,7 @@ ARGTABLE3_FILENAME := lib$(ARGTABLE3).a
 
 ARGTABLE3_INCLUDES := -I$(ARGTABLE3_DIR)/src
 
-ARGTABLE3_LIBS :=-L./$(BUILD_DIR) -Wl,-Bstatic -l$(ARGTABLE3)
+ARGTABLE3_LIBS := -L./$(BUILD_DIR) -l:$(ARGTABLE3_FILENAME)
 
 # --- pestacle executable ----------------------------------------------------
 
@@ -91,10 +91,10 @@ PESTACLE_INCLUDES += $(shell pkg-config --cflags zlib)
 
 PESTACLE_LIBS  = $(LIBPESTACLE_LIBS)
 PESTACLE_LIBS += $(SDL2_LIBS)
-PESTACLE_LIBS += $(ARGTABLE3_LIBS)
 PESTACLE_LIBS += $(shell pkg-config --libs libpng)
 PESTACLE_LIBS += $(shell pkg-config --libs zlib)
 PESTACLE_LIBS += -lm
+PESTACLE_LIBS += $(ARGTABLE3_LIBS)
 
 
 # --- ffmpeg plugin ----------------------------------------------------------
