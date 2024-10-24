@@ -165,11 +165,19 @@ matrix_resize_data_init(
 	size_t output_height
 ) {
 	Matrix_init(&(self->A), input_height, input_width);
+	Matrix_fill(&(self->A), (real_t)0);
+
 	Matrix_init(&(self->B), input_height, input_width);
+	Matrix_fill(&(self->B), (real_t)0);
+
 	Matrix_init(&(self->C), input_width, input_height);
+	Matrix_fill(&(self->C), (real_t)0);
+
 	Matrix_init(&(self->D), input_width, input_height);
+	Matrix_fill(&(self->D), (real_t)0);
 
 	Matrix_init(&(self->out), output_height, output_width);
+	Matrix_fill(&(self->out), (real_t)0);
 
 	float x_factor = ((float)input_width) / ((float)output_width);
 	float y_factor = ((float)input_height) / ((float)output_height);
