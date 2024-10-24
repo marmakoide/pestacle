@@ -196,9 +196,18 @@ Graph_setup(
 
 	// Setup the nodes in reverse topological order
 	Node** node_ptr = self->sorted_nodes + self->sorted_node_count - 1;
-	for(size_t i = self->sorted_node_count; i != 0; --i, --node_ptr)
-		if (!Node_setup(*node_ptr))
+	for(size_t i = self->sorted_node_count; i != 0; --i, --node_ptr) {
+		Node* node = *node_ptr;
+
+		SDL_Log(
+			"setup node %s : %s",
+			node->name,
+			node->delegate->name
+		);
+
+		if (!Node_setup(node))
 			return false;
+	}
 
 	// Job done
 	return true;
