@@ -111,7 +111,7 @@ write_npy(
 	const char* path,
 	const Matrix* matrix
 ) {
-	#define WRITE_BUFFER_SIZE 4096
+	#define WRITE_BUFFER_SIZE 4096 // Must be a multiple of 4
 
 	// Allocate write buffer
 	char* write_buffer = checked_malloc(WRITE_BUFFER_SIZE);
@@ -179,23 +179,55 @@ write_npy(
 		goto termination;
 	}
 
-	// Write the file content
-	real_t* ptr = matrix->data;
+	// Write the file content, through a buffer
+	const real_t* src = matrix->data;
+	
+	uint32_t* dst = (uint32_t*)write_buffer;
+	size_t buffer_pos = 0;
+
 	for(size_t i = 0; i < matrix->row_count; ++i)
-		for(size_t j = 0; j < matrix->col_count; ++j, ++ptr) {
+		for(size_t j = 0; j < matrix->col_count; ++j, ++src) {
 			union ieee764_float32 value;
-			ieee764_float32_encode(&value, *ptr);
+			ieee764_float32_encode(&value, *src);
 
 			#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-			uint32_t out = value.uint32;
+			*dst = value.uint32;
 			#elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-			uint32_t out = uint32t_reverse_bytes(value.uint32);
+			*dst = uint32t_reverse_bytes(value.uint32);
 			#else
 				#error Unsupported byte order
 			#endif
-			
-			fwrite(&out, 4, 1, fp);
+
+			buffer_pos += 4;
+			dst += 1;
+
+			if (buffer_pos == WRITE_BUFFER_SIZE) {
+				if (!fwrite(write_buffer, WRITE_BUFFER_SIZE, 1, fp)) {
+					SDL_LogError(
+						SDL_LOG_CATEGORY_SYSTEM,
+						"Unable to write to file '%s': %s",
+						path,
+						strerror(errno)
+					);
+					goto termination;
+				}
+				
+				dst = (uint32_t*)write_buffer;
+				buffer_pos = 0;
+			}
 		}
+
+	if (buffer_pos > 0) {
+		if (!fwrite(write_buffer, buffer_pos, 1, fp)) {
+			SDL_LogError(
+				SDL_LOG_CATEGORY_SYSTEM,
+				"Unable to write to file '%s': %s",
+				path,
+				strerror(errno)
+			);
+			goto termination;
+		}
+	}
 
 	// Close the file
 	fclose(fp);
