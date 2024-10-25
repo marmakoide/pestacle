@@ -1,6 +1,6 @@
 #include <pestacle/memory.h>
 
-#include <cnpy.h>
+#include "ieee764.h"
 #include "output.h"
 
 
@@ -78,6 +78,112 @@ output_node_delegate = {
 
 // --- Implementation ---------------------------------------------------------
 
+static const char
+npy_header_signature[] = {
+	'\x93', 'N', 'U', 'M', 'P', 'Y', '\x01', '\x00'
+};
+
+static const char
+npy_byte_order = '<';
+
+static const char*
+npy_dtype = "f4";
+
+static const bool
+npy_fortran_order = false;
+
+
+uint32_t
+uint32t_reverse_bytes(
+	uint32_t x
+) { 
+  return 
+      ((x >> 24) & 0x000000fful) | 
+      ((x >>  8) & 0x0000ff00ul) | 
+      ((x <<  8) & 0x00ff0000ul) | 
+      ((x << 24) & 0xff000000ul); 
+}
+
+
+static bool
+write_npy(
+	const char* path,
+	const Matrix* matrix
+) {
+	/*
+	 * Generate file header
+	 */
+
+	char header_data[1024];
+	
+	// Fill the header with ' ' char
+	memset(header_data, ' ', sizeof(header_data));
+
+	// Write the signature
+	memcpy(header_data, npy_header_signature, sizeof(npy_header_signature));
+	size_t header_size = sizeof(npy_header_signature) + 2;
+
+	// Write metadata
+	int metadata_size = snprintf(
+		header_data + sizeof(npy_header_signature) + 2,
+		sizeof(header_data) - sizeof(npy_header_signature) + 2,
+		"{'descr': '%c%s', 'fortran_order': %s, 'shape': (%zu, %zu), }",
+		npy_byte_order,
+		npy_dtype,
+		npy_fortran_order ? "True" : "False",
+		matrix->row_count,
+		matrix->col_count
+	);
+
+	header_size += metadata_size;
+
+	// Replace the trailing '0' left by snprintf
+	header_data[header_size] = ' ';
+
+	// Pad header size to a multiple of 64
+	size_t padded_header_size = header_size;
+	if (header_size % 64 != 0)
+		padded_header_size += 64 - (header_size % 64);
+
+	// Final character of the header is a line return
+	header_data[padded_header_size - 1] = '\n';
+
+	// Write the header size
+	header_data[sizeof(npy_header_signature) + 0] = (padded_header_size - (sizeof(npy_header_signature) + 2)) % 256;
+	header_data[sizeof(npy_header_signature) + 1] = (padded_header_size - (sizeof(npy_header_signature) + 2)) / 256;
+	
+	// Open the file
+	FILE* fp = fopen(path, "wb");
+
+	// Write the file header
+	fwrite(header_data, padded_header_size, 1, fp);
+
+	// Write the file content
+	real_t* ptr = matrix->data;
+	for(size_t i = 0; i < matrix->row_count; ++i)
+		for(size_t j = 0; j < matrix->col_count; ++j, ++ptr) {
+			union ieee764_float32 value;
+			ieee764_float32_encode(&value, *ptr);
+
+			#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+			uint32_t out = value.uint32;
+			#elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+			uint32_t out = uint32t_reverse_bytes(value.uint32);
+			#else
+				#error Unsupported byte order
+			#endif
+			
+			fwrite(&out, 4, 1, fp);
+		}
+
+	// Close the file
+	fclose(fp);
+
+	// Job done
+	return true;
+}
+
+
 #define MAX_PATH_LEN 1024
 
 typedef struct {
@@ -138,49 +244,8 @@ OutputData_write(
 		goto termination;
 	}
 
-	// Creates the file
-	cnpy_byte_order byte_order = CNPY_BE;
-	cnpy_dtype dtype           = CNPY_F4;
-	cnpy_flat_order order      = CNPY_FORTRAN_ORDER; 
-	
-	cnpy_array array;
-	if (cnpy_create(
-		self->path,
-		byte_order,
-		dtype, order,
-		2,
-		self->dims,
-		&array) != CNPY_SUCCESS) {
-		SDL_LogError(
-			SDL_LOG_CATEGORY_SYSTEM,
-			"unable to create file '%s'\n",
-			self->path
-		);
-		exit_code = false;
-		goto termination;
-	}
-
-	// Write the file
-	size_t index[2] = { 0, 0 };
-	const real_t* src = matrix->data;
-	for(size_t i = 0; i < self->dims[0]; ++i) {
-		index[0] = i;
-		for(size_t j = 0; j < self->dims[1]; ++j, ++src) {
-			index[1] = j;
-			cnpy_set_f4(array, index, *src);
-		}
-	}
-
-	// Close the file
-	if (cnpy_close(&array) != CNPY_SUCCESS) {
-		SDL_LogError(
-			SDL_LOG_CATEGORY_SYSTEM,
-			"unable to close file '%s'\n",
-			self->path
-		);
-		exit_code = false;
-		goto termination;
-	}
+	// Writeh file file
+	write_npy(self->path, matrix);
 
 termination:
 	// Job done
