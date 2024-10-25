@@ -1,3 +1,4 @@
+#include <errno.h>
 #include <pestacle/memory.h>
 
 #include "ieee764.h"
@@ -110,23 +111,26 @@ write_npy(
 	const char* path,
 	const Matrix* matrix
 ) {
+	#define WRITE_BUFFER_SIZE 4096
+
+	// Allocate write buffer
+	char* write_buffer = checked_malloc(WRITE_BUFFER_SIZE);
+
 	/*
 	 * Generate file header
 	 */
-
-	char header_data[1024];
 	
-	// Fill the header with ' ' char
-	memset(header_data, ' ', sizeof(header_data));
+	// Fill the write_buffer with ' ' char
+	memset(write_buffer, ' ', WRITE_BUFFER_SIZE);
 
-	// Write the signature
-	memcpy(header_data, npy_header_signature, sizeof(npy_header_signature));
+	// Copy the signature to write_buffer
+	memcpy(write_buffer, npy_header_signature, sizeof(npy_header_signature));
 	size_t header_size = sizeof(npy_header_signature) + 2;
 
 	// Write metadata
 	int metadata_size = snprintf(
-		header_data + sizeof(npy_header_signature) + 2,
-		sizeof(header_data) - sizeof(npy_header_signature) + 2,
+		write_buffer + header_size,
+		WRITE_BUFFER_SIZE - header_size,
 		"{'descr': '%c%s', 'fortran_order': %s, 'shape': (%zu, %zu), }",
 		npy_byte_order,
 		npy_dtype,
@@ -138,7 +142,7 @@ write_npy(
 	header_size += metadata_size;
 
 	// Replace the trailing '0' left by snprintf
-	header_data[header_size] = ' ';
+	write_buffer[header_size] = ' ';
 
 	// Pad header size to a multiple of 64
 	size_t padded_header_size = header_size;
@@ -146,17 +150,34 @@ write_npy(
 		padded_header_size += 64 - (header_size % 64);
 
 	// Final character of the header is a line return
-	header_data[padded_header_size - 1] = '\n';
+	write_buffer[padded_header_size - 1] = '\n';
 
 	// Write the header size
-	header_data[sizeof(npy_header_signature) + 0] = (padded_header_size - (sizeof(npy_header_signature) + 2)) % 256;
-	header_data[sizeof(npy_header_signature) + 1] = (padded_header_size - (sizeof(npy_header_signature) + 2)) / 256;
+	write_buffer[sizeof(npy_header_signature) + 0] = (padded_header_size - (sizeof(npy_header_signature) + 2)) % 256;
+	write_buffer[sizeof(npy_header_signature) + 1] = (padded_header_size - (sizeof(npy_header_signature) + 2)) / 256;
 	
 	// Open the file
 	FILE* fp = fopen(path, "wb");
+	if (!fp) {
+		SDL_LogError(
+			SDL_LOG_CATEGORY_SYSTEM,
+			"Unable to open file '%s': %s",
+			path,
+			strerror(errno)
+		);
+		goto termination;
+	}
 
 	// Write the file header
-	fwrite(header_data, padded_header_size, 1, fp);
+	if (!fwrite(write_buffer, padded_header_size, 1, fp)) {
+		SDL_LogError(
+			SDL_LOG_CATEGORY_SYSTEM,
+			"Unable to write to file '%s': %s",
+			path,
+			strerror(errno)
+		);
+		goto termination;
+	}
 
 	// Write the file content
 	real_t* ptr = matrix->data;
@@ -178,6 +199,11 @@ write_npy(
 
 	// Close the file
 	fclose(fp);
+
+termination:
+	// Deallocate write_buffer
+	if (write_buffer)
+		free(write_buffer);
 
 	// Job done
 	return true;
