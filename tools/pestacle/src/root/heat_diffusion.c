@@ -1,6 +1,6 @@
 #include <pestacle/memory.h>
 
-#include "nodes/heat_diffusion.h"
+#include "root/heat_diffusion.h"
 
 
 // --- Interface --------------------------------------------------------------

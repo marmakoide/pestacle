@@ -1,13 +1,13 @@
-#include "nodes/gradient_map.h"
-#include "nodes/heat_diffusion.h"
-#include "nodes/lightness.h"
-#include "nodes/matrix_resize.h"
-#include "nodes/picture.h"
-#include "nodes/surface_blend.h"
-#include "nodes/surface_overlay.h"
-#include "nodes/surface_resize.h"
+#include "root/gradient_map.h"
+#include "root/heat_diffusion.h"
+#include "root/lightness.h"
+#include "root/matrix_resize.h"
+#include "root/picture.h"
+#include "root/surface_blend.h"
+#include "root/surface_overlay.h"
+#include "root/surface_resize.h"
 
-#include "scopes/window.h"
+#include "window/scope.h"
 
 
 // --- Interface --------------------------------------------------------------

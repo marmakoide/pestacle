@@ -1,4 +1,4 @@
-#include "nodes/surface_resize.h"
+#include "root/surface_resize.h"
 
 
 // --- Interface --------------------------------------------------------------

@@ -1,5 +1,5 @@
-#ifndef PESTACLE_NODES_SURFACE_BLEND_H
-#define PESTACLE_NODES_SURFACE_BLEND_H
+#ifndef PESTACLE_ROOT_SURFACE_BLEND_H
+#define PESTACLE_ROOT_SURFACE_BLEND_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -17,4 +17,4 @@ surface_blend_node_delegate;
 }
 #endif
 
-#endif /* PESTACLE_NODES_SURFACE_BLEND_H */
+#endif /* PESTACLE_ROOT_SURFACE_BLEND_H */

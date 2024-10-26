@@ -1,5 +1,5 @@
-#ifndef PESTACLE_NODES_HEAT_DIFFUSION_H
-#define PESTACLE_NODES_HEAT_DIFFUSION_H
+#ifndef PESTACLE_ROOT_HEAT_DIFFUSION_H
+#define PESTACLE_ROOT_HEAT_DIFFUSION_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -17,4 +17,4 @@ heat_diffusion_node_delegate;
 }
 #endif
 
-#endif /* PESTACLE_NODES_HEAT_DIFFUSION_H */
+#endif /* PESTACLE_ROOT_HEAT_DIFFUSION_H */

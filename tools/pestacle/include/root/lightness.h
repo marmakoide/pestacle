@@ -1,5 +1,5 @@
-#ifndef PESTACLE_NODES_LIGHTNESS_H
-#define PESTACLE_NODES_LIGHTNESS_H
+#ifndef PESTACLE_ROOT_LIGHTNESS_H
+#define PESTACLE_ROOT_LIGHTNESS_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -17,4 +17,4 @@ lightness_node_delegate;
 }
 #endif
 
-#endif /* PESTACLE_NODES_LIGHTNESS_H */
+#endif /* PESTACLE_ROOT_LIGHTNESS_H */

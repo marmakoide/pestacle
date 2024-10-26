@@ -1,6 +1,6 @@
 #include <pestacle/memory.h>
 
-#include "nodes/lightness.h"
+#include "root/lightness.h"
 
 
 // --- Interface --------------------------------------------------------------

@@ -1,5 +1,5 @@
-#ifndef PESTACLE_NODES_GRADIENT_MAP_H
-#define PESTACLE_NODES_GRADIENT_MAP_H
+#ifndef PESTACLE_ROOT_GRADIENT_MAP_H
+#define PESTACLE_ROOT_GRADIENT_MAP_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -17,4 +17,4 @@ gradient_map_node_delegate;
 }
 #endif
 
-#endif /* PESTACLE_NODES_GRADIENT_MAP_H */
+#endif /* PESTACLE_ROOT_GRADIENT_MAP_H */

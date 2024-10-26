@@ -1,6 +1,6 @@
 #include <pestacle/memory.h>
 
-#include "nodes/surface_blend.h"
+#include "root/surface_blend.h"
 
 
 // --- Interface --------------------------------------------------------------

@@ -1,5 +1,5 @@
-#ifndef PESTACLE_SCOPES_WINDOW_H
-#define PESTACLE_SCOPES_WINDOW_H
+#ifndef PESTACLE_ROOT_SCOPE_H
+#define PESTACLE_ROOT_SCOPE_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -10,11 +10,11 @@ extern "C" {
 
 
 extern const ScopeDelegate
-window_scope_delegate;
+root_scope_delegate;
 
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* PESTACLE_SCOPES_WINDOW_H */
+#endif /* PESTACLE_ROOT_SCOPE_H */

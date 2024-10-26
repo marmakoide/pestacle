@@ -1,6 +1,6 @@
 #include <pestacle/memory.h>
 
-#include "nodes/surface_overlay.h"
+#include "root/surface_overlay.h"
 
 
 // --- Interface --------------------------------------------------------------

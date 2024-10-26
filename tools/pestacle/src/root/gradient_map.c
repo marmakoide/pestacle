@@ -1,6 +1,6 @@
 #include <pestacle/memory.h>
 
-#include "nodes/gradient_map.h"
+#include "root/gradient_map.h"
 
 
 // --- Interface --------------------------------------------------------------

@@ -3,7 +3,7 @@
 #include <pestacle/macros.h>
 #include <pestacle/memory.h>
 
-#include "scopes/window.h"
+#include "window/scope.h"
 #include "window_manager.h"
 
 

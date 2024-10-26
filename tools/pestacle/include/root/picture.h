@@ -1,5 +1,5 @@
-#ifndef PESTACLE_NODES_PICTURE_H
-#define PESTACLE_NODES_PICTURE_H
+#ifndef PESTACLE_ROOT_PICTURE_H
+#define PESTACLE_ROOT_PICTURE_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -17,4 +17,4 @@ picture_node_delegate;
 }
 #endif
 
-#endif /* PESTACLE_NODES_PICTURE_H */
+#endif /* PESTACLE_ROOT_PICTURE_H */

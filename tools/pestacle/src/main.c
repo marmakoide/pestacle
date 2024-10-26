@@ -10,7 +10,7 @@
 #include <pestacle/parser/parser.h>
 
 #include "cmdline.h"
-#include "scopes/root.h"
+#include "root/scope.h"
 #include "window_manager.h"
 
 

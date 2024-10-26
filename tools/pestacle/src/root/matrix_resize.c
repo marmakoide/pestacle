@@ -1,7 +1,7 @@
 #include <math.h>
 #include <pestacle/memory.h>
 
-#include "nodes/matrix_resize.h"
+#include "root/matrix_resize.h"
 
 /*
   See "Fast Almost-Gaussian Filtering" by Peter Kovesi for the Gaussian 
