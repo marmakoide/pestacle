@@ -128,15 +128,22 @@ initialization_log() {
 	for(int i = 0; i < display_count; ++i) {
 		SDL_DisplayMode mode;
 		SDL_GetDesktopDisplayMode(i, &mode);
-		
+
+		SDL_Rect rect;
+		SDL_GetDisplayBounds(i, &rect);
+
 		SDL_Log(
-			"  display #%d '%s' => %dx%d %dsbpp %dHz",
+			"  display #%d '%s' => %dx%d %dsbpp %dHz @ (%d, %d)-(%d, %d)",
 			i,
 			SDL_GetDisplayName(i),
 			mode.w,
 			mode.h,
 			SDL_BITSPERPIXEL(mode.format),
-			mode.refresh_rate
+			mode.refresh_rate,
+			rect.x,
+			rect.y,
+			rect.x + rect.w,
+			rect.y + rect.h
 		);
 	}
 }
