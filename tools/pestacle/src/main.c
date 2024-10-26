@@ -130,7 +130,7 @@ initialization_log() {
 		SDL_GetDesktopDisplayMode(i, &mode);
 		
 		SDL_Log(
-			"display #%d => %dx%d %dsbpp %dHz",
+			"  display #%d => %dx%d %dsbpp %dHz",
 			i,
 			mode.w,
 			mode.h,

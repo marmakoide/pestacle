@@ -18,13 +18,6 @@ window_scope_setup(
 );
 
 
-static void
-window_scope_destroy(
-	Scope* self
-);
-
-
-
 #define WIDTH_PARAMETER    0
 #define HEIGHT_PARAMETER   1
 #define TITLE_PARAMETER    2
@@ -62,7 +55,7 @@ window_scope_delegate = {
 	window_scope_parameters,
 	{
 		window_scope_setup,
-		window_scope_destroy
+		0
 	},
 }; // window_scope_delegate
 
@@ -118,12 +111,4 @@ failure:
 		WindowManager_remove_window(window_manager, window);
 
 	return false;
-}
-
-
-static void
-window_scope_destroy(
-	ATTRIBUTE_UNUSED Scope* self
-) {
-	
 }
