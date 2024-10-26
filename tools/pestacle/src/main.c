@@ -45,6 +45,18 @@ initialization_log() {
 		SDL_GetPlatform()
 	);
 
+	// Endianess informations
+	SDL_Log(
+		"endianess => %s",
+		#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+		"little endian"
+		#elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+		"big endian"
+		#else
+			#error Unsupported byte order
+		#endif
+	);
+
 	// CPU informations
 	SDL_Log(
 		"%d CPU(s) detected",
