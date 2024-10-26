@@ -86,7 +86,11 @@ Window_init(
 	);
 	
 	if (!self->window) {
-		SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Could not create window: %s\n", SDL_GetError());
+		SDL_LogError(
+			SDL_LOG_CATEGORY_VIDEO,
+			"Could not create window: %s\n",
+			SDL_GetError()
+		);
 		goto failure;
 	}
 
@@ -95,7 +99,11 @@ Window_init(
 	self->renderer = SDL_CreateSoftwareRenderer(self->surface);
 
 	if (!self->renderer) {
-		SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Could not create SDL renderer : %s\n", SDL_GetError());
+		SDL_LogError(
+			SDL_LOG_CATEGORY_VIDEO,
+			"Could not create SDL renderer : %s\n",
+			SDL_GetError()
+		);
 		goto failure;
 	}
 
