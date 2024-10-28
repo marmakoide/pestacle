@@ -40,12 +40,13 @@ bool
 scope_setup(
 	Scope* self
 ) {
-	const NodeDelegate** node_delegate_ptr = node_delegate_list;
-	for( ; *node_delegate_ptr != 0; ++node_delegate_ptr)
-		if (!Scope_add_node_delegate(self, *node_delegate_ptr))
-			return false;
-
-	return true;	
+	return 
+		Scope_populate(
+			self,
+			 node_delegate_list,
+			 0,
+			 0
+		);
 }
 
 

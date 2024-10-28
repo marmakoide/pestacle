@@ -150,6 +150,15 @@ Scope_instanciate_scope(
 );
 
 
+extern bool
+Scope_populate(
+	Scope* self,
+	const NodeDelegate** node_delegate_list,
+	const ScopeDelegate** scope_delegate_list,
+	const ScopeDelegate** scope_instance_delegate_list
+);
+
+
 #ifdef __cplusplus
 }
 #endif

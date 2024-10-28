@@ -447,6 +447,40 @@ Scope_add_scope_delegate(
 }
 
 
+bool
+Scope_populate(
+	Scope* self,
+	const NodeDelegate** node_delegate_list,
+	const ScopeDelegate** scope_delegate_list,
+	const ScopeDelegate** scope_instance_delegate_list
+) {
+	assert(self);
+
+	if (node_delegate_list) {
+		const NodeDelegate** node_delegate_ptr = node_delegate_list;
+		for( ; *node_delegate_ptr != 0; ++node_delegate_ptr)
+			if (!Scope_add_node_delegate(self, *node_delegate_ptr))
+				return false;
+	}
+
+	if (scope_delegate_list) {
+		const ScopeDelegate** scope_delegate_ptr = scope_delegate_list;
+		for( ; *scope_delegate_ptr != 0; ++scope_delegate_ptr)
+			if (!Scope_add_scope_delegate(self, *scope_delegate_ptr))
+				return false;
+	}
+
+	if (scope_instance_delegate_list) {
+		const ScopeDelegate** scope_delegate_ptr = scope_instance_delegate_list;
+		for( ; *scope_delegate_ptr != 0; ++scope_delegate_ptr)
+			if (!Scope_instanciate_scope(self, *scope_delegate_ptr))
+				return false;
+	}
+
+	return true;
+}
+
+
 void
 Scope_print(
 	Scope* self,

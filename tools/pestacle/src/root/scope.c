@@ -33,7 +33,7 @@ scope_delegate_list[] = {
 
 
 static const ScopeDelegate*
-scope_list[] = {
+scope_instance_delegate_list[] = {
 	&root_rgb_surface_scope_delegate,
 	0
 }; // scope_list
@@ -62,20 +62,11 @@ bool
 root_scope_setup(
 	Scope* self
 ) {
-	const NodeDelegate** node_delegate_ptr = node_delegate_list;
-	for( ; *node_delegate_ptr != 0; ++node_delegate_ptr)
-		if (!Scope_add_node_delegate(self, *node_delegate_ptr))
-			return false;
-
-	const ScopeDelegate** scope_delegate_ptr = scope_delegate_list;
-	for( ; *scope_delegate_ptr != 0; ++scope_delegate_ptr)
-		if (!Scope_add_scope_delegate(self, *scope_delegate_ptr))
-			return false;
-
-	scope_delegate_ptr = scope_list;
-	for( ; *scope_delegate_ptr != 0; ++scope_delegate_ptr)
-		if (!Scope_instanciate_scope(self, *scope_delegate_ptr))
-			return false;
-
-	return true;
+	return 
+		Scope_populate(
+			self,
+			 node_delegate_list,
+			 scope_delegate_list,
+			 scope_instance_delegate_list
+		);
 }
