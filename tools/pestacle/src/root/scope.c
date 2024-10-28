@@ -1,6 +1,5 @@
 #include "root/gradient_map.h"
 #include "root/heat_diffusion.h"
-#include "root/lightness.h"
 #include "root/matrix_resize.h"
 
 #include "window/scope.h"
@@ -19,7 +18,6 @@ static const NodeDelegate*
 node_delegate_list[] = {
 	&gradient_map_node_delegate,
 	&heat_diffusion_node_delegate,
-	&lightness_node_delegate,
 	&matrix_resize_node_delegate,
 	0
 }; // node_delegate_list

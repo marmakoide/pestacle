@@ -1,30 +1,30 @@
 #include <pestacle/memory.h>
 
-#include "root/lightness.h"
+#include "root/rgb_surface/luminance.h"
 
 
 // --- Interface --------------------------------------------------------------
 
 static bool
-lightness_node_setup(
+luminance_node_setup(
 	Node* self
 );
 
 
 static void
-lightness_node_destroy(
+luminance_node_destroy(
 	Node* self
 );
 
 
 static void
-lightness_node_update(
+luminance_node_update(
 	Node* self
 );
 
 
 static NodeOutput
-lightness_node_output(
+luminance_node_output(
 	const Node* self
 );
 
@@ -33,7 +33,7 @@ lightness_node_output(
 
 
 static const NodeInputDefinition
-lightness_inputs[] = {
+luminance_inputs[] = {
 	{
 		NodeType__rgb_surface,
 		"source",
@@ -46,7 +46,7 @@ lightness_inputs[] = {
 #define HEIGHT_PARAMETER 1
 
 static const ParameterDefinition
-lightness_parameters[] = {
+luminance_parameters[] = {
 	{
 		ParameterType__integer,
 		"width",
@@ -62,16 +62,16 @@ lightness_parameters[] = {
 
 
 const NodeDelegate
-lightness_node_delegate = {
-	"lightness",
+root_rgb_surface_luminance_node_delegate = {
+	"luminance",
 	NodeType__matrix,
-	lightness_inputs,
-	lightness_parameters,
+	luminance_inputs,
+	luminance_parameters,
 	{
-		lightness_node_setup,
-		lightness_node_destroy,
-		lightness_node_update,
-		lightness_node_output
+		luminance_node_setup,
+		luminance_node_destroy,
+		luminance_node_update,
+		luminance_node_output
 	},
 };
 
@@ -79,7 +79,7 @@ lightness_node_delegate = {
 // --- Implementation ---------------------------------------------------------
 
 static bool
-lightness_node_setup(
+luminance_node_setup(
 	Node* self
 ) {
 	// Retrieve the parameters
@@ -108,7 +108,7 @@ lightness_node_setup(
 
 
 static void
-lightness_node_destroy(
+luminance_node_destroy(
 	Node* self
 ) {
 	Matrix* matrix = (Matrix*)self->data;
@@ -130,7 +130,7 @@ sRGB_to_linear(real_t x) {
 
 static real_t
 Y_to_Lstar(real_t Y) {
-	// 1976 CIELAB perceived lightness formula
+	// 1976 CIELAB perceived luminance formula
 	if (Y <= ((real_t)0.008856))
 		return Y * ((real_t)(903.3));
 
@@ -139,7 +139,7 @@ Y_to_Lstar(real_t Y) {
 
 
 static void
-lightness_node_update(
+luminance_node_update(
 	Node* self
 ) {
 	// Retrieve inputs and outputs
@@ -176,7 +176,7 @@ lightness_node_update(
 
 
 static NodeOutput
-lightness_node_output(
+luminance_node_output(
 	const Node* self
 ) {
 	NodeOutput ret = { .matrix = (Matrix*)self->data };

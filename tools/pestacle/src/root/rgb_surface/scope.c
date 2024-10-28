@@ -1,4 +1,5 @@
 #include "root/rgb_surface/blend.h"
+#include "root/rgb_surface/luminance.h"
 #include "root/rgb_surface/overlay.h"
 #include "root/rgb_surface/resize.h"
 
@@ -16,6 +17,7 @@ rgb_surface_scope_setup(
 static const NodeDelegate*
 node_delegate_list[] = {
 	&root_rgb_surface_blend_node_delegate,
+	&root_rgb_surface_luminance_node_delegate,
 	&root_rgb_surface_overlay_node_delegate,
 	&root_rgb_surface_resize_node_delegate,
 	0
