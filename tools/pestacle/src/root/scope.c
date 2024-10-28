@@ -6,7 +6,7 @@
 // --- Interface --------------------------------------------------------------
 
 static bool
-root_scope_setup(
+scope_setup(
 	Scope* self
 );
 
@@ -27,7 +27,7 @@ scope_instance_delegate_list[] = {
 
 
 static const ParameterDefinition
-root_scope_parameters[] = {
+scope_parameters[] = {
 	PARAMETER_DEFINITION_END
 };
 
@@ -35,9 +35,9 @@ root_scope_parameters[] = {
 const ScopeDelegate
 root_scope_delegate = {
 	"root",
-	root_scope_parameters,
+	scope_parameters,
 	{
-		root_scope_setup,
+		scope_setup,
 		0
 	}
 };
@@ -46,7 +46,7 @@ root_scope_delegate = {
 // --- Implementation ---------------------------------------------------------
 
 bool
-root_scope_setup(
+scope_setup(
 	Scope* self
 ) {
 	return 

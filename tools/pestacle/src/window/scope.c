@@ -13,7 +13,7 @@
 // --- Interface --------------------------------------------------------------
 
 static bool
-window_scope_setup(
+scope_setup(
 	Scope* self
 );
 
@@ -24,7 +24,7 @@ window_scope_setup(
 #define BORDERED_PARAMETER 3
 
 static const ParameterDefinition
-window_scope_parameters[] = {
+scope_parameters[] = {
 	{
 		ParameterType__integer,
 		"width",
@@ -52,9 +52,9 @@ window_scope_parameters[] = {
 const ScopeDelegate
 window_scope_delegate = {
 	"window",
-	window_scope_parameters,
+	scope_parameters,
 	{
-		window_scope_setup,
+		scope_setup,
 		0
 	},
 }; // window_scope_delegate
@@ -63,7 +63,7 @@ window_scope_delegate = {
 // --- Implementation ---------------------------------------------------------
 
 static bool
-window_scope_setup(
+scope_setup(
 	Scope* self
 ) {
 	// Retrieve the parameters

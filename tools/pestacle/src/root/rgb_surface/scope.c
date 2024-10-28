@@ -9,7 +9,7 @@
 // --- Interface --------------------------------------------------------------
 
 static bool
-rgb_surface_scope_setup(
+scope_setup(
 	Scope* self
 );
 
@@ -25,7 +25,7 @@ node_delegate_list[] = {
 
 
 static const ParameterDefinition
-rgb_surface_scope_parameters[] = {
+scope_parameters[] = {
 	PARAMETER_DEFINITION_END
 };
 
@@ -33,9 +33,9 @@ rgb_surface_scope_parameters[] = {
 const ScopeDelegate
 root_rgb_surface_scope_delegate = {
 	"rgb-surface",
-	rgb_surface_scope_parameters,
+	scope_parameters,
 	{
-		rgb_surface_scope_setup,
+		scope_setup,
 		0
 	}
 };
@@ -44,7 +44,7 @@ root_rgb_surface_scope_delegate = {
 // --- Implementation ---------------------------------------------------------
 
 bool
-rgb_surface_scope_setup(
+scope_setup(
 	Scope* self
 ) {
 	return 
