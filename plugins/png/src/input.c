@@ -1,29 +1,31 @@
-#include "root/picture.h"
+#include <pestacle/memory.h>
+
 #include "picture.h"
+#include "input.h"
 
 
 // --- Interface --------------------------------------------------------------
 
 static bool
-picture_node_setup(
+input_node_setup(
 	Node* self
 );
 
 
 static void
-picture_node_destroy(
+input_node_destroy(
 	Node* self
 );
 
 
 static NodeOutput
-picture_node_output(
+input_node_output(
 	const Node* self
 );
 
 
 static const NodeInputDefinition
-picture_inputs[] = {
+input_inputs[] = {
 	NODE_INPUT_DEFINITION_END
 };
 
@@ -31,7 +33,7 @@ picture_inputs[] = {
 #define PATH_PARAMETER 0
 
 static const ParameterDefinition
-picture_parameters[] = {
+input_parameters[] = {
 	{
 		ParameterType__string,
 		"path",
@@ -42,16 +44,16 @@ picture_parameters[] = {
 
 
 const NodeDelegate
-picture_node_delegate = {
-	"picture",
+input_node_delegate = {
+	"input",
 	NodeType__rgb_surface,
-	picture_inputs,
-	picture_parameters,
+	input_inputs,
+	input_parameters,
 	{
-		picture_node_setup,
-		picture_node_destroy,
+		input_node_setup,
+		input_node_destroy,
 		0,
-		picture_node_output
+		input_node_output
 	},
 };
 
@@ -59,7 +61,7 @@ picture_node_delegate = {
 // --- Implementation ---------------------------------------------------------
 
 static bool
-picture_node_setup(
+input_node_setup(
 	Node* self
 ) {
 	const char* path = self->parameters[PATH_PARAMETER].string_value;
@@ -80,7 +82,7 @@ picture_node_setup(
 
 
 static void
-picture_node_destroy(
+input_node_destroy(
 	Node* self
 ) {
 	SDL_Surface* rgb_surface = (SDL_Surface*)self->data;
@@ -90,7 +92,7 @@ picture_node_destroy(
 
 
 static NodeOutput
-picture_node_output(
+input_node_output(
 	const Node* self
 ) {
 	NodeOutput ret = { .rgb_surface = (SDL_Surface*)self->data };

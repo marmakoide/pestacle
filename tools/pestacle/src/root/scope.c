@@ -2,7 +2,6 @@
 #include "root/heat_diffusion.h"
 #include "root/lightness.h"
 #include "root/matrix_resize.h"
-#include "root/picture.h"
 #include "root/surface_blend.h"
 #include "root/surface_overlay.h"
 #include "root/surface_resize.h"
@@ -26,7 +25,6 @@ node_delegate_list[] = {
 	&heat_diffusion_node_delegate,
 	&lightness_node_delegate,
 	&matrix_resize_node_delegate,
-	&picture_node_delegate,
 	&surface_blend_node_delegate,
 	&surface_overlay_node_delegate,
 	&surface_resize_node_delegate,
