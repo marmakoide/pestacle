@@ -143,6 +143,13 @@ Scope_add_scope_delegate(
 );
 
 
+extern bool
+Scope_instanciate_scope(
+	Scope* self,
+	const ScopeDelegate* scope_delegate
+);
+
+
 #ifdef __cplusplus
 }
 #endif

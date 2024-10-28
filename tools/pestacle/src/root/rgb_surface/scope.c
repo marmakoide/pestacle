@@ -1,16 +1,14 @@
-#include "root/gradient_map.h"
-#include "root/heat_diffusion.h"
-#include "root/lightness.h"
-#include "root/matrix_resize.h"
+#include "root/rgb_surface/blend.h"
+#include "root/rgb_surface/overlay.h"
+#include "root/rgb_surface/resize.h"
 
-#include "window/scope.h"
 #include "root/rgb_surface/scope.h"
 
 
 // --- Interface --------------------------------------------------------------
 
 static bool
-root_scope_setup(
+rgb_surface_scope_setup(
 	Scope* self
 );
 
@@ -19,10 +17,9 @@ root_scope_setup(
 
 static const NodeDelegate*
 node_delegate_list[] = {
-	&gradient_map_node_delegate,
-	&heat_diffusion_node_delegate,
-	&lightness_node_delegate,
-	&matrix_resize_node_delegate,
+	&root_rgb_surface_blend_node_delegate,
+	&root_rgb_surface_overlay_node_delegate,
+	&root_rgb_surface_resize_node_delegate,
 	NODE_DELEGATE_LIST_END
 }; // node_delegate_list
 
@@ -31,32 +28,22 @@ node_delegate_list[] = {
 
 static const ScopeDelegate*
 scope_delegate_list[] = {
-	&window_scope_delegate,
 	SCOPE_DELEGATE_LIST_END
 }; // scope_delegate_list
 
 
-#define SCOPE_LIST_END 0
-
-static const ScopeDelegate*
-scope_list[] = {
-	&root_rgb_surface_scope_delegate,
-	SCOPE_LIST_END
-}; // scope_list
-
-
 static const ParameterDefinition
-root_scope_parameters[] = {
+rgb_surface_scope_parameters[] = {
 	PARAMETER_DEFINITION_END
 };
 
 
 const ScopeDelegate
-root_scope_delegate = {
-	"root",
-	root_scope_parameters,
+root_rgb_surface_scope_delegate = {
+	"rgb-surface",
+	rgb_surface_scope_parameters,
 	{
-		root_scope_setup,
+		rgb_surface_scope_setup,
 		0
 	}
 };
@@ -65,7 +52,7 @@ root_scope_delegate = {
 // --- Implementation ---------------------------------------------------------
 
 bool
-root_scope_setup(
+rgb_surface_scope_setup(
 	Scope* self
 ) {
 	const NodeDelegate** node_delegate_ptr = node_delegate_list;
@@ -76,11 +63,6 @@ root_scope_setup(
 	const ScopeDelegate** scope_delegate_ptr = scope_delegate_list;
 	for( ; *scope_delegate_ptr != SCOPE_DELEGATE_LIST_END; ++scope_delegate_ptr)
 		if (!Scope_add_scope_delegate(self, *scope_delegate_ptr))
-			return false;
-
-	scope_delegate_ptr = scope_list;
-	for( ; *scope_delegate_ptr != SCOPE_LIST_END; ++scope_delegate_ptr)
-		if (!Scope_instanciate_scope(self, *scope_delegate_ptr))
 			return false;
 
 	return true;

@@ -154,43 +154,17 @@ load_plugins(
 	PluginManager* plugin_manager,
 	Scope* root_scope
 ) {
-	bool ret = true;
-	Scope* scope = 0;
-
 	// Load the plugins
 	if (!PluginManager_load_plugins(plugin_manager))
 		return false;
 	
 	// For each plugin
-	for(Plugin* plugin = plugin_manager->head; plugin != 0; plugin = plugin->next) {
-		// Build the scope
-		scope = Scope_new(plugin->delegate->name, plugin->delegate, 0);
-		if (!scope) {
-			ret = false;
-			goto termination;
-		}
+	for(Plugin* plugin = plugin_manager->head; plugin != 0; plugin = plugin->next)
+		if (!Scope_instanciate_scope(root_scope, plugin->delegate))
+			return false;
 
-		// Setup the scope
-		if (!Scope_setup(scope)) {
-			ret = false;
-			goto termination;
-		}
-
-		// Add the scope to the root scope
-		if (!Scope_add_scope(root_scope, scope)) {
-			ret = false;
-			goto termination;
-		}
-	}
-	
 	// Job done
-termination:
-	if ((scope) && (!ret)) {
-		Scope_destroy(scope);
-		free(scope);
-	}
-
-	return ret;
+	return true;
 }
 
 

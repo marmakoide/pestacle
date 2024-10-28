@@ -1,28 +1,28 @@
-#include "root/surface_resize.h"
+#include "root/rgb_surface/resize.h"
 
 
 // --- Interface --------------------------------------------------------------
 
 static bool
-surface_resize_node_setup(
+resize_node_setup(
 	Node* self
 );
 
 
 static void
-surface_resize_node_destroy(
+resize_node_destroy(
 	Node* self
 );
 
 
 static void
-surface_resize_node_update(
+resize_node_update(
 	Node* self
 );
 
 
 static NodeOutput
-surface_resize_node_output(
+resize_node_output(
 	const Node* self
 );
 
@@ -30,7 +30,7 @@ surface_resize_node_output(
 #define SOURCE_INPUT 0
 
 static const NodeInputDefinition
-surface_resize_inputs[] = {
+resize_inputs[] = {
 	{
 		NodeType__rgb_surface,
 		"source",
@@ -45,7 +45,7 @@ surface_resize_inputs[] = {
 #define OUTPUT_HEIGHT_PARAMETER 3
 
 static const ParameterDefinition
-surface_resize_parameters[] = {
+resize_parameters[] = {
 	{
 		ParameterType__integer,
 		"input-width",
@@ -71,16 +71,16 @@ surface_resize_parameters[] = {
 
 
 const NodeDelegate
-surface_resize_node_delegate = {
-	"surface-resize",
+root_rgb_surface_resize_node_delegate = {
+	"resize",
 	NodeType__rgb_surface,
-	surface_resize_inputs,
-	surface_resize_parameters,
+	resize_inputs,
+	resize_parameters,
 	{
-		surface_resize_node_setup,
-		surface_resize_node_destroy,
-		surface_resize_node_update,
-		surface_resize_node_output
+		resize_node_setup,
+		resize_node_destroy,
+		resize_node_update,
+		resize_node_output
 	},
 };
 
@@ -88,7 +88,7 @@ surface_resize_node_delegate = {
 // --- Implementation ---------------------------------------------------------
 
 static bool
-surface_resize_node_setup(
+resize_node_setup(
 	Node* self
 ) {
 	// Retrieve the parameters
@@ -123,7 +123,7 @@ surface_resize_node_setup(
 
 
 static void
-surface_resize_node_destroy(
+resize_node_destroy(
 	Node* self
 ) {
 	SDL_Surface* rgb_surface = (SDL_Surface*)self->data;
@@ -133,7 +133,7 @@ surface_resize_node_destroy(
 
 
 static void
-surface_resize_node_update(
+resize_node_update(
 	Node* self
 ) {
 	SDL_Surface* src =
@@ -146,7 +146,7 @@ surface_resize_node_update(
 
 
 static NodeOutput
-surface_resize_node_output(
+resize_node_output(
 	const Node* self
 ) {
 	NodeOutput ret = { .rgb_surface = (SDL_Surface*)self->data };

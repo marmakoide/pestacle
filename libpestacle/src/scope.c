@@ -371,6 +371,47 @@ Scope_add_scope(
 
 
 bool
+Scope_instanciate_scope(
+	Scope* self,
+	const ScopeDelegate* scope_delegate
+) {
+	assert(self);
+	assert(scope_delegate);
+
+	bool ret = true;
+	Scope* scope = 0;
+
+	// Build the scope
+	scope = Scope_new(scope_delegate->name, scope_delegate, 0);
+	if (!scope) {
+		ret = false;
+		goto termination;
+	}
+
+	// Setup the scope
+	if (!Scope_setup(scope)) {
+		ret = false;
+		goto termination;
+	}
+
+	// Add the scope to the root scope
+	if (!Scope_add_scope(self, scope)) {
+		ret = false;
+		goto termination;
+	}
+
+	// Job done
+termination:
+	if ((scope) && (!ret)) {
+		Scope_destroy(scope);
+		free(scope);
+	}
+
+	return ret;
+}
+
+
+bool
 Scope_add_node_delegate(
 	Scope* self,
 	const NodeDelegate* node_delegate
