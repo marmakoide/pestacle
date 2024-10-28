@@ -1,6 +1,6 @@
 #include <pestacle/memory.h>
 
-#include "root/gradient_map.h"
+#include "root/matrix/gradient_map.h"
 
 
 // --- Interface --------------------------------------------------------------
@@ -62,7 +62,7 @@ gradient_map_parameters[] = {
 
 
 const NodeDelegate
-gradient_map_node_delegate = {
+root_matrix_gradient_map_node_delegate = {
 	"gradient-map",
 	NodeType__rgb_surface,
 	gradient_map_inputs,

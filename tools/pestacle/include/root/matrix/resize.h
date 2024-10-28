@@ -10,7 +10,7 @@ extern "C" {
 
 
 extern const NodeDelegate
-matrix_resize_node_delegate;
+root_matrix_resize_node_delegate;
 
 
 #ifdef __cplusplus

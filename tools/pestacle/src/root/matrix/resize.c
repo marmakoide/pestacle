@@ -1,7 +1,7 @@
 #include <math.h>
 #include <pestacle/memory.h>
 
-#include "root/matrix_resize.h"
+#include "root/matrix/resize.h"
 
 /*
   See "Fast Almost-Gaussian Filtering" by Peter Kovesi for the Gaussian 
@@ -79,8 +79,8 @@ matrix_resize_parameters[] = {
 
 
 const NodeDelegate
-matrix_resize_node_delegate = {
-	"matrix-resize",
+root_matrix_resize_node_delegate = {
+	"resize",
 	NodeType__matrix,
 	matrix_resize_inputs,
 	matrix_resize_parameters,

@@ -1,8 +1,5 @@
-#include "root/gradient_map.h"
-#include "root/heat_diffusion.h"
-#include "root/matrix_resize.h"
-
 #include "window/scope.h"
+#include "root/matrix/scope.h"
 #include "root/rgb_surface/scope.h"
 
 
@@ -14,15 +11,6 @@ root_scope_setup(
 );
 
 
-static const NodeDelegate*
-node_delegate_list[] = {
-	&gradient_map_node_delegate,
-	&heat_diffusion_node_delegate,
-	&matrix_resize_node_delegate,
-	0
-}; // node_delegate_list
-
-
 static const ScopeDelegate*
 scope_delegate_list[] = {
 	&window_scope_delegate,
@@ -32,6 +20,7 @@ scope_delegate_list[] = {
 
 static const ScopeDelegate*
 scope_instance_delegate_list[] = {
+	&root_matrix_scope_delegate,
 	&root_rgb_surface_scope_delegate,
 	0
 }; // scope_list
@@ -63,7 +52,7 @@ root_scope_setup(
 	return 
 		Scope_populate(
 			self,
-			 node_delegate_list,
+			 0,
 			 scope_delegate_list,
 			 scope_instance_delegate_list
 		);

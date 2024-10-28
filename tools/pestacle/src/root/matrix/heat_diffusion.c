@@ -1,6 +1,6 @@
 #include <pestacle/memory.h>
 
-#include "root/heat_diffusion.h"
+#include "root/matrix/heat_diffusion.h"
 
 
 // --- Interface --------------------------------------------------------------
@@ -67,7 +67,7 @@ heat_diffusion_parameters[] = {
 
 
 const NodeDelegate
-heat_diffusion_node_delegate = {
+root_matrix_heat_diffusion_node_delegate = {
 	"heat-diffusion",
 	NodeType__matrix,
 	heat_diffusion_inputs,
