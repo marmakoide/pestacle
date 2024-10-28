@@ -10,12 +10,10 @@ scope_setup(
 );
 
 
-#define NODE_DELEGATE_LIST_END 0
-
 static const NodeDelegate*
 node_delegate_list[] = {
-	&load_node_delegate,
-	NODE_DELEGATE_LIST_END
+	&png_load_node_delegate,
+	0
 }; // node_delegate_list
 
 
@@ -43,7 +41,7 @@ scope_setup(
 	Scope* self
 ) {
 	const NodeDelegate** node_delegate_ptr = node_delegate_list;
-	for( ; *node_delegate_ptr != NODE_DELEGATE_LIST_END; ++node_delegate_ptr)
+	for( ; *node_delegate_ptr != 0; ++node_delegate_ptr)
 		if (!Scope_add_node_delegate(self, *node_delegate_ptr))
 			return false;
 

@@ -63,7 +63,7 @@ output_parameters[] = {
 
 
 const NodeDelegate
-output_node_delegate = {
+matrix_io_output_node_delegate = {
 	"output",
 	NodeType__void,
 	output_inputs,

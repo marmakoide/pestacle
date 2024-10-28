@@ -10,7 +10,7 @@ extern "C" {
 
 
 extern const NodeDelegate
-tof_camera_node_delegate;
+arducam_tof_camera_node_delegate;
 
 
 #ifdef __cplusplus

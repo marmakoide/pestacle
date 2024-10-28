@@ -53,7 +53,7 @@ load_parameters[] = {
 
 
 const NodeDelegate
-load_node_delegate = {
+ffmpeg_load_node_delegate = {
 	"load",
 	NodeType__rgb_surface,
 	load_inputs,

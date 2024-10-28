@@ -15,33 +15,27 @@ root_scope_setup(
 );
 
 
-#define NODE_DELEGATE_LIST_END 0
-
 static const NodeDelegate*
 node_delegate_list[] = {
 	&gradient_map_node_delegate,
 	&heat_diffusion_node_delegate,
 	&lightness_node_delegate,
 	&matrix_resize_node_delegate,
-	NODE_DELEGATE_LIST_END
+	0
 }; // node_delegate_list
 
-
-#define SCOPE_DELEGATE_LIST_END 0
 
 static const ScopeDelegate*
 scope_delegate_list[] = {
 	&window_scope_delegate,
-	SCOPE_DELEGATE_LIST_END
+	0
 }; // scope_delegate_list
 
-
-#define SCOPE_LIST_END 0
 
 static const ScopeDelegate*
 scope_list[] = {
 	&root_rgb_surface_scope_delegate,
-	SCOPE_LIST_END
+	0
 }; // scope_list
 
 
@@ -69,17 +63,17 @@ root_scope_setup(
 	Scope* self
 ) {
 	const NodeDelegate** node_delegate_ptr = node_delegate_list;
-	for( ; *node_delegate_ptr != NODE_DELEGATE_LIST_END; ++node_delegate_ptr)
+	for( ; *node_delegate_ptr != 0; ++node_delegate_ptr)
 		if (!Scope_add_node_delegate(self, *node_delegate_ptr))
 			return false;
 
 	const ScopeDelegate** scope_delegate_ptr = scope_delegate_list;
-	for( ; *scope_delegate_ptr != SCOPE_DELEGATE_LIST_END; ++scope_delegate_ptr)
+	for( ; *scope_delegate_ptr != 0; ++scope_delegate_ptr)
 		if (!Scope_add_scope_delegate(self, *scope_delegate_ptr))
 			return false;
 
 	scope_delegate_ptr = scope_list;
-	for( ; *scope_delegate_ptr != SCOPE_LIST_END; ++scope_delegate_ptr)
+	for( ; *scope_delegate_ptr != 0; ++scope_delegate_ptr)
 		if (!Scope_instanciate_scope(self, *scope_delegate_ptr))
 			return false;
 

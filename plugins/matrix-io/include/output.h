@@ -10,7 +10,7 @@ extern "C" {
 
 
 extern const NodeDelegate
-output_node_delegate;
+matrix_io_output_node_delegate;
 
 
 #ifdef __cplusplus
