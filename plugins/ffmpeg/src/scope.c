@@ -1,5 +1,5 @@
 #include "scope.h"
-#include "input_stream.h"
+#include "load.h"
 
 
 // --- Interface --------------------------------------------------------------
@@ -14,7 +14,7 @@ scope_setup(
 
 static const NodeDelegate*
 node_delegate_list[] = {
-	&input_stream_node_delegate,
+	&load_node_delegate,
 	NODE_DELEGATE_LIST_END
 }; // node_delegate_list
 

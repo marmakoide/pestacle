@@ -4,37 +4,37 @@
 #include <libavformat/avformat.h>
 #include <libavutil/avutil.h>
 
-#include "input_stream.h"
+#include "load.h"
 
 
 // --- Interface --------------------------------------------------------------
 
 static bool
-input_stream_node_setup(
+load_node_setup(
 	Node* self
 );
 
 
 static void
-input_stream_node_destroy(
+load_node_destroy(
 	Node* self
 );
 
 
 static void
-input_stream_node_update(
+load_node_update(
 	Node* self
 );
 
 
 static NodeOutput
-input_stream_node_output(
+load_node_output(
 	const Node* self
 );
 
 
 static const NodeInputDefinition
-input_stream_inputs[] = {
+load_inputs[] = {
 	NODE_INPUT_DEFINITION_END
 };
 
@@ -42,7 +42,7 @@ input_stream_inputs[] = {
 #define PATH_PARAMETER 0
 
 static const ParameterDefinition
-input_stream_parameters[] = {
+load_parameters[] = {
 	{
 		ParameterType__string,
 		"path",
@@ -53,16 +53,16 @@ input_stream_parameters[] = {
 
 
 const NodeDelegate
-input_stream_node_delegate = {
-	"input-stream",
+load_node_delegate = {
+	"load",
 	NodeType__rgb_surface,
-	input_stream_inputs,
-	input_stream_parameters,
+	load_inputs,
+	load_parameters,
 	{
-		input_stream_node_setup,
-		input_stream_node_destroy,
-		input_stream_node_update,
-		input_stream_node_output
+		load_node_setup,
+		load_node_destroy,
+		load_node_update,
+		load_node_output
 	},
 };
 
@@ -325,7 +325,7 @@ InputStreamData_update(
 
 
 static bool
-input_stream_node_setup(
+load_node_setup(
 	Node* self
 ) {
 	// Retrieve path to video file
@@ -349,7 +349,7 @@ input_stream_node_setup(
 
 
 static void
-input_stream_node_destroy(
+load_node_destroy(
 	Node* self
 ) {
 	InputStreamData* data = (InputStreamData*)self->data;
@@ -361,7 +361,7 @@ input_stream_node_destroy(
 
 
 static void
-input_stream_node_update(
+load_node_update(
 	Node* self
 ) {
 	InputStreamData* data = (InputStreamData*)self->data;
@@ -370,7 +370,7 @@ input_stream_node_update(
 
 
 static NodeOutput
-input_stream_node_output(
+load_node_output(
 	const Node* self
 ) {
 	InputStreamData* data = (InputStreamData*)self->data;
