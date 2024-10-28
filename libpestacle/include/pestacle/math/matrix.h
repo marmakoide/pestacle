@@ -79,6 +79,12 @@ Matrix_copy(
 
 
 extern void
+Matrix_square(
+	Matrix* self
+);
+
+
+extern void
 Matrix_scale(
 	Matrix* self,
 	real_t value

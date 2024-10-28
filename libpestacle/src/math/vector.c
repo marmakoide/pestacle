@@ -141,6 +141,19 @@ Vector_arange(
 
 
 void
+Vector_square(
+	Vector* self
+) {
+	assert(self != 0);
+
+	array_ops_square(
+		self->data,
+		self->len
+	);
+}
+
+
+void
 Vector_scale(
 	Vector* self,
 	real_t value

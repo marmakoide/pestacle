@@ -160,6 +160,19 @@ Matrix_copy(
 
 
 void
+Matrix_square(
+	Matrix* self
+) {
+	assert(self != 0);
+
+	array_ops_square(
+		self->data,
+		self->data_len
+	);
+}
+
+
+void
 Matrix_scale(
 	Matrix* self,
 	real_t value
