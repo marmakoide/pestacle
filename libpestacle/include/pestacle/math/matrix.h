@@ -85,6 +85,12 @@ Matrix_square(
 
 
 extern void
+Matrix_sqrt(
+	Matrix* self
+);
+
+
+extern void
 Matrix_scale(
 	Matrix* self,
 	real_t value

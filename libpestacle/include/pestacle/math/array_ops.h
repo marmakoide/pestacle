@@ -65,6 +65,12 @@ array_ops_square(
 	size_t len
 );
 
+extern void
+array_ops_sqrt(
+	real_t* dst,
+	size_t len
+);
+
 
 extern void
 array_ops_scale(

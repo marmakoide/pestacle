@@ -141,6 +141,27 @@ MU_TEST(test_Vector_square) {
 }
 
 
+MU_TEST(test_Vector_sqrt) {
+	Vector U;
+
+	for(size_t i = 1; i < 256; ++i) {
+		Vector_init(&U, i);
+
+		Vector_arange(&U, (real_t)0, (real_t)1);
+		Vector_square(&U);
+		Vector_sqrt(&U);
+		
+		for(size_t j = 0; j < i; ++j)
+			mu_assert_double_eq(
+				j,
+				Vector_get_coeff(&U, j)
+			);
+
+		Vector_destroy(&U);
+	}
+}
+
+
 MU_TEST(test_Vector_scale) {
 	Vector U;
 
@@ -475,6 +496,30 @@ MU_TEST(test_Matrix_square) {
 }
 
 
+MU_TEST(test_Matrix_sqrt) {
+	Matrix U;
+
+	for(size_t i = 1; i < 256; i += 9) {
+		for(size_t j = 1; j < 256; j += 9) {
+			Matrix_init(&U, i, j);
+			Matrix_filler(&U);
+			Matrix_square(&U);
+			Matrix_sqrt(&U);
+
+			size_t uk = 0;
+			for(size_t ui = 0; ui < i; ++ui)
+				for(size_t uj = 0; uj < j; ++uj, ++uk)
+					mu_assert_double_eq(
+						uk,
+						Matrix_get_coeff(&U, ui, uj)
+					);
+
+			Matrix_destroy(&U);
+		}
+	}
+}
+
+
 MU_TEST(test_Matrix_scale) {
 	Matrix U;
 
@@ -509,6 +554,7 @@ MU_TEST_SUITE(test_Vector_suite) {
 	MU_RUN_TEST(test_Vector_sub);
 	MU_RUN_TEST(test_Vector_scaled_add);
 	MU_RUN_TEST(test_Vector_square);
+	MU_RUN_TEST(test_Vector_sqrt);
 	MU_RUN_TEST(test_Vector_scale);
 	MU_RUN_TEST(test_Vector_sum);
 	MU_RUN_TEST(test_Vector_square_sum);
@@ -526,6 +572,7 @@ MU_TEST_SUITE(test_Matrix_suite) {
 	MU_RUN_TEST(test_Matrix_sub);
 	MU_RUN_TEST(test_Matrix_scaled_add);
 	MU_RUN_TEST(test_Matrix_square);
+	MU_RUN_TEST(test_Matrix_sqrt);
 	MU_RUN_TEST(test_Matrix_scale);
 }
 

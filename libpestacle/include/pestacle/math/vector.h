@@ -93,6 +93,12 @@ Vector_square(
 );
 
 
+extern void
+Vector_sqrt(
+	Vector* self
+);
+
+
 extern real_t
 Vector_sum(
 	const Vector* self

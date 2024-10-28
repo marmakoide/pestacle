@@ -154,6 +154,19 @@ Vector_square(
 
 
 void
+Vector_sqrt(
+	Vector* self
+) {
+	assert(self != 0);
+
+	array_ops_sqrt(
+		self->data,
+		self->len
+	);
+}
+
+
+void
 Vector_scale(
 	Vector* self,
 	real_t value

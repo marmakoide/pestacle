@@ -99,6 +99,15 @@ array_ops_square(
 
 
 void
+array_ops_sqrt(
+	real_t* dst,
+	size_t len
+) {
+	for( ; len != 0; --len, ++dst)
+		*dst = sqrtf(*dst);
+}
+
+void
 array_ops_scale(
 	real_t* dst,
 	size_t len,
