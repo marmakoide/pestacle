@@ -12,25 +12,25 @@
 // --- Interface --------------------------------------------------------------
 
 static bool
-matrix_resize_node_setup(
+node_setup(
 	Node* self
 );
 
 
 static void
-matrix_resize_node_destroy(
+node_destroy(
 	Node* self
 );
 
 
 static void
-matrix_resize_node_update(
+node_update(
 	Node* self
 );
 
 
 static NodeOutput
-matrix_resize_node_output(
+node_output(
 	const Node* self
 );
 
@@ -38,7 +38,7 @@ matrix_resize_node_output(
 #define SOURCE_INPUT 0
 
 static const NodeInputDefinition
-matrix_resize_inputs[] = {
+node_inputs[] = {
 	{
 		NodeType__matrix,
 		"source"
@@ -53,7 +53,7 @@ matrix_resize_inputs[] = {
 #define OUTPUT_HEIGHT_PARAMETER 3
 
 static const ParameterDefinition
-matrix_resize_parameters[] = {
+node_parameters[] = {
 	{
 		ParameterType__integer,
 		"input-width",
@@ -82,13 +82,13 @@ const NodeDelegate
 root_matrix_resize_node_delegate = {
 	"resize",
 	NodeType__matrix,
-	matrix_resize_inputs,
-	matrix_resize_parameters,
+	node_inputs,
+	node_parameters,
 	{
-		matrix_resize_node_setup,
-		matrix_resize_node_destroy,
-		matrix_resize_node_update,
-		matrix_resize_node_output
+		node_setup,
+		node_destroy,
+		node_update,
+		node_output
 	},
 };
 
@@ -211,7 +211,7 @@ matrix_resize_data_destroy(
 
 
 static bool
-matrix_resize_node_setup(
+node_setup(
 	Node* self
 ) {
 	// Retrieve the parameters
@@ -246,7 +246,7 @@ matrix_resize_node_setup(
 
 
 static void
-matrix_resize_node_destroy(
+node_destroy(
 	Node* self
 ) {
 	MatrixResizeData* data = (MatrixResizeData*)self->data;
@@ -256,7 +256,7 @@ matrix_resize_node_destroy(
 
 
 static void
-matrix_resize_node_update(
+node_update(
 	Node* self
 ) {
 	MatrixResizeData* data = (MatrixResizeData*)self->data;
@@ -327,7 +327,7 @@ matrix_resize_node_update(
 
 
 static NodeOutput
-matrix_resize_node_output(
+node_output(
 	const Node* self
 ) {
 	MatrixResizeData* data = (MatrixResizeData*)self->data;

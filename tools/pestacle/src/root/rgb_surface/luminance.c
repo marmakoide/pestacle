@@ -6,25 +6,25 @@
 // --- Interface --------------------------------------------------------------
 
 static bool
-luminance_node_setup(
+node_setup(
 	Node* self
 );
 
 
 static void
-luminance_node_destroy(
+node_destroy(
 	Node* self
 );
 
 
 static void
-luminance_node_update(
+node_update(
 	Node* self
 );
 
 
 static NodeOutput
-luminance_node_output(
+node_output(
 	const Node* self
 );
 
@@ -33,7 +33,7 @@ luminance_node_output(
 
 
 static const NodeInputDefinition
-luminance_inputs[] = {
+node_inputs[] = {
 	{
 		NodeType__rgb_surface,
 		"source",
@@ -46,7 +46,7 @@ luminance_inputs[] = {
 #define HEIGHT_PARAMETER 1
 
 static const ParameterDefinition
-luminance_parameters[] = {
+node_parameters[] = {
 	{
 		ParameterType__integer,
 		"width",
@@ -65,13 +65,13 @@ const NodeDelegate
 root_rgb_surface_luminance_node_delegate = {
 	"luminance",
 	NodeType__matrix,
-	luminance_inputs,
-	luminance_parameters,
+	node_inputs,
+	node_parameters,
 	{
-		luminance_node_setup,
-		luminance_node_destroy,
-		luminance_node_update,
-		luminance_node_output
+		node_setup,
+		node_destroy,
+		node_update,
+		node_output
 	},
 };
 
@@ -79,7 +79,7 @@ root_rgb_surface_luminance_node_delegate = {
 // --- Implementation ---------------------------------------------------------
 
 static bool
-luminance_node_setup(
+node_setup(
 	Node* self
 ) {
 	// Retrieve the parameters
@@ -108,7 +108,7 @@ luminance_node_setup(
 
 
 static void
-luminance_node_destroy(
+node_destroy(
 	Node* self
 ) {
 	Matrix* matrix = (Matrix*)self->data;
@@ -139,7 +139,7 @@ Y_to_Lstar(real_t Y) {
 
 
 static void
-luminance_node_update(
+node_update(
 	Node* self
 ) {
 	// Retrieve inputs and outputs
@@ -176,7 +176,7 @@ luminance_node_update(
 
 
 static NodeOutput
-luminance_node_output(
+node_output(
 	const Node* self
 ) {
 	NodeOutput ret = { .matrix = (Matrix*)self->data };

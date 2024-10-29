@@ -7,25 +7,25 @@
 // --- Interface --------------------------------------------------------------
 
 static bool
-load_node_setup(
+node_setup(
 	Node* self
 );
 
 
 static void
-load_node_destroy(
+node_destroy(
 	Node* self
 );
 
 
 static NodeOutput
-load_node_output(
+node_output(
 	const Node* self
 );
 
 
 static const NodeInputDefinition
-load_inputs[] = {
+node_inputs[] = {
 	NODE_INPUT_DEFINITION_END
 };
 
@@ -33,7 +33,7 @@ load_inputs[] = {
 #define PATH_PARAMETER 0
 
 static const ParameterDefinition
-load_parameters[] = {
+node_parameters[] = {
 	{
 		ParameterType__string,
 		"path",
@@ -47,13 +47,13 @@ const NodeDelegate
 png_load_node_delegate = {
 	"load",
 	NodeType__rgb_surface,
-	load_inputs,
-	load_parameters,
+	node_inputs,
+	node_parameters,
 	{
-		load_node_setup,
-		load_node_destroy,
+		node_setup,
+		node_destroy,
 		0,
-		load_node_output
+		node_output
 	},
 };
 
@@ -61,7 +61,7 @@ png_load_node_delegate = {
 // --- Implementation ---------------------------------------------------------
 
 static bool
-load_node_setup(
+node_setup(
 	Node* self
 ) {
 	const char* path = self->parameters[PATH_PARAMETER].string_value;
@@ -82,7 +82,7 @@ load_node_setup(
 
 
 static void
-load_node_destroy(
+node_destroy(
 	Node* self
 ) {
 	SDL_Surface* rgb_surface = (SDL_Surface*)self->data;
@@ -92,7 +92,7 @@ load_node_destroy(
 
 
 static NodeOutput
-load_node_output(
+node_output(
 	const Node* self
 ) {
 	NodeOutput ret = { .rgb_surface = (SDL_Surface*)self->data };

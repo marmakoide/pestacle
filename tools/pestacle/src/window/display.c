@@ -8,7 +8,7 @@
 // --- Interface --------------------------------------------------------------
 
 static void
-display_node_update(
+node_update(
 	Node* self
 );
 
@@ -17,7 +17,7 @@ display_node_update(
 
 
 static const NodeInputDefinition
-display_inputs[] = {
+node_inputs[] = {
 	{
 		NodeType__rgb_surface,
 		"source"
@@ -27,7 +27,7 @@ display_inputs[] = {
 
 
 static const ParameterDefinition
-display_parameters[] = {
+node_parameters[] = {
 	PARAMETER_DEFINITION_END
 }; // display_parameters
 
@@ -36,12 +36,12 @@ const NodeDelegate
 display_node_delegate = {
 	"display",
 	NodeType__void,
-	display_inputs,
-	display_parameters,
+	node_inputs,
+	node_parameters,
 	{
 		0,
 		0,
-		display_node_update,
+		node_update,
 		0
 	},
 }; // display_node_delegate
@@ -50,7 +50,7 @@ display_node_delegate = {
 // --- Implementation ---------------------------------------------------------
 
 static void
-display_node_update(
+node_update(
 	Node* self
 ) {
 	Window* window = (Window*)self->delegate_scope->data;

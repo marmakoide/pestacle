@@ -6,25 +6,25 @@
 // --- Interface --------------------------------------------------------------
 
 static bool
-gradient_map_node_setup(
+node_setup(
 	Node* self
 );
 
 
 static void
-gradient_map_node_destroy(
+node_destroy(
 	Node* self
 );
 
 
 static void
-gradient_map_node_update(
+node_update(
 	Node* self
 );
 
 
 static NodeOutput
-gradient_map_node_output(
+node_output(
 	const Node* self
 );
 
@@ -33,7 +33,7 @@ gradient_map_node_output(
 
 
 static const NodeInputDefinition
-gradient_map_inputs[] = {
+node_inputs[] = {
 	{
 		NodeType__matrix,
 		"source"
@@ -46,7 +46,7 @@ gradient_map_inputs[] = {
 #define HEIGHT_PARAMETER 1
 
 static const ParameterDefinition
-gradient_map_parameters[] = {
+node_parameters[] = {
 	{
 		ParameterType__integer,
 		"width",
@@ -65,13 +65,13 @@ const NodeDelegate
 root_matrix_gradient_map_node_delegate = {
 	"gradient-map",
 	NodeType__rgb_surface,
-	gradient_map_inputs,
-	gradient_map_parameters,
+	node_inputs,
+	node_parameters,
 	{
-		gradient_map_node_setup,
-		gradient_map_node_destroy,
-		gradient_map_node_update,
-		gradient_map_node_output
+		node_setup,
+		node_destroy,
+		node_update,
+		node_output
 	},
 };
 
@@ -79,7 +79,7 @@ root_matrix_gradient_map_node_delegate = {
 // --- Implementation ---------------------------------------------------------
 
 static bool
-gradient_map_node_setup(
+node_setup(
 	Node* self
 ) {
 	// Retrieve the parameters
@@ -116,7 +116,7 @@ gradient_map_node_setup(
 
 
 static void
-gradient_map_node_destroy(
+node_destroy(
 	Node* self
 ) {
 	SDL_Surface* rgb_surface = (SDL_Surface*)self->data;
@@ -126,7 +126,7 @@ gradient_map_node_destroy(
 
 
 static void
-gradient_map_node_update(
+node_update(
 	Node* self
 ) {
 	// Retrieve inputs and outputs
@@ -153,7 +153,7 @@ gradient_map_node_update(
 
 
 static NodeOutput
-gradient_map_node_output(
+node_output(
 	const Node* self
 ) {
 	NodeOutput ret = { .rgb_surface = (SDL_Surface*)self->data };

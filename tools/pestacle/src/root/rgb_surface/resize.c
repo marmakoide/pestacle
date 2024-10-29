@@ -4,25 +4,25 @@
 // --- Interface --------------------------------------------------------------
 
 static bool
-resize_node_setup(
+node_setup(
 	Node* self
 );
 
 
 static void
-resize_node_destroy(
+node_destroy(
 	Node* self
 );
 
 
 static void
-resize_node_update(
+node_update(
 	Node* self
 );
 
 
 static NodeOutput
-resize_node_output(
+node_output(
 	const Node* self
 );
 
@@ -30,7 +30,7 @@ resize_node_output(
 #define SOURCE_INPUT 0
 
 static const NodeInputDefinition
-resize_inputs[] = {
+node_inputs[] = {
 	{
 		NodeType__rgb_surface,
 		"source",
@@ -45,7 +45,7 @@ resize_inputs[] = {
 #define OUTPUT_HEIGHT_PARAMETER 3
 
 static const ParameterDefinition
-resize_parameters[] = {
+node_parameters[] = {
 	{
 		ParameterType__integer,
 		"input-width",
@@ -74,13 +74,13 @@ const NodeDelegate
 root_rgb_surface_resize_node_delegate = {
 	"resize",
 	NodeType__rgb_surface,
-	resize_inputs,
-	resize_parameters,
+	node_inputs,
+	node_parameters,
 	{
-		resize_node_setup,
-		resize_node_destroy,
-		resize_node_update,
-		resize_node_output
+		node_setup,
+		node_destroy,
+		node_update,
+		node_output
 	},
 };
 
@@ -88,7 +88,7 @@ root_rgb_surface_resize_node_delegate = {
 // --- Implementation ---------------------------------------------------------
 
 static bool
-resize_node_setup(
+node_setup(
 	Node* self
 ) {
 	// Retrieve the parameters
@@ -123,7 +123,7 @@ resize_node_setup(
 
 
 static void
-resize_node_destroy(
+node_destroy(
 	Node* self
 ) {
 	SDL_Surface* rgb_surface = (SDL_Surface*)self->data;
@@ -133,7 +133,7 @@ resize_node_destroy(
 
 
 static void
-resize_node_update(
+node_update(
 	Node* self
 ) {
 	SDL_Surface* src =
@@ -146,7 +146,7 @@ resize_node_update(
 
 
 static NodeOutput
-resize_node_output(
+node_output(
 	const Node* self
 ) {
 	NodeOutput ret = { .rgb_surface = (SDL_Surface*)self->data };

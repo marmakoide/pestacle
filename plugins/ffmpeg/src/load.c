@@ -10,31 +10,31 @@
 // --- Interface --------------------------------------------------------------
 
 static bool
-load_node_setup(
+node_setup(
 	Node* self
 );
 
 
 static void
-load_node_destroy(
+node_destroy(
 	Node* self
 );
 
 
 static void
-load_node_update(
+node_update(
 	Node* self
 );
 
 
 static NodeOutput
-load_node_output(
+node_output(
 	const Node* self
 );
 
 
 static const NodeInputDefinition
-load_inputs[] = {
+node_inputs[] = {
 	NODE_INPUT_DEFINITION_END
 };
 
@@ -42,7 +42,7 @@ load_inputs[] = {
 #define PATH_PARAMETER 0
 
 static const ParameterDefinition
-load_parameters[] = {
+node_parameters[] = {
 	{
 		ParameterType__string,
 		"path",
@@ -56,13 +56,13 @@ const NodeDelegate
 ffmpeg_load_node_delegate = {
 	"load",
 	NodeType__rgb_surface,
-	load_inputs,
-	load_parameters,
+	node_inputs,
+	node_parameters,
 	{
-		load_node_setup,
-		load_node_destroy,
-		load_node_update,
-		load_node_output
+		node_setup,
+		node_destroy,
+		node_update,
+		node_output
 	},
 };
 
@@ -325,7 +325,7 @@ InputStreamData_update(
 
 
 static bool
-load_node_setup(
+node_setup(
 	Node* self
 ) {
 	// Retrieve path to video file
@@ -349,7 +349,7 @@ load_node_setup(
 
 
 static void
-load_node_destroy(
+node_destroy(
 	Node* self
 ) {
 	InputStreamData* data = (InputStreamData*)self->data;
@@ -361,7 +361,7 @@ load_node_destroy(
 
 
 static void
-load_node_update(
+node_update(
 	Node* self
 ) {
 	InputStreamData* data = (InputStreamData*)self->data;
@@ -370,7 +370,7 @@ load_node_update(
 
 
 static NodeOutput
-load_node_output(
+node_output(
 	const Node* self
 ) {
 	InputStreamData* data = (InputStreamData*)self->data;

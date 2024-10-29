@@ -9,31 +9,31 @@
 // --- Interface --------------------------------------------------------------
 
 static bool
-mouse_motion_node_setup(
+node_setup(
 	Node* self
 );
 
 
 static void
-mouse_motion_node_destroy(
+node_destroy(
 	Node* self
 );
 
 
 static void
-mouse_motion_node_update(
+node_update(
 	Node* self
 );
 
 
 static NodeOutput
-mouse_motion_node_output(
+node_output(
 	const Node* self
 );
 
 
 static const NodeInputDefinition
-mouse_motion_inputs[] = {
+node_inputs[] = {
 	NODE_INPUT_DEFINITION_END
 };
 
@@ -41,7 +41,7 @@ mouse_motion_inputs[] = {
 #define VALUE_PARAMETER  0
 
 static const ParameterDefinition
-mouse_motion_parameters[] = {
+node_parameters[] = {
 	{
 		ParameterType__real,
 		"value",
@@ -55,13 +55,13 @@ const NodeDelegate
 mouse_motion_node_delegate = {
 	"mouse-motion",
 	NodeType__matrix,
-	mouse_motion_inputs,
-	mouse_motion_parameters,
+	node_inputs,
+	node_parameters,
 	{
-		mouse_motion_node_setup,
-		mouse_motion_node_destroy,
-		mouse_motion_node_update,
-		mouse_motion_node_output
+		node_setup,
+		node_destroy,
+		node_update,
+		node_output
 	},
 };
 
@@ -93,7 +93,7 @@ mouse_motion_on_event(
 
 
 static bool
-mouse_motion_node_setup(
+node_setup(
 	Node* self
 ) {
 	assert(self->delegate_scope->data);
@@ -124,7 +124,7 @@ mouse_motion_node_setup(
 
 
 static void
-mouse_motion_node_destroy(
+node_destroy(
 	Node* self
 ) {
 	Matrix* accumulator = (Matrix*)self->data;
@@ -136,7 +136,7 @@ mouse_motion_node_destroy(
 
 
 static void
-mouse_motion_node_update(
+node_update(
 	Node* self
 ) {
 	// Retrieve the accumulator
@@ -171,7 +171,7 @@ mouse_motion_node_update(
 
 
 static NodeOutput
-mouse_motion_node_output(
+node_output(
 	const Node* self
 ) {
 	Matrix* accumulator = (Matrix*)self->data;

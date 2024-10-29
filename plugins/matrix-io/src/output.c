@@ -8,19 +8,19 @@
 // --- Interface --------------------------------------------------------------
 
 static bool
-output_node_setup(
+node_setup(
 	Node* self
 );
 
 
 static void
-output_node_destroy(
+node_destroy(
 	Node* self
 );
 
 
 static void
-output_node_update(
+node_update(
 	Node* self
 );
 
@@ -28,7 +28,7 @@ output_node_update(
 #define SOURCE_INPUT 0
 
 static const NodeInputDefinition
-output_inputs[] = {
+node_inputs[] = {
 	{
 		NodeType__matrix,
 		"source"
@@ -42,7 +42,7 @@ output_inputs[] = {
 #define HEIGHT_PARAMETER      2
 
 static const ParameterDefinition
-output_parameters[] = {
+node_parameters[] = {
 	{
 		ParameterType__string,
 		"path-prefix",
@@ -66,12 +66,12 @@ const NodeDelegate
 matrix_io_output_node_delegate = {
 	"output",
 	NodeType__void,
-	output_inputs,
-	output_parameters,
+	node_inputs,
+	node_parameters,
 	{
-		output_node_setup,
-		output_node_destroy,
-		output_node_update,
+		node_setup,
+		node_destroy,
+		node_update,
 		0
 	},
 };
@@ -313,7 +313,7 @@ termination:
 
 
 static bool
-output_node_setup(
+node_setup(
 	Node* self
 ) {
 	// Retrieve path to video file
@@ -339,7 +339,7 @@ output_node_setup(
 
 
 static void
-output_node_destroy(
+node_destroy(
 	Node* self
 ) {
 	OutputData* data = (OutputData*)self->data;
@@ -349,7 +349,7 @@ output_node_destroy(
 
 
 static void
-output_node_update(
+node_update(
 	Node* self
 ) {
 	OutputData* data = (OutputData*)self->data;

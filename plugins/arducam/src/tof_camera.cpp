@@ -9,37 +9,37 @@
 // --- Interface --------------------------------------------------------------
 
 static bool
-tof_camera_node_setup(
+node_setup(
 	Node* self
 );
 
 
 static void
-tof_camera_node_destroy(
+node_destroy(
 	Node* self
 );
 
 
 static void
-tof_camera_node_update(
+node_update(
 	Node* self
 );
 
 
 static NodeOutput
-tof_camera_node_output(
+node_output(
 	const Node* self
 );
 
 
 static const NodeInputDefinition
-tof_camera_inputs[] = {
+node_inputs[] = {
 	NODE_INPUT_DEFINITION_END
 };
 
 
 static const ParameterDefinition
-tof_camera_parameters[] = {
+node_parameters[] = {
 	PARAMETER_DEFINITION_END
 };
 
@@ -48,13 +48,13 @@ const NodeDelegate
 arducam_tof_camera_node_delegate = {
 	"tof-camera",
 	NodeType__matrix,
-	tof_camera_inputs,
-	tof_camera_parameters,
+	node_inputs,
+	node_parameters,
 	{
-		tof_camera_node_setup,
-		tof_camera_node_destroy,
-		tof_camera_node_update,
-		tof_camera_node_output
+		node_setup,
+		node_destroy,
+		node_update,
+		node_output
 	},
 };
 
@@ -134,7 +134,7 @@ struct ToFCameraData {
 
 
 static bool
-tof_camera_node_setup(
+node_setup(
 	Node* self
 ) {
 	// Allocate data
@@ -155,7 +155,7 @@ tof_camera_node_setup(
 
 
 static void
-tof_camera_node_destroy(
+node_destroy(
 	Node* self
 ) {
 	ToFCameraData* data = (ToFCameraData*)self->data;
@@ -165,7 +165,7 @@ tof_camera_node_destroy(
 
 
 static void
-tof_camera_node_update(
+node_update(
 	Node* self
 ) {
 	ToFCameraData* data = (ToFCameraData*)self->data;
@@ -174,7 +174,7 @@ tof_camera_node_update(
 
 
 static NodeOutput
-tof_camera_node_output(
+node_output(
 	const Node* self
 ) {
 	ToFCameraData* data = (ToFCameraData*)self->data;

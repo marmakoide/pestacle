@@ -6,25 +6,25 @@
 // --- Interface --------------------------------------------------------------
 
 static bool
-heat_diffusion_node_setup(
+node_setup(
 	Node* self
 );
 
 
 static void
-heat_diffusion_node_destroy(
+node_destroy(
 	Node* self
 );
 
 
 static void
-heat_diffusion_node_update(
+node_update(
 	Node* self
 );
 
 
 static NodeOutput
-heat_diffusion_node_output(
+node_output(
 	const Node* self
 );
 
@@ -32,7 +32,7 @@ heat_diffusion_node_output(
 #define SOURCE_INPUT 0
 
 static const NodeInputDefinition
-heat_diffusion_inputs[] = {
+node_inputs[] = {
 	{
 		NodeType__matrix,
 		"source"
@@ -46,7 +46,7 @@ heat_diffusion_inputs[] = {
 #define DECAY_PARAMETER  2
 
 static const ParameterDefinition
-heat_diffusion_parameters[] = {
+node_parameters[] = {
 	{
 		ParameterType__integer,
 		"width",
@@ -70,13 +70,13 @@ const NodeDelegate
 root_matrix_heat_diffusion_node_delegate = {
 	"heat-diffusion",
 	NodeType__matrix,
-	heat_diffusion_inputs,
-	heat_diffusion_parameters,
+	node_inputs,
+	node_parameters,
 	{
-		heat_diffusion_node_setup,
-		heat_diffusion_node_destroy,
-		heat_diffusion_node_update,
-		heat_diffusion_node_output
+		node_setup,
+		node_destroy,
+		node_update,
+		node_output
 	},
 };
 
@@ -91,7 +91,7 @@ typedef struct {
 
 
 static bool
-heat_diffusion_node_setup(
+node_setup(
 	Node* self
 ) {
 	// Retrieve the parameters
@@ -150,7 +150,7 @@ heat_diffusion_node_setup(
 
 
 static void
-heat_diffusion_node_destroy(
+node_destroy(
 	Node* self
 ) {
 	HeatDiffusionData* data = (HeatDiffusionData*)self->data;
@@ -166,7 +166,7 @@ heat_diffusion_node_destroy(
 
 
 static void
-heat_diffusion_node_update(
+node_update(
 	Node* self
 ) {
 	HeatDiffusionData* data = (HeatDiffusionData*)self->data;
@@ -201,7 +201,7 @@ heat_diffusion_node_update(
 
 
 static NodeOutput
-heat_diffusion_node_output(
+node_output(
 	const Node* self
 ) {
 	const HeatDiffusionData* data = (const HeatDiffusionData*)self->data;

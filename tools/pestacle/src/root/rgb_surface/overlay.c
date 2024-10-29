@@ -6,25 +6,25 @@
 // --- Interface --------------------------------------------------------------
 
 static bool
-overlay_node_setup(
+node_setup(
 	Node* self
 );
 
 
 static void
-overlay_node_destroy(
+node_destroy(
 	Node* self
 );
 
 
 static void
-overlay_node_update(
+node_update(
 	Node* self
 );
 
 
 static NodeOutput
-overlay_node_output(
+node_output(
 	const Node* self
 );
 
@@ -34,7 +34,7 @@ overlay_node_output(
 
 
 static const NodeInputDefinition
-overlay_inputs[] = {
+node_inputs[] = {
 	{
 		NodeType__rgb_surface,
 		"source-a"
@@ -51,7 +51,7 @@ overlay_inputs[] = {
 #define HEIGHT_PARAMETER 1
 
 static const ParameterDefinition
-overlay_parameters[] = {
+node_parameters[] = {
 	{
 		ParameterType__integer,
 		"width",
@@ -70,13 +70,13 @@ const NodeDelegate
 root_rgb_surface_overlay_node_delegate = {
 	"overlay",
 	NodeType__rgb_surface,
-	overlay_inputs,
-	overlay_parameters,
+	node_inputs,
+	node_parameters,
 	{
-		overlay_node_setup,
-		overlay_node_destroy,
-		overlay_node_update,
-		overlay_node_output
+		node_setup,
+		node_destroy,
+		node_update,
+		node_output
 	},
 };
 
@@ -84,7 +84,7 @@ root_rgb_surface_overlay_node_delegate = {
 // --- Implementation ---------------------------------------------------------
 
 static bool
-overlay_node_setup(
+node_setup(
 	Node* self
 ) {
 	// Retrieve the parameters
@@ -121,7 +121,7 @@ overlay_node_setup(
 
 
 static void
-overlay_node_destroy(
+node_destroy(
 	Node* self
 ) {
 	SDL_Surface* rgb_surface = (SDL_Surface*)self->data;
@@ -131,7 +131,7 @@ overlay_node_destroy(
 
 
 static void
-overlay_node_update(
+node_update(
 	Node* self
 ) {
 	// Retrieve inputs and outputs
@@ -150,7 +150,7 @@ overlay_node_update(
 
 
 static NodeOutput
-overlay_node_output(
+node_output(
 	const Node* self
 ) {
 	NodeOutput ret = { .rgb_surface = (SDL_Surface*)self->data };

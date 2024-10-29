@@ -6,25 +6,25 @@
 // --- Interface --------------------------------------------------------------
 
 static bool
-blend_node_setup(
+node_setup(
 	Node* self
 );
 
 
 static void
-blend_node_destroy(
+node_destroy(
 	Node* self
 );
 
 
 static void
-blend_node_update(
+node_update(
 	Node* self
 );
 
 
 static NodeOutput
-blend_node_output(
+node_output(
 	const Node* self
 );
 
@@ -35,7 +35,7 @@ blend_node_output(
 
 
 static const NodeInputDefinition
-blend_inputs[] = {
+node_inputs[] = {
 	{
 		NodeType__rgb_surface,
 		"source-a"
@@ -56,7 +56,7 @@ blend_inputs[] = {
 #define HEIGHT_PARAMETER 1
 
 static const ParameterDefinition
-blend_parameters[] = {
+node_parameters[] = {
 	{
 		ParameterType__integer,
 		"width",
@@ -75,13 +75,13 @@ const NodeDelegate
 root_rgb_surface_blend_node_delegate = {
 	"blend",
 	NodeType__rgb_surface,
-	blend_inputs,
-	blend_parameters,
+	node_inputs,
+	node_parameters,
 	{
-		blend_node_setup,
-		blend_node_destroy,
-		blend_node_update,
-		blend_node_output
+		node_setup,
+		node_destroy,
+		node_update,
+		node_output
 	},
 };
 
@@ -89,7 +89,7 @@ root_rgb_surface_blend_node_delegate = {
 // --- Implementation ---------------------------------------------------------
 
 static bool
-blend_node_setup(
+node_setup(
 	Node* self
 ) {
 	// Retrieve the parameters
@@ -126,7 +126,7 @@ blend_node_setup(
 
 
 static void
-blend_node_destroy(
+node_destroy(
 	Node* self
 ) {
 	SDL_Surface* rgb_surface = (SDL_Surface*)self->data;
@@ -136,7 +136,7 @@ blend_node_destroy(
 
 
 static void
-blend_node_update(
+node_update(
 	Node* self
 ) {
 	// Retrieve inputs and outputs
@@ -175,7 +175,7 @@ blend_node_update(
 
 
 static NodeOutput
-blend_node_output(
+node_output(
 	const Node* self
 ) {
 	NodeOutput ret = { .rgb_surface = (SDL_Surface*)self->data };
