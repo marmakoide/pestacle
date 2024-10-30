@@ -1,5 +1,6 @@
 #include <math.h>
 #include <stdlib.h>
+#include <sys/types.h>
 #include <pestacle/math/array_ops.h>
 #include <pestacle/memory.h>
 
@@ -74,13 +75,15 @@ array_ops_set_gaussian_kernel(
 	real_t* dst,
 	size_t len,
 	real_t sigma) {
-	size_t offset = len / 2;
+	ssize_t x = len / 2;
+	x = -x;
+
 	real_t k = -((real_t)1) / (2 * square(sigma));
 	real_t sum = (real_t)0;
 	
 	real_t* ptr = dst;
-	for(size_t i = 0; i < len; ++i, ++ptr) {
-		*ptr = expf(k * square(i - offset));
+	for(size_t i = len; i != 0; --i, ++ptr, ++x) {
+		*ptr = expf(k * square(x));
 		sum += *ptr;
 	}
 
