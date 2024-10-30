@@ -190,7 +190,9 @@ Parser_parse_parameter(
 			break;
 
 		case ParameterType__real:
-			if ((context->lexer->token.type == TokenType__integer) || (context->lexer->token.type == TokenType__real))
+			if (context->lexer->token.type == TokenType__integer)
+				param_value->real_value = context->lexer->token.value.int64_value;
+			else if (context->lexer->token.type == TokenType__real)
 				param_value->real_value = context->lexer->token.value.real_value;
 			else {
 				ret = false;
