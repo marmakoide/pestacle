@@ -1,7 +1,7 @@
 #include <pestacle/memory.h>
 #include <pestacle/image/gaussian.h>
 
-#include "root/matrix/gaussian.h"
+#include "root/matrix/stddev.h"
 
 
 // --- Interface --------------------------------------------------------------
@@ -68,8 +68,8 @@ node_parameters[] = {
 
 
 const NodeDelegate
-root_matrix_gaussian_node_delegate = {
-	"gaussian",
+root_matrix_stddev_node_delegate = {
+	"stddev",
 	NodeType__matrix,
 	node_inputs,
 	node_parameters,
@@ -85,20 +85,24 @@ root_matrix_gaussian_node_delegate = {
 // --- Implementation ---------------------------------------------------------
 
 typedef struct {
+	Matrix U;
 	Matrix out;
 	GaussianFilter filter;
-} GaussianData;
+} StdDevData;
 
 
 static void
-GaussianData_init(
-	GaussianData* self,
+StdDevData_init(
+	StdDevData* self,
 	size_t width,
 	size_t height,
 	real_t sigma
 ) {
 	Matrix_init(&(self->out), height, width);
 	Matrix_fill(&(self->out), (real_t)0);
+
+	Matrix_init(&(self->U), height, width);
+	Matrix_fill(&(self->U), (real_t)0);
 
 	GaussianFilter_init(
 		&(self->filter),
@@ -110,9 +114,10 @@ GaussianData_init(
 
 
 static void
-GaussianData_destroy(
-	GaussianData* self
+StdDevData_destroy(
+	StdDevData* self
 ) {
+	Matrix_destroy(&(self->U));
 	Matrix_destroy(&(self->out));
 	GaussianFilter_destroy(&(self->filter));
 }
@@ -128,14 +133,14 @@ node_setup(
 	real_t sigma = (real_t)self->parameters[SIGMA_PARAMETER].real_value;
 
 	// Allocate data
-	GaussianData* data =
-		(GaussianData*)checked_malloc(sizeof(GaussianData));
+	StdDevData* data =
+		(StdDevData*)checked_malloc(sizeof(StdDevData));
 
 	if (!data)
 		return false;
 
 	// Setup data
-	GaussianData_init(data, width, height, sigma);
+	StdDevData_init(data, width, height, sigma);
 
 	// Job done
 	self->data = data;
@@ -147,10 +152,10 @@ static void
 node_destroy(
 	Node* self
 ) {
-	GaussianData* data = (GaussianData*)self->data;
+	StdDevData* data = (StdDevData*)self->data;
 
 	if (data != 0) {
-		GaussianData_destroy(data);
+		StdDevData_destroy(data);
 		free(data);
 	}
 }
@@ -160,17 +165,33 @@ static void
 node_update(
 	Node* self
 ) {
-	GaussianData* data = (GaussianData*)self->data;
+	StdDevData* data = (StdDevData*)self->data;
 
+	// Compute out = gaussian(E^2)
 	Matrix_copy(
 		&(data->out),
 		Node_output(self->inputs[SOURCE_INPUT]).matrix
 	);
-
+	Matrix_square(&(data->out));
 	GaussianFilter_transform(
 		&(data->filter),
 		&(data->out)
 	);
+
+	// Compute U = gaussian(E)^2
+	Matrix_copy(
+		&(data->U),
+		Node_output(self->inputs[SOURCE_INPUT]).matrix
+	);
+	GaussianFilter_transform(
+		&(data->filter),
+		&(data->U)
+	);
+	Matrix_square(&(data->U));
+
+	// Compute out = sqrt(out - U)
+	Matrix_sub(&(data->out), &(data->U));
+	Matrix_sqrt(&(data->out));
 }
 
 
@@ -178,7 +199,7 @@ static NodeOutput
 node_output(
 	const Node* self
 ) {
-	const GaussianData* data = (const GaussianData*)self->data;
+	const StdDevData* data = (const StdDevData*)self->data;
 
 	NodeOutput ret = { .matrix = &(data->out) };
 	return ret;
