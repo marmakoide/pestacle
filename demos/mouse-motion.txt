@@ -1,0 +1,23 @@
+main-window = window(
+	width  = 256,
+	height = 256,
+	title  = "demo-mouse-motion"
+)
+
+input = main-window.mouse-motion(
+	value  = 32.
+)
+
+heat = matrix.heat-diffusion(
+	width  = 256,
+	height = 256
+)
+
+main = matrix.gradient-map(
+	width  = 256,
+	height = 256
+)
+
+heat.source = input
+main.source = heat
+main-window.display.source = main
