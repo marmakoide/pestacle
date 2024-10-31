@@ -462,6 +462,36 @@ Matrix_rowwise_convolution__mirror(
 
 
 void
+Matrix_colwise_convolution__mirror(
+	Matrix* self,
+	const Matrix* other,
+	const Vector* kernel
+) {
+	assert(self != 0);
+	assert(self->data != 0);
+	assert(other != 0);
+	assert(other->data != 0);
+	assert(kernel != 0);
+	assert(kernel->data != 0);
+	assert(self->row_count == other->row_count);
+	assert(self->col_count == other->col_count);
+
+	const real_t* src = other->data;
+	real_t* dst = self->data;
+	for(size_t i = other->col_count; i != 0; --i, ++src, ++dst)
+		array_ops_strided_convolution__mirror(
+			dst,
+			src,
+			kernel->data,
+			other->row_count,
+			kernel->len,
+			other->col_count,
+			other->col_count
+		);
+}
+
+
+void
 Matrix_rowwise_box_filter(
 	Matrix* self,
 	const Matrix* other,

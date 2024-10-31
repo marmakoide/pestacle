@@ -9,9 +9,16 @@ extern "C" {
 #include <pestacle/math/matrix.h>
 
 
+enum GaussianFilterMode {
+	GaussianFilterMode__ZERO,
+	GaussianFilterMode__MIRROR
+}; // enum GaussianFilterMode
+
+
 typedef struct {
 	Matrix U;
-	Vector kernel;	
+	Vector kernel;
+	enum GaussianFilterMode mode;
 } GaussianFilter;
 
 
@@ -21,7 +28,8 @@ GaussianFilter_init(
 	GaussianFilter* self,
 	size_t row_count,
 	size_t col_count,
-	real_t sigma
+	real_t sigma,
+	enum GaussianFilterMode mode
 );
 
 

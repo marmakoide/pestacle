@@ -203,6 +203,18 @@ array_ops_strided_convolution__zero(
 
 
 extern void
+array_ops_strided_convolution__mirror(
+	real_t* dst,
+	const real_t* src,
+	const real_t* kernel,
+	size_t len,
+	size_t kernel_len,
+	size_t dst_stride,
+	size_t src_stride
+);
+
+
+extern void
 array_ops_box_filter(
 	real_t* dst,
 	const real_t* src,

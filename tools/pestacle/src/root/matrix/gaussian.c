@@ -104,7 +104,8 @@ GaussianData_init(
 		&(self->filter),
 		height,
 		width,
-		sigma
+		sigma,
+		GaussianFilterMode__ZERO
 	);
 }
 

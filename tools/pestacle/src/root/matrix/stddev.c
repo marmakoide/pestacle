@@ -108,7 +108,8 @@ StdDevData_init(
 		&(self->filter),
 		height,
 		width,
-		sigma
+		sigma,
+		GaussianFilterMode__MIRROR
 	);
 }
 
