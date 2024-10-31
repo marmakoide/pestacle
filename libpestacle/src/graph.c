@@ -205,8 +205,15 @@ Graph_setup(
 			node->delegate->name
 		);
 
-		if (!Node_setup(node))
+		if (!Node_setup(node)) {
+			SDL_LogError(
+				SDL_LOG_CATEGORY_SYSTEM,
+				"node %s : %s setup failure",
+				node->name,
+				node->delegate->name
+			);
 			return false;
+		}
 	}
 
 	// Job done
