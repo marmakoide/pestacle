@@ -1,0 +1,33 @@
+main-window = window(
+	width  = 512,
+	height = 512,
+	title  = "demo-gaussian"
+)
+
+rgb-picture = png.load(
+	path = "demos/pictures/lena.png"
+)
+
+bw-picture = rgb-surface.luminance(
+	width  = 512,
+	height = 512
+)
+
+bw-picture.source = rgb-picture
+
+gaussian = matrix.gaussian(
+	width  = 512,
+	height = 512,
+	sigma  = 1.
+)
+
+gaussian.source = bw-picture
+
+output = matrix.gradient-map(
+	width  = 512,
+	height = 512
+)
+
+output.source = gaussian
+
+main-window.display.source = output
