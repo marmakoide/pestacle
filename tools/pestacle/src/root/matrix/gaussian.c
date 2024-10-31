@@ -45,6 +45,7 @@ node_inputs[] = {
 #define WIDTH_PARAMETER  0
 #define HEIGHT_PARAMETER 1
 #define SIGMA_PARAMETER  2
+#define MODE_PARAMETER   3
 
 static const ParameterDefinition
 node_parameters[] = {
@@ -62,6 +63,11 @@ node_parameters[] = {
 		ParameterType__real,
 		"sigma",
 		{ .real_value = (real_t)1 }
+	},
+	{
+		ParameterType__string,
+		"mode",
+		{ .string_value = "zero" }
 	},
 	PARAMETER_DEFINITION_END
 };
@@ -95,7 +101,8 @@ GaussianData_init(
 	GaussianData* self,
 	size_t width,
 	size_t height,
-	real_t sigma
+	real_t sigma,
+	enum GaussianFilterMode mode
 ) {
 	Matrix_init(&(self->out), height, width);
 	Matrix_fill(&(self->out), (real_t)0);
@@ -105,7 +112,7 @@ GaussianData_init(
 		height,
 		width,
 		sigma,
-		GaussianFilterMode__ZERO
+		mode
 	);
 }
 
@@ -127,6 +134,31 @@ node_setup(
 	size_t width = (size_t)self->parameters[WIDTH_PARAMETER].int64_value;
 	size_t height = (size_t)self->parameters[HEIGHT_PARAMETER].int64_value;
 	real_t sigma = (real_t)self->parameters[SIGMA_PARAMETER].real_value;
+	char* mode_str = (char*)self->parameters[MODE_PARAMETER].string_value;
+
+	// Check parameters validity
+	if (sigma <= __FLT_EPSILON__) {
+		SDL_LogError(
+			SDL_LOG_CATEGORY_SYSTEM,
+			"invalid sigma parameter"
+		);
+		return false;
+	}
+
+	enum GaussianFilterMode mode = GaussianFilterMode__ZERO;
+	if (strcmp(mode_str, "zero") == 0) {
+		mode = GaussianFilterMode__ZERO;
+	}
+	else if (strcmp(mode_str, "mirror") == 0) {
+		mode = GaussianFilterMode__MIRROR;
+	}
+	else {
+		SDL_LogError(
+			SDL_LOG_CATEGORY_SYSTEM,
+			"invalid mode parameter"
+		);
+		return false;
+	}
 
 	// Allocate data
 	GaussianData* data =
@@ -136,7 +168,7 @@ node_setup(
 		return false;
 
 	// Setup data
-	GaussianData_init(data, width, height, sigma);
+	GaussianData_init(data, width, height, sigma, mode);
 
 	// Job done
 	self->data = data;

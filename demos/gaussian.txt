@@ -18,7 +18,8 @@ bw-picture.source = rgb-picture
 gaussian = matrix.gaussian(
 	width  = 512,
 	height = 512,
-	sigma  = 1.
+	sigma  = 8,
+	mode   = "mirror"
 )
 
 gaussian.source = bw-picture
