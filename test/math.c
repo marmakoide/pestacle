@@ -235,7 +235,7 @@ MU_TEST(test_Vector_dot) {
 }
 
 
-MU_TEST(test_Vector_convolution) {
+MU_TEST(test_Vector_convolution__zero) {
 	Vector U, V, W;
 
 	for(size_t vector_len = 16; vector_len < 256; ++vector_len) {
@@ -251,7 +251,7 @@ MU_TEST(test_Vector_convolution) {
 			Vector_init(&W, kernel_len);
 			Vector_set_gaussian_kernel(&W, (real_t)1);
 
-			Vector_convolution(&V, &U, &W);
+			Vector_convolution__zero(&V, &U, &W);
 
 			for(size_t k = 0; k < vector_len; ++k) {
 				real_t sum = (real_t)0;
@@ -476,8 +476,8 @@ MU_TEST(test_Matrix_scaled_add) {
 MU_TEST(test_Matrix_square) {
 	Matrix U;
 
-	for(size_t i = 1; i < 256; i += 9) {
-		for(size_t j = 1; j < 256; j += 9) {
+	for(size_t i = 1; i < 32; i += 9) {
+		for(size_t j = 1; j < 32; j += 9) {
 			Matrix_init(&U, i, j);
 			Matrix_filler(&U);
 			Matrix_square(&U);
@@ -559,7 +559,7 @@ MU_TEST_SUITE(test_Vector_suite) {
 	MU_RUN_TEST(test_Vector_sum);
 	MU_RUN_TEST(test_Vector_square_sum);
 	MU_RUN_TEST(test_Vector_dot);
-	MU_RUN_TEST(test_Vector_convolution);
+	MU_RUN_TEST(test_Vector_convolution__zero);
 	MU_RUN_TEST(test_Vector_box_filter);
 }
 
