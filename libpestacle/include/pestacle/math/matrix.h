@@ -157,7 +157,7 @@ Matrix_scaled_max(
 
 
 extern void
-Matrix_rowwise_convolution(
+Matrix_rowwise_convolution__zero(
 	Matrix* self,
 	const Matrix* other,
 	const Vector* kernel
@@ -165,7 +165,23 @@ Matrix_rowwise_convolution(
 
 
 extern void
-Matrix_colwise_convolution(
+Matrix_colwise_convolution__zero(
+	Matrix* self,
+	const Matrix* other,
+	const Vector* kernel
+);
+
+
+extern void
+Matrix_rowwise_convolution__mirror(
+	Matrix* self,
+	const Matrix* other,
+	const Vector* kernel
+);
+
+
+extern void
+Matrix_colwise_convolution__mirror(
 	Matrix* self,
 	const Matrix* other,
 	const Vector* kernel

@@ -376,7 +376,7 @@ Matrix_resample_nearest(
 
 
 void
-Matrix_rowwise_convolution(
+Matrix_rowwise_convolution__zero(
 	Matrix* self,
 	const Matrix* other,
 	const Vector* kernel
@@ -393,7 +393,7 @@ Matrix_rowwise_convolution(
 	const real_t* src = other->data;
 	real_t* dst = self->data;
 	for(size_t i = other->row_count; i != 0; --i, src += other->col_count, dst += other->col_count)
-		array_ops_convolution(
+		array_ops_convolution__zero(
 			dst,
 			src,
 			kernel->data,
@@ -404,7 +404,7 @@ Matrix_rowwise_convolution(
 
 
 void
-Matrix_colwise_convolution(
+Matrix_colwise_convolution__zero(
 	Matrix* self,
 	const Matrix* other,
 	const Vector* kernel
@@ -421,7 +421,7 @@ Matrix_colwise_convolution(
 	const real_t* src = other->data;
 	real_t* dst = self->data;
 	for(size_t i = other->col_count; i != 0; --i, ++src, ++dst)
-		array_ops_strided_convolution(
+		array_ops_strided_convolution__zero(
 			dst,
 			src,
 			kernel->data,
@@ -429,6 +429,34 @@ Matrix_colwise_convolution(
 			kernel->len,
 			other->col_count,
 			other->col_count
+		);
+}
+
+
+void
+Matrix_rowwise_convolution__mirror(
+	Matrix* self,
+	const Matrix* other,
+	const Vector* kernel
+) {
+	assert(self != 0);
+	assert(self->data != 0);
+	assert(other != 0);
+	assert(other->data != 0);
+	assert(kernel != 0);
+	assert(kernel->data != 0);
+	assert(self->row_count == other->row_count);
+	assert(self->col_count == other->col_count);
+
+	const real_t* src = other->data;
+	real_t* dst = self->data;
+	for(size_t i = other->row_count; i != 0; --i, src += other->col_count, dst += other->col_count)
+		array_ops_convolution__mirror(
+			dst,
+			src,
+			kernel->data,
+			other->col_count,
+			kernel->len
 		);
 }
 

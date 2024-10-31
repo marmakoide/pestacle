@@ -275,6 +275,60 @@ MU_TEST(test_Vector_convolution__zero) {
 }
 
 
+MU_TEST(test_Vector_convolution__mirror) {
+	Vector U, V, W;
+
+	for(size_t vector_len = 16; vector_len < 256; ++vector_len) {
+		Vector_init(&U, vector_len);
+		Vector_arange(&U, (real_t)0, (real_t)1);
+
+		Vector_init(&V, vector_len);
+		Vector_fill(&V, (real_t)0);
+
+		for(size_t i = 1; i < 8; ++i) {
+			size_t kernel_len = 2 * i + 1;
+
+			Vector_init(&W, kernel_len);
+			Vector_set_gaussian_kernel(&W, (real_t)1);
+
+			Vector_convolution__mirror(&V, &U, &W);
+
+			for(size_t k = 0; k < vector_len; ++k) {
+				printf("  coeff %zu/%zu\n", k, vector_len);
+
+				real_t sum = (real_t)0;
+				for(size_t n = 0; n < kernel_len; ++n) {
+					ssize_t index = k + n;
+					index -= kernel_len / 2;
+
+					if (index < 0)
+						index = -index;
+
+					if (index >= (ssize_t)vector_len) {
+						index = -index;
+						index += 2 * (vector_len - 1);
+					}
+
+					printf("    U[%zd] x W[%zu]\n", index, n);
+					sum = fmaf(
+						Vector_get_coeff(&U, index),
+						Vector_get_coeff(&W, n),
+						sum
+					);
+				}
+
+				mu_assert_double_eq(Vector_get_coeff(&V, k), sum);
+			}
+			
+			Vector_destroy(&W);
+		}
+
+		Vector_destroy(&U);
+		Vector_destroy(&V);
+	}
+}
+
+
 MU_TEST(test_Vector_box_filter) {
 	Vector U, V;
 
@@ -560,6 +614,7 @@ MU_TEST_SUITE(test_Vector_suite) {
 	MU_RUN_TEST(test_Vector_square_sum);
 	MU_RUN_TEST(test_Vector_dot);
 	MU_RUN_TEST(test_Vector_convolution__zero);
+	MU_RUN_TEST(test_Vector_convolution__mirror);	
 	MU_RUN_TEST(test_Vector_box_filter);
 }
 

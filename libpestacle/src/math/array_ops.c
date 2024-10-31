@@ -251,7 +251,7 @@ array_ops_scaled_max(
 
 
 void
-array_ops_convolution(
+array_ops_convolution__zero(
 	real_t* dst,
 	const real_t* src,
 	const real_t* kernel,
@@ -303,7 +303,73 @@ array_ops_convolution(
 
 
 void
-array_ops_strided_convolution(
+array_ops_convolution__mirror(
+	real_t* dst,
+	const real_t* src,
+	const real_t* kernel,
+	size_t len,
+	size_t kernel_len
+) {
+	// Left part
+	for(size_t i = kernel_len / 2; i != 0; --i, ++dst) {
+		const real_t* _src = src;
+		const real_t* _kernel = kernel + i;
+		
+		real_t sum = (*_kernel) * (*_src);
+
+		_src += 1;
+		_kernel += 1;
+	
+		for(size_t j = kernel_len - 1 - i; j != 0; --j, ++_src, ++_kernel)
+			sum = fmaf(*_kernel, *_src, sum);
+
+		_src = src + 1;
+		_kernel = kernel + i - 1;
+
+		for(size_t j = i; j != 0; --j, ++_src, --_kernel)
+			sum = fmaf(*_kernel, *_src, sum);
+
+		*dst = sum;
+	}
+
+	// Center part
+	for(size_t i = len - (kernel_len - 1); i != 0; --i, ++dst, ++src) {
+		const real_t* _src = src;
+		const real_t* _kernel = kernel;
+		
+		real_t sum = (*_kernel) * (*_src);
+		_src += 1;
+		_kernel += 1;
+		for(size_t j = kernel_len - 1; j != 0; --j, ++_src, ++_kernel)
+			sum = fmaf(*_kernel, *_src, sum);
+
+		*dst = sum;
+	}
+
+	// Right part
+	for(size_t i = 0; i < kernel_len / 2; ++i, ++dst, ++src) {
+		const real_t* _src = src;
+		const real_t* _kernel = kernel;
+		
+		real_t sum = (*_kernel) * (*_src);
+
+		_src += 1;
+		_kernel += 1;
+
+		for(size_t j = kernel_len - 2 - i; j != 0; --j, ++_src, ++_kernel)
+			sum = fmaf(*_kernel, *_src, sum);
+
+		_src -= 2;
+		for(size_t j = i + 1; j != 0; --j, --_src, ++_kernel)
+			sum = fmaf(*_kernel, *_src, sum);
+
+		*dst = sum;
+	}
+}
+
+
+void
+array_ops_strided_convolution__zero(
 	real_t* dst,
 	const real_t* src,
 	const real_t* kernel,

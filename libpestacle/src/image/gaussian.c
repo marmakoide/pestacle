@@ -44,13 +44,13 @@ GaussianFilter_transform(
 	assert(matrix->row_count == self->U.row_count);
 	assert(matrix->col_count == self->U.col_count);
 
-	Matrix_rowwise_convolution(
+	Matrix_rowwise_convolution__zero(
 		&(self->U),
 		matrix,
 		&(self->kernel)
 	);
 
-	Matrix_colwise_convolution(
+	Matrix_colwise_convolution__zero(
 		matrix,
 		&(self->U),
 		&(self->kernel)

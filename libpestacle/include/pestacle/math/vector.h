@@ -171,7 +171,15 @@ Vector_scaled_max(
 
 
 extern void
-Vector_convolution(
+Vector_convolution__zero(
+	Vector* self,
+	const Vector* other,
+	const Vector* kernel
+);
+
+
+extern void
+Vector_convolution__mirror(
 	Vector* self,
 	const Vector* other,
 	const Vector* kernel

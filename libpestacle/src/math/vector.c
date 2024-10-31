@@ -369,7 +369,7 @@ Vector_scaled_max(
 
 
 void
-Vector_convolution(
+Vector_convolution__zero(
 	Vector* self,
 	const Vector* other,
 	const Vector* kernel
@@ -382,7 +382,31 @@ Vector_convolution(
 	assert(other->data != 0);
 	assert(self->len == other->len);
 
-	array_ops_convolution(
+	array_ops_convolution__zero(
+		self->data,
+		other->data,
+		kernel->data,
+		self->len,
+		kernel->len
+	);
+}
+
+
+void
+Vector_convolution__mirror(
+	Vector* self,
+	const Vector* other,
+	const Vector* kernel
+) {
+	assert(self != 0);
+	assert(self->data != 0);
+	assert(kernel != 0);
+	assert(kernel->data != 0);
+	assert(other != 0);
+	assert(other->data != 0);
+	assert(self->len == other->len);
+
+	array_ops_convolution__mirror(
 		self->data,
 		other->data,
 		kernel->data,

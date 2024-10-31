@@ -180,13 +180,13 @@ node_update(
 	);
 
 	// Diffusion operator on U
-	Matrix_rowwise_convolution(
+	Matrix_rowwise_convolution__zero(
 		&(data->U_tmp),
 		&(data->U),
 		&(data->diff_kernel)
 	);
 
-	Matrix_colwise_convolution(
+	Matrix_colwise_convolution__zero(
 		&(data->U),
 		&(data->U_tmp),
 		&(data->diff_kernel)

@@ -171,7 +171,7 @@ array_ops_scaled_max(
 
 
 extern void
-array_ops_convolution(
+array_ops_convolution__zero(
 	real_t* dst,
 	const real_t* src,
 	const real_t* kernel,
@@ -181,7 +181,17 @@ array_ops_convolution(
 
 
 extern void
-array_ops_strided_convolution(
+array_ops_convolution__mirror(
+	real_t* dst,
+	const real_t* src,
+	const real_t* kernel,
+	size_t len,
+	size_t kernel_len
+);
+
+
+extern void
+array_ops_strided_convolution__zero(
 	real_t* dst,
 	const real_t* src,
 	const real_t* kernel,
