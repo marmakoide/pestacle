@@ -217,7 +217,11 @@ main(int argc, char* argv[]) {
 	
 	// SDL initialization
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_EVENTS)) {
-		SDL_LogError(SDL_LOG_CATEGORY_SYSTEM, "Unable to initialize SDL: %s", SDL_GetError());
+		SDL_LogError(
+			SDL_LOG_CATEGORY_SYSTEM,
+			"Unable to initialize SDL: %s",
+			SDL_GetError()
+		);
 		return EXIT_FAILURE;
 	}
 
