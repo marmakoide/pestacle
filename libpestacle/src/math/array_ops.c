@@ -155,6 +155,38 @@ array_ops_scaled_copy(
 
 
 real_t
+array_ops_min_reduction(
+	const real_t* src,
+	size_t len
+) {
+	real_t ret = *src;
+
+	++src;
+	--len;
+	for( ; len != 0; --len, ++src)
+		ret = fminf(ret, *src);
+
+	return ret;
+}
+
+
+real_t
+array_ops_max_reduction(
+	const real_t* src,
+	size_t len
+) {
+	real_t ret = *src;
+
+	++src;
+	--len;
+	for( ; len != 0; --len, ++src)
+		ret = fmaxf(ret, *src);
+
+	return ret;
+}
+
+
+real_t
 array_ops_sum(
 	const real_t* src,
 	size_t len

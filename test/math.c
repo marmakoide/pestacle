@@ -224,6 +224,38 @@ MU_TEST(test_Vector_scale) {
 }
 
 
+MU_TEST(test_Vector_min_reduction) {
+	Vector U;
+
+	for(size_t i = 1; i < 256; ++i) {
+		Vector_init(&U, i);
+
+		Vector_arange(&U, (real_t)1, (real_t)1);
+		real_t ret = Vector_min_reduction(&U);
+		real_t ret_expected = Vector_get_coeff(&U, 0);
+		mu_assert_double_eq(ret_expected, ret);
+		
+		Vector_destroy(&U);
+	}
+}
+
+
+MU_TEST(test_Vector_max_reduction) {
+	Vector U;
+
+	for(size_t i = 1; i < 256; ++i) {
+		Vector_init(&U, i);
+
+		Vector_arange(&U, (real_t)1, (real_t)1);
+		real_t ret = Vector_max_reduction(&U);
+		real_t ret_expected = Vector_get_coeff(&U, i - 1);
+		mu_assert_double_eq(ret_expected, ret);
+		
+		Vector_destroy(&U);
+	}
+}
+
+
 MU_TEST(test_Vector_sum) {
 	Vector U;
 
@@ -231,10 +263,9 @@ MU_TEST(test_Vector_sum) {
 		Vector_init(&U, i);
 
 		Vector_arange(&U, (real_t)1, (real_t)1);
-		real_t u_sum = Vector_sum(&U);
-
-		real_t u_sum_expected = (i * (i + 1)) / 2;
-		mu_assert_double_eq(u_sum_expected, u_sum);
+		real_t ret = Vector_sum(&U);
+		real_t ret_expected = (i * (i + 1)) / 2;
+		mu_assert_double_eq(ret_expected, ret);
 		
 		Vector_destroy(&U);
 	}
@@ -248,10 +279,9 @@ MU_TEST(test_Vector_square_sum) {
 		Vector_init(&U, i);
 
 		Vector_arange(&U, (real_t)1, (real_t)1);
-		real_t u_sqr_sum = Vector_square_sum(&U);
-
-		real_t u_sqr_sum_expected = (i * (i + 1) * (2 * i + 1)) / 6;
-		mu_assert_double_eq(u_sqr_sum_expected, u_sqr_sum);
+		real_t ret = Vector_square_sum(&U);
+		real_t ret_expected = (i * (i + 1) * (2 * i + 1)) / 6;
+		mu_assert_double_eq(ret_expected, ret);
 		
 		Vector_destroy(&U);
 	}
@@ -695,6 +725,8 @@ MU_TEST_SUITE(test_Vector_suite) {
 	MU_RUN_TEST(test_Vector_log);
 	MU_RUN_TEST(test_Vector_exp);	
 	MU_RUN_TEST(test_Vector_scale);
+	MU_RUN_TEST(test_Vector_min_reduction);
+	MU_RUN_TEST(test_Vector_max_reduction);	
 	MU_RUN_TEST(test_Vector_sum);
 	MU_RUN_TEST(test_Vector_square_sum);
 	MU_RUN_TEST(test_Vector_dot);
