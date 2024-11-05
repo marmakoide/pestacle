@@ -8,7 +8,7 @@ Vector_init(
 	Vector* self,
 	size_t len
 ) {
-	assert(self != 0);
+	assert(self);
 	assert(len > 0);
 
 	self->len = len;
@@ -20,8 +20,8 @@ void
 Vector_destroy(
 	Vector* self
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
+	assert(self);
+	assert(self->data);
 
 	free(self->data);
 
@@ -38,10 +38,10 @@ Vector_print(
 	FILE* f,
 	const char* format
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
-	assert(f != 0);
-	assert(format != 0);
+	assert(self);
+	assert(self->data);
+	assert(f);
+	assert(format);
 
 	fputs("[", f);
 	array_ops_print(self->data, self->len, f, format);
@@ -54,7 +54,7 @@ Vector_set_gaussian_kernel(
 	Vector* self,
 	real_t sigma
 ) {
-	assert(self != 0);
+	assert(self);
 
 	array_ops_set_gaussian_kernel(self->data, self->len, sigma);
 }
@@ -66,8 +66,8 @@ Vector_set_coeff(
 	size_t pos,
 	real_t value
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
+	assert(self);
+	assert(self->data);
 	assert(pos < self->len);
 
 	self->data[pos] = value;
@@ -79,8 +79,8 @@ Vector_get_coeff(
 	const Vector* self,
 	size_t pos
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
+	assert(self);
+	assert(self->data);
 	assert(pos < self->len);
 
 	return self->data[pos];
@@ -92,8 +92,8 @@ Vector_fill(
 	Vector* self,
 	real_t value
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
+	assert(self);
+	assert(self->data);
 
 	array_ops_fill(
 		self->data,
@@ -108,10 +108,10 @@ Vector_copy(
 	Vector* self,
 	const Vector* other
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
-	assert(other != 0);
-	assert(other->data != 0);
+	assert(self);
+	assert(self->data);
+	assert(other);
+	assert(other->data);
 	assert(self->len == other->len);
 
 	array_ops_copy(
@@ -128,8 +128,8 @@ Vector_arange(
 	real_t start,
 	real_t step
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
+	assert(self);
+	assert(self->data);
 
 	array_ops_arange(
 		self->data,
@@ -144,7 +144,7 @@ void
 Vector_square(
 	Vector* self
 ) {
-	assert(self != 0);
+	assert(self);
 
 	array_ops_square(
 		self->data,
@@ -157,7 +157,7 @@ void
 Vector_sqrt(
 	Vector* self
 ) {
-	assert(self != 0);
+	assert(self);
 
 	array_ops_sqrt(
 		self->data,
@@ -170,7 +170,7 @@ void
 Vector_exp(
 	Vector* self
 ) {
-	assert(self != 0);
+	assert(self);
 
 	array_ops_exp(
 		self->data,
@@ -183,7 +183,7 @@ void
 Vector_log(
 	Vector* self
 ) {
-	assert(self != 0);
+	assert(self);
 
 	array_ops_log(
 		self->data,
@@ -197,8 +197,8 @@ Vector_scale(
 	Vector* self,
 	real_t value
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
+	assert(self);
+	assert(self->data);
 
 	array_ops_scale(
 		self->data,
@@ -238,8 +238,8 @@ real_t
 Vector_reduction_sum(
 	const Vector* self
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
+	assert(self);
+	assert(self->data);
 
 	return array_ops_reduction_sum(
 		self->data,
@@ -252,8 +252,8 @@ real_t
 Vector_reduction_square_sum(
 	const Vector* self
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
+	assert(self);
+	assert(self->data);
 
 	return array_ops_reduction_square_sum(
 		self->data,
@@ -267,10 +267,10 @@ Vector_dot(
 	const Vector* self,
 	const Vector* other
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
-	assert(other != 0);
-	assert(other->data != 0);
+	assert(self);
+	assert(self->data);
+	assert(other);
+	assert(other->data);
 	assert(self->len == other->len);
 
 	return array_ops_dot(
@@ -286,10 +286,10 @@ Vector_add(
 	Vector* self,
 	const Vector* other
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
-	assert(other != 0);
-	assert(other->data != 0);
+	assert(self);
+	assert(self->data);
+	assert(other);
+	assert(other->data);
 	assert(self->len == other->len);
 
 	array_ops_add(
@@ -305,10 +305,10 @@ Vector_sub(
 	Vector* self,
 	const Vector* other
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
-	assert(other != 0);
-	assert(other->data != 0);
+	assert(self);
+	assert(self->data);
+	assert(other);
+	assert(other->data);
 	assert(self->len == other->len);
 
 	array_ops_sub(
@@ -325,10 +325,10 @@ Vector_scaled_add(
 	const Vector* other,
 	real_t value
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
-	assert(other != 0);
-	assert(other->data != 0);
+	assert(self);
+	assert(self->data);
+	assert(other);
+	assert(other->data);
 	assert(self->len == other->len);
 
 	array_ops_scaled_add(
@@ -345,10 +345,10 @@ Vector_min(
 	Vector* self,
 	const Vector* other
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
-	assert(other != 0);
-	assert(other->data != 0);
+	assert(self);
+	assert(self->data);
+	assert(other);
+	assert(other->data);
 	assert(self->len == other->len);
 
 	array_ops_min(
@@ -365,10 +365,10 @@ Vector_scaled_min(
 	const Vector* other,
 	real_t value
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
-	assert(other != 0);
-	assert(other->data != 0);
+	assert(self);
+	assert(self->data);
+	assert(other);
+	assert(other->data);
 	assert(self->len == other->len);
 
 	array_ops_scaled_min(
@@ -385,10 +385,10 @@ Vector_max(
 	Vector* self,
 	const Vector* other
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
-	assert(other != 0);
-	assert(other->data != 0);
+	assert(self);
+	assert(self->data);
+	assert(other);
+	assert(other->data);
 	assert(self->len == other->len);
 
 	array_ops_max(
@@ -405,10 +405,10 @@ Vector_scaled_max(
 	const Vector* other,
 	real_t value
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
-	assert(other != 0);
-	assert(other->data != 0);
+	assert(self);
+	assert(self->data);
+	assert(other);
+	assert(other->data);
 	assert(self->len == other->len);
 
 	array_ops_scaled_max(
@@ -426,12 +426,12 @@ Vector_convolution__zero(
 	const Vector* other,
 	const Vector* kernel
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
-	assert(kernel != 0);
-	assert(kernel->data != 0);
-	assert(other != 0);
-	assert(other->data != 0);
+	assert(self);
+	assert(self->data);
+	assert(kernel);
+	assert(kernel->data);
+	assert(other);
+	assert(other->data);
 	assert(self->len == other->len);
 
 	array_ops_convolution__zero(
@@ -450,12 +450,12 @@ Vector_convolution__mirror(
 	const Vector* other,
 	const Vector* kernel
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
-	assert(kernel != 0);
-	assert(kernel->data != 0);
-	assert(other != 0);
-	assert(other->data != 0);
+	assert(self);
+	assert(self->data);
+	assert(kernel);
+	assert(kernel->data);
+	assert(other);
+	assert(other->data);
 	assert(self->len == other->len);
 
 	array_ops_convolution__mirror(
@@ -474,10 +474,10 @@ Vector_box_filter(
 	const Vector* other,
 	size_t filter_size
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
-	assert(other != 0);
-	assert(other->data != 0);
+	assert(self);
+	assert(self->data);
+	assert(other);
+	assert(other->data);
 	assert(self->len == other->len);
 	assert(filter_size % 2 == 1);
 
