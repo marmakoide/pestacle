@@ -112,25 +112,25 @@ Vector_log(
 
 
 extern real_t
-Vector_min_reduction(
+Vector_reduction_min(
 	const Vector* self
 );
 
 
 extern real_t
-Vector_max_reduction(
+Vector_reduction_max(
 	const Vector* self
 );
 
 
 extern real_t
-Vector_sum(
+Vector_reduction_sum(
 	const Vector* self
 );
 
 
 extern real_t
-Vector_square_sum(
+Vector_reduction_square_sum(
 	const Vector* self
 );
 

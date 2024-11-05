@@ -155,15 +155,12 @@ array_ops_scaled_copy(
 
 
 real_t
-array_ops_min_reduction(
+array_ops_reduction_min(
 	const real_t* src,
 	size_t len
 ) {
 	real_t ret = *src;
-
-	++src;
-	--len;
-	for( ; len != 0; --len, ++src)
+	for(--len, ++src; len != 0; --len, ++src)
 		ret = fminf(ret, *src);
 
 	return ret;
@@ -171,15 +168,12 @@ array_ops_min_reduction(
 
 
 real_t
-array_ops_max_reduction(
+array_ops_reduction_max(
 	const real_t* src,
 	size_t len
 ) {
 	real_t ret = *src;
-
-	++src;
-	--len;
-	for( ; len != 0; --len, ++src)
+	for(--len, ++src; len != 0; --len, ++src)
 		ret = fmaxf(ret, *src);
 
 	return ret;
@@ -187,26 +181,28 @@ array_ops_max_reduction(
 
 
 real_t
-array_ops_sum(
+array_ops_reduction_sum(
 	const real_t* src,
 	size_t len
 ) {
-	real_t sum = (*src);
+	real_t ret = (*src);
 	for(--len, ++src; len != 0; --len, ++src)
-		sum += (*src);
-	return sum;
+		ret += (*src);
+
+	return ret;
 }
 
 
 real_t
-array_ops_square_sum(
+array_ops_reduction_square_sum(
 	const real_t* src,
 	size_t len
 ) {
-	real_t sum = (*src) * (*src);
+	real_t ret = (*src) * (*src);
 	for(--len, ++src; len != 0; --len, ++src)
-		sum = fmaf(*src, *src, sum);
-	return sum;
+		ret = fmaf(*src, *src, ret);
+
+	return ret;
 }
 
 

@@ -224,14 +224,14 @@ MU_TEST(test_Vector_scale) {
 }
 
 
-MU_TEST(test_Vector_min_reduction) {
+MU_TEST(test_Vector_reduction_min) {
 	Vector U;
 
 	for(size_t i = 1; i < 256; ++i) {
 		Vector_init(&U, i);
 
 		Vector_arange(&U, (real_t)1, (real_t)1);
-		real_t ret = Vector_min_reduction(&U);
+		real_t ret = Vector_reduction_min(&U);
 		real_t ret_expected = Vector_get_coeff(&U, 0);
 		mu_assert_double_eq(ret_expected, ret);
 		
@@ -240,14 +240,14 @@ MU_TEST(test_Vector_min_reduction) {
 }
 
 
-MU_TEST(test_Vector_max_reduction) {
+MU_TEST(test_Vector_reduction_max) {
 	Vector U;
 
 	for(size_t i = 1; i < 256; ++i) {
 		Vector_init(&U, i);
 
 		Vector_arange(&U, (real_t)1, (real_t)1);
-		real_t ret = Vector_max_reduction(&U);
+		real_t ret = Vector_reduction_max(&U);
 		real_t ret_expected = Vector_get_coeff(&U, i - 1);
 		mu_assert_double_eq(ret_expected, ret);
 		
@@ -256,14 +256,14 @@ MU_TEST(test_Vector_max_reduction) {
 }
 
 
-MU_TEST(test_Vector_sum) {
+MU_TEST(test_Vector_reduction_sum) {
 	Vector U;
 
 	for(size_t i = 1; i < 256; ++i) {
 		Vector_init(&U, i);
 
 		Vector_arange(&U, (real_t)1, (real_t)1);
-		real_t ret = Vector_sum(&U);
+		real_t ret = Vector_reduction_sum(&U);
 		real_t ret_expected = (i * (i + 1)) / 2;
 		mu_assert_double_eq(ret_expected, ret);
 		
@@ -272,14 +272,14 @@ MU_TEST(test_Vector_sum) {
 }
 
 
-MU_TEST(test_Vector_square_sum) {
+MU_TEST(test_Vector_reduction_square_sum) {
 	Vector U;
 
 	for(size_t i = 1; i < 256; ++i) {
 		Vector_init(&U, i);
 
 		Vector_arange(&U, (real_t)1, (real_t)1);
-		real_t ret = Vector_square_sum(&U);
+		real_t ret = Vector_reduction_square_sum(&U);
 		real_t ret_expected = (i * (i + 1) * (2 * i + 1)) / 6;
 		mu_assert_double_eq(ret_expected, ret);
 		
@@ -725,10 +725,10 @@ MU_TEST_SUITE(test_Vector_suite) {
 	MU_RUN_TEST(test_Vector_log);
 	MU_RUN_TEST(test_Vector_exp);	
 	MU_RUN_TEST(test_Vector_scale);
-	MU_RUN_TEST(test_Vector_min_reduction);
-	MU_RUN_TEST(test_Vector_max_reduction);	
-	MU_RUN_TEST(test_Vector_sum);
-	MU_RUN_TEST(test_Vector_square_sum);
+	MU_RUN_TEST(test_Vector_reduction_min);
+	MU_RUN_TEST(test_Vector_reduction_max);
+	MU_RUN_TEST(test_Vector_reduction_sum);
+	MU_RUN_TEST(test_Vector_reduction_square_sum);
 	MU_RUN_TEST(test_Vector_dot);
 	MU_RUN_TEST(test_Vector_convolution__zero);
 	MU_RUN_TEST(test_Vector_convolution__mirror);	

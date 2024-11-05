@@ -105,28 +105,28 @@ array_ops_scaled_copy(
 
 
 extern real_t
-array_ops_min_reduction(
+array_ops_reduction_min(
 	const real_t* src,
 	size_t len
 );
 
 
 extern real_t
-array_ops_max_reduction(
+array_ops_reduction_max(
 	const real_t* src,
 	size_t len
 );
 
 
 extern real_t
-array_ops_sum(
+array_ops_reduction_sum(
 	const real_t* src,
 	size_t len
 );
 
 
 extern real_t
-array_ops_square_sum(
+array_ops_reduction_square_sum(
 	const real_t* src,
 	size_t len
 );

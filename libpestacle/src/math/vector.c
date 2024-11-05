@@ -209,12 +209,12 @@ Vector_scale(
 
 
 real_t
-Vector_min_reduction(
+Vector_reduction_min(
 	const Vector* self
 ) {
 	assert(self);
 
-	return array_ops_min_reduction(
+	return array_ops_reduction_min(
 		self->data,
 		self->len
 	);
@@ -222,12 +222,12 @@ Vector_min_reduction(
 
 
 real_t
-Vector_max_reduction(
+Vector_reduction_max(
 	const Vector* self
 ) {
 	assert(self);
 
-	return array_ops_max_reduction(
+	return array_ops_reduction_max(
 		self->data,
 		self->len
 	);
@@ -235,13 +235,13 @@ Vector_max_reduction(
 
 
 real_t
-Vector_sum(
+Vector_reduction_sum(
 	const Vector* self
 ) {
 	assert(self != 0);
 	assert(self->data != 0);
 
-	return array_ops_sum(
+	return array_ops_reduction_sum(
 		self->data,
 		self->len
 	);
@@ -249,13 +249,13 @@ Vector_sum(
 
 
 real_t
-Vector_square_sum(
+Vector_reduction_square_sum(
 	const Vector* self
 ) {
 	assert(self != 0);
 	assert(self->data != 0);
 
-	return array_ops_square_sum(
+	return array_ops_reduction_square_sum(
 		self->data,
 		self->len
 	);

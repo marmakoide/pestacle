@@ -141,7 +141,7 @@ node_setup(
 	Vector_set_coeff(&(data->diff_kernel), 5,  6.f);
 	Vector_set_coeff(&(data->diff_kernel), 6,  1.f);
 
-	Vector_scale(&(data->diff_kernel), 1.f / Vector_sum(&data->diff_kernel));
+	Vector_scale(&(data->diff_kernel), 1.f / Vector_reduction_sum(&data->diff_kernel));
 
 	// Job done
 	self->data = data;
