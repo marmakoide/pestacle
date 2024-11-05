@@ -99,6 +99,18 @@ Vector_sqrt(
 );
 
 
+extern void
+Vector_exp(
+	Vector* self
+);
+
+
+extern void
+Vector_log(
+	Vector* self
+);
+
+
 extern real_t
 Vector_sum(
 	const Vector* self

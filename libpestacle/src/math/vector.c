@@ -167,6 +167,32 @@ Vector_sqrt(
 
 
 void
+Vector_exp(
+	Vector* self
+) {
+	assert(self != 0);
+
+	array_ops_exp(
+		self->data,
+		self->len
+	);
+}
+
+
+void
+Vector_log(
+	Vector* self
+) {
+	assert(self != 0);
+
+	array_ops_log(
+		self->data,
+		self->len
+	);
+}
+
+
+void
 Vector_scale(
 	Vector* self,
 	real_t value

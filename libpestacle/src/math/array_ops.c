@@ -110,6 +110,27 @@ array_ops_sqrt(
 		*dst = sqrtf(*dst);
 }
 
+
+void
+array_ops_exp(
+	real_t* dst,
+	size_t len
+) {
+	for( ; len != 0; --len, ++dst)
+		*dst = expf(*dst);
+}
+
+
+void
+array_ops_log(
+	real_t* dst,
+	size_t len
+) {
+	for( ; len != 0; --len, ++dst)
+		*dst = logf(*dst);
+}
+
+
 void
 array_ops_scale(
 	real_t* dst,

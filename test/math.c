@@ -162,6 +162,46 @@ MU_TEST(test_Vector_sqrt) {
 }
 
 
+MU_TEST(test_Vector_log) {
+	Vector U;
+
+	for(size_t i = 1; i < 256; ++i) {
+		Vector_init(&U, i);
+
+		Vector_arange(&U, (real_t)0, (real_t)1);
+		Vector_log(&U);
+		
+		for(size_t j = 0; j < i; ++j)
+			mu_assert_double_eq(
+				logf(j),
+				Vector_get_coeff(&U, j)
+			);
+
+		Vector_destroy(&U);
+	}
+}
+
+
+MU_TEST(test_Vector_exp) {
+	Vector U;
+
+	for(size_t i = 1; i < 256; ++i) {
+		Vector_init(&U, i);
+
+		Vector_arange(&U, (real_t)0, (real_t)1);
+		Vector_exp(&U);
+
+		for(size_t j = 0; j < i; ++j)
+			mu_assert_double_eq(
+				expf(j),
+				Vector_get_coeff(&U, j)
+			);
+
+		Vector_destroy(&U);
+	}
+}
+
+
 MU_TEST(test_Vector_scale) {
 	Vector U;
 
@@ -294,8 +334,6 @@ MU_TEST(test_Vector_convolution__mirror) {
 			Vector_convolution__mirror(&V, &U, &W);
 
 			for(size_t k = 0; k < vector_len; ++k) {
-				printf("  coeff %zu/%zu\n", k, vector_len);
-
 				real_t sum = (real_t)0;
 				for(size_t n = 0; n < kernel_len; ++n) {
 					ssize_t index = k + n;
@@ -309,7 +347,6 @@ MU_TEST(test_Vector_convolution__mirror) {
 						index += 2 * (vector_len - 1);
 					}
 
-					printf("    U[%zd] x W[%zu]\n", index, n);
 					sum = fmaf(
 						Vector_get_coeff(&U, index),
 						Vector_get_coeff(&W, n),
@@ -574,6 +611,52 @@ MU_TEST(test_Matrix_sqrt) {
 }
 
 
+MU_TEST(test_Matrix_log) {
+	Matrix U;
+
+	for(size_t i = 1; i < 32; i += 9) {
+		for(size_t j = 1; j < 32; j += 9) {
+			Matrix_init(&U, i, j);
+			Matrix_filler(&U);
+			Matrix_log(&U);
+
+			size_t uk = 0;
+			for(size_t ui = 0; ui < i; ++ui)
+				for(size_t uj = 0; uj < j; ++uj, ++uk)
+					mu_assert_double_eq(
+						logf(uk),
+						Matrix_get_coeff(&U, ui, uj)
+					);
+
+			Matrix_destroy(&U);
+		}
+	}
+}
+
+
+MU_TEST(test_Matrix_exp) {
+	Matrix U;
+
+	for(size_t i = 1; i < 32; i += 9) {
+		for(size_t j = 1; j < 32; j += 9) {
+			Matrix_init(&U, i, j);
+			Matrix_filler(&U);
+			Matrix_exp(&U);
+
+			size_t uk = 0;
+			for(size_t ui = 0; ui < i; ++ui)
+				for(size_t uj = 0; uj < j; ++uj, ++uk)
+					mu_assert_double_eq(
+						expf(uk),
+						Matrix_get_coeff(&U, ui, uj)
+					);
+
+			Matrix_destroy(&U);
+		}
+	}
+}
+
+
 MU_TEST(test_Matrix_scale) {
 	Matrix U;
 
@@ -609,6 +692,8 @@ MU_TEST_SUITE(test_Vector_suite) {
 	MU_RUN_TEST(test_Vector_scaled_add);
 	MU_RUN_TEST(test_Vector_square);
 	MU_RUN_TEST(test_Vector_sqrt);
+	MU_RUN_TEST(test_Vector_log);
+	MU_RUN_TEST(test_Vector_exp);	
 	MU_RUN_TEST(test_Vector_scale);
 	MU_RUN_TEST(test_Vector_sum);
 	MU_RUN_TEST(test_Vector_square_sum);
@@ -629,6 +714,8 @@ MU_TEST_SUITE(test_Matrix_suite) {
 	MU_RUN_TEST(test_Matrix_square);
 	MU_RUN_TEST(test_Matrix_sqrt);
 	MU_RUN_TEST(test_Matrix_scale);
+	MU_RUN_TEST(test_Matrix_log);
+	MU_RUN_TEST(test_Matrix_exp);
 }
 
 

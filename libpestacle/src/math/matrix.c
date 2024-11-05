@@ -186,6 +186,32 @@ Matrix_sqrt(
 
 
 void
+Matrix_exp(
+	Matrix* self
+) {
+	assert(self != 0);
+
+	array_ops_exp(
+		self->data,
+		self->data_len
+	);
+}
+
+
+void
+Matrix_log(
+	Matrix* self
+) {
+	assert(self != 0);
+
+	array_ops_log(
+		self->data,
+		self->data_len
+	);
+}
+
+
+void
 Matrix_scale(
 	Matrix* self,
 	real_t value

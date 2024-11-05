@@ -91,6 +91,18 @@ Matrix_sqrt(
 
 
 extern void
+Matrix_exp(
+	Matrix* self
+);
+
+
+extern void
+Matrix_log(
+	Matrix* self
+);
+
+
+extern void
 Matrix_scale(
 	Matrix* self,
 	real_t value
