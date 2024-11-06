@@ -136,6 +136,12 @@ Vector_reduction_square_sum(
 
 
 extern real_t
+Vector_reduction_logsumexp(
+	const Vector* self
+);
+
+
+extern real_t
 Vector_dot(
 	const Vector* self,
 	const Vector* other

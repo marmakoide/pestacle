@@ -263,6 +263,20 @@ Vector_reduction_square_sum(
 
 
 real_t
+Vector_reduction_logsumexp(
+	const Vector* self
+) {
+	assert(self);
+	assert(self->data);
+
+	return array_ops_reduction_logsumexp(
+		self->data,
+		self->len
+	);
+}
+
+
+real_t
 Vector_dot(
 	const Vector* self,
 	const Vector* other

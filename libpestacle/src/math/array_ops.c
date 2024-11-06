@@ -194,6 +194,21 @@ array_ops_reduction_sum(
 
 
 real_t
+array_ops_reduction_logsumexp(
+	const real_t* src,
+	size_t len
+) {
+	real_t max_val = array_ops_reduction_max(src, len);
+
+	real_t ret = expf(*src - max_val);
+	for(--len, ++src; len != 0; --len, ++src)
+		ret += expf(*src - max_val);
+
+	return logf(ret) + max_val;
+}
+
+
+real_t
 array_ops_reduction_square_sum(
 	const real_t* src,
 	size_t len

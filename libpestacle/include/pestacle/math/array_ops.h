@@ -133,6 +133,13 @@ array_ops_reduction_square_sum(
 
 
 extern real_t
+array_ops_reduction_logsumexp(
+	const real_t* src,
+	size_t len
+);
+
+
+extern real_t
 array_ops_dot(
 	const real_t* src,
 	const real_t* other,
