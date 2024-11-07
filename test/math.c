@@ -3,6 +3,22 @@
 #include <pestacle/macros.h>
 #include <pestacle/math/vector.h>
 #include <pestacle/math/matrix.h>
+#include <pestacle/math/special.h>
+
+
+// --- Special functions tests ------------------------------------------------
+
+MU_TEST(test_special_erfinv) {
+	real_t start = (real_t)-1.6;
+	real_t end   = (real_t) 1.6;
+	size_t step_count = 256;
+
+	for(size_t i = 0; i < step_count; ++i) {
+		real_t x = start + ((end - start) / (step_count - 1)) * i;
+		real_t y = erfinv(erff(x));
+		mu_assert_double_eq(x, y);
+	}
+}
 
 
 // --- Vector tests -----------------------------------------------------------
@@ -730,6 +746,11 @@ MU_TEST(test_Matrix_scale) {
 
 // --- Main entry point -------------------------------------------------------
 
+MU_TEST_SUITE(test_special_suite) {
+	MU_RUN_TEST(test_special_erfinv);
+}
+
+
 MU_TEST_SUITE(test_Vector_suite) {
 	MU_RUN_TEST(test_Vector_fill);
 	MU_RUN_TEST(test_Vector_copy);
@@ -770,6 +791,7 @@ MU_TEST_SUITE(test_Matrix_suite) {
 
 int
 main(ATTRIBUTE_UNUSED int argc, ATTRIBUTE_UNUSED char *argv[]) {
+	MU_RUN_SUITE(test_special_suite);
 	MU_RUN_SUITE(test_Vector_suite);
 	MU_RUN_SUITE(test_Matrix_suite);
 	MU_REPORT();

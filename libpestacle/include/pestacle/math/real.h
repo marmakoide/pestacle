@@ -1,5 +1,5 @@
-#ifndef PESTACLE_REAL_H
-#define PESTACLE_REAL_H
+#ifndef PESTACLE_MATH_REAL_H
+#define PESTACLE_MATH_REAL_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -13,4 +13,4 @@ typedef float real_t;
 }
 #endif
 
-#endif /* PESTACLE_REAL_H */
+#endif /* PESTACLE_MATH_REAL_H */
