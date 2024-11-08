@@ -134,9 +134,9 @@ SoftEqualData_transform(
 	Matrix* out
 ) {
 	Matrix_inc(out, -self->value);
+	Matrix_square(out);
 	Matrix_scale(out, self->factor);
 	Matrix_exp(out);
-	Matrix_sqrt(out);
 }
 
 
