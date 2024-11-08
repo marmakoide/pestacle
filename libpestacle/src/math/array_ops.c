@@ -132,6 +132,17 @@ array_ops_log(
 
 
 void
+array_ops_inc(
+	real_t* dst,
+	size_t len,
+	real_t shift
+) {
+	for( ; len != 0; --len, ++dst)
+		*dst += shift;
+}
+
+
+void
 array_ops_scale(
 	real_t* dst,
 	size_t len,
@@ -152,6 +163,7 @@ array_ops_scaled_copy(
 	for( ; len != 0; --len, ++dst, ++src)
 		*dst = factor * (*src);
 }
+
 
 
 real_t

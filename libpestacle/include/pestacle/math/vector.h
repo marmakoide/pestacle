@@ -81,6 +81,13 @@ Vector_arange(
 
 
 extern void
+Vector_inc(
+	Vector* self,
+	real_t value
+);
+
+
+extern void
 Vector_scale(
 	Vector* self,
 	real_t value

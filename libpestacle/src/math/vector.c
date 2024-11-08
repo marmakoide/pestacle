@@ -193,6 +193,22 @@ Vector_log(
 
 
 void
+Vector_inc(
+	Vector* self,
+	real_t value
+) {
+	assert(self);
+	assert(self->data);
+
+	array_ops_inc(
+		self->data,
+		self->len,
+		value
+	);
+}
+
+
+void
 Vector_scale(
 	Vector* self,
 	real_t value

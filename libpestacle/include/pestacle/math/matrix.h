@@ -103,6 +103,13 @@ Matrix_log(
 
 
 extern void
+Matrix_inc(
+	Matrix* self,
+	real_t value
+);
+
+
+extern void
 Matrix_scale(
 	Matrix* self,
 	real_t value

@@ -212,6 +212,22 @@ Matrix_log(
 
 
 void
+Matrix_inc(
+	Matrix* self,
+	real_t value
+) {
+	assert(self != 0);
+	assert(self->data != 0);
+
+	array_ops_inc(
+		self->data,
+		self->data_len,
+		value
+	);
+}
+
+
+void
 Matrix_scale(
 	Matrix* self,
 	real_t value

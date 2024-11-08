@@ -88,6 +88,14 @@ array_ops_log(
 
 
 extern void
+array_ops_inc(
+	real_t* dst,
+	size_t len,
+	real_t shift
+);
+
+
+extern void
 array_ops_scale(
 	real_t* dst,
 	size_t len,
