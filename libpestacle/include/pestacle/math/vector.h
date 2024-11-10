@@ -178,6 +178,20 @@ Vector_scaled_add(
 
 
 extern void
+Vector_mul(
+	Vector* self,
+	const Vector* other
+);
+
+
+extern void
+Vector_div(
+	Vector* self,
+	const Vector* other
+);
+
+
+extern void
 Vector_min(
 	Vector* self,
 	const Vector* other

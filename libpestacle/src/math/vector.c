@@ -371,6 +371,44 @@ Vector_scaled_add(
 
 
 void
+Vector_mul(
+	Vector* self,
+	const Vector* other
+) {
+	assert(self);
+	assert(self->data);
+	assert(other);
+	assert(other->data);
+	assert(self->len == other->len);
+
+	array_ops_mul(
+		self->data,
+		other->data,
+		self->len
+	);
+}
+
+
+void
+Vector_div(
+	Vector* self,
+	const Vector* other
+) {
+	assert(self);
+	assert(self->data);
+	assert(other);
+	assert(other->data);
+	assert(self->len == other->len);
+
+	array_ops_div(
+		self->data,
+		other->data,
+		self->len
+	);
+}
+
+
+void
 Vector_min(
 	Vector* self,
 	const Vector* other

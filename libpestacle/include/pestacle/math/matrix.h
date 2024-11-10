@@ -139,6 +139,20 @@ Matrix_scaled_add(
 
 
 extern void
+Matrix_mul(
+	Matrix* self,
+	const Matrix* other
+);
+
+
+extern void
+Matrix_div(
+	Matrix* self,
+	const Matrix* other
+);
+
+
+extern void
 Matrix_min(
 	Matrix* self,
 	const Matrix* other

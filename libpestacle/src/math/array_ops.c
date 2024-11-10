@@ -281,6 +281,28 @@ array_ops_scaled_add(
 
 
 void
+array_ops_mul(
+	real_t* dst,
+	const real_t* src,
+	size_t len
+) {
+	for( ; len != 0; --len, ++dst, ++src)
+		*dst *= (*src);
+}
+
+
+void
+array_ops_div(
+	real_t* dst,
+	const real_t* src,
+	size_t len
+) {
+	for( ; len != 0; --len, ++dst, ++src)
+		*dst /= (*src);
+}
+
+
+void
 array_ops_min(
 	real_t* dst,
 	const real_t* src,

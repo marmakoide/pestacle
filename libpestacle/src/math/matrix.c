@@ -306,6 +306,46 @@ Matrix_scaled_add(
 
 
 void
+Matrix_mul(
+	Matrix* self,
+	const Matrix* other
+) {
+	assert(self != 0);
+	assert(self->data != 0);
+	assert(other != 0);
+	assert(other->data != 0);
+	assert(self->row_count == other->row_count);
+	assert(self->col_count == other->col_count);
+
+	array_ops_mul(
+		self->data,
+		other->data,
+		self->data_len
+	);
+}
+
+
+void
+Matrix_div(
+	Matrix* self,
+	const Matrix* other
+) {
+	assert(self != 0);
+	assert(self->data != 0);
+	assert(other != 0);
+	assert(other->data != 0);
+	assert(self->row_count == other->row_count);
+	assert(self->col_count == other->col_count);
+
+	array_ops_div(
+		self->data,
+		other->data,
+		self->data_len
+	);
+}
+
+
+void
 Matrix_min(
 	Matrix* self,
 	const Matrix* other

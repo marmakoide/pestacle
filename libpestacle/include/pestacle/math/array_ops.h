@@ -181,6 +181,22 @@ array_ops_scaled_add(
 
 
 extern void
+array_ops_mul(
+	real_t* dst,
+	const real_t* src,
+	size_t len
+);
+
+
+extern void
+array_ops_div(
+	real_t* dst,
+	const real_t* src,
+	size_t len
+);
+
+
+extern void
 array_ops_min(
 	real_t* dst,
 	const real_t* src,
