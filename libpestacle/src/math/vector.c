@@ -293,6 +293,38 @@ Vector_reduction_logsumexp(
 
 
 real_t
+Vector_reduction_mean(
+	const Vector* self
+) {
+	assert(self);
+	assert(self->data);
+
+	return array_ops_reduction_mean(
+		self->data,
+		self->len
+	);
+}
+
+
+real_t
+Vector_reduction_average(
+	const Vector* self,
+	const Vector* weight
+) {
+	assert(self);
+	assert(self->data);
+	assert(weight);
+	assert(weight->data);
+
+	return array_ops_reduction_average(
+		self->data,
+		weight->data,
+		self->len
+	);
+}
+
+
+real_t
 Vector_dot(
 	const Vector* self,
 	const Vector* other

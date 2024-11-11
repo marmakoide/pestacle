@@ -234,6 +234,42 @@ array_ops_reduction_square_sum(
 
 
 real_t
+array_ops_reduction_mean(
+	const real_t* src,
+	size_t len
+) {
+	real_t ret = *src;
+	++src;
+
+	for(size_t i = 2; i <= len; ++i, ++src)
+		ret += ((*src) - ret) / i;
+
+	return ret;
+}
+
+
+real_t
+array_ops_reduction_average(
+	const real_t* src,
+	const real_t* weight,
+	size_t len
+) {
+	real_t ret = *src;
+	++src;
+
+	real_t w_sum = *weight;
+	++weight;
+
+	for(size_t i = 2; i <= len; ++i, ++src, ++weight) {
+		w_sum += *weight;
+		ret = fmaf(*weight / w_sum, *src - ret, ret);
+	}
+
+	return ret;
+}
+
+
+real_t
 array_ops_dot(
 	const real_t* src,
 	const real_t* other,

@@ -137,6 +137,19 @@ Vector_reduction_sum(
 
 
 extern real_t
+Vector_reduction_mean(
+	const Vector* self
+);
+
+
+extern real_t
+Vector_reduction_average(
+	const Vector* self,
+	const Vector* weight
+);
+
+
+extern real_t
 Vector_reduction_square_sum(
 	const Vector* self
 );

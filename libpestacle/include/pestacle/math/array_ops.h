@@ -148,6 +148,21 @@ array_ops_reduction_logsumexp(
 
 
 extern real_t
+array_ops_reduction_mean(
+	const real_t* src,
+	size_t len
+);
+
+
+extern real_t
+array_ops_reduction_average(
+	const real_t* src,
+	const real_t* weight,
+	size_t len
+);
+
+ 
+extern real_t
 array_ops_dot(
 	const real_t* src,
 	const real_t* other,

@@ -390,6 +390,45 @@ MU_TEST(test_Vector_reduction_logsumexp) {
 }
 
 
+MU_TEST(test_Vector_reduction_mean) {
+	Vector U;
+
+	for(size_t i = 1; i < 64; ++i) {
+		Vector_init(&U, i);
+
+		Vector_arange(&U, (real_t)1, (real_t)1);
+
+		real_t ret = Vector_reduction_mean(&U);
+		real_t ret_expected = (i * (i + 1)) / 2;
+		ret_expected /= i;
+		mu_assert_double_eq(ret_expected, ret);
+		
+		Vector_destroy(&U);
+	}
+}
+
+
+MU_TEST(test_Vector_reduction_average) {
+	Vector U, V;
+
+	for(size_t i = 1; i < 64; ++i) {
+		Vector_init(&U, i);
+		Vector_init(&V, i);
+
+		Vector_arange(&U, (real_t)1, (real_t)1);
+		Vector_fill(&V, (real_t)1);
+
+		real_t ret = Vector_reduction_average(&U, &V);
+		real_t ret_expected = (i * (i + 1)) / 2;
+		ret_expected /= i;
+		mu_assert_double_eq(ret_expected, ret);
+		
+		Vector_destroy(&U);
+		Vector_destroy(&V);
+	}
+}
+
+
 MU_TEST(test_Vector_dot) {
 	Vector U;
 
@@ -865,6 +904,8 @@ MU_TEST_SUITE(test_Vector_suite) {
 	MU_RUN_TEST(test_Vector_reduction_sum);
 	MU_RUN_TEST(test_Vector_reduction_square_sum);
 	MU_RUN_TEST(test_Vector_reduction_logsumexp);
+	MU_RUN_TEST(test_Vector_reduction_mean);
+	MU_RUN_TEST(test_Vector_reduction_average);
 	MU_RUN_TEST(test_Vector_dot);
 	MU_RUN_TEST(test_Vector_convolution__zero);
 	MU_RUN_TEST(test_Vector_convolution__mirror);	
