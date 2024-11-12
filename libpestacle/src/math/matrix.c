@@ -10,7 +10,7 @@ Matrix_init(
 	size_t row_count,
 	size_t col_count
 ) {
-	assert(self != 0);
+	assert(self);
 
 	self->row_count = row_count;
 	self->col_count = col_count;
@@ -23,8 +23,8 @@ void
 Matrix_destroy(
 	Matrix* self
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
+	assert(self);
+	assert(self->data);
 	
 	free(self->data);
 
@@ -43,10 +43,10 @@ Matrix_print(
 	FILE* fp,
 	const char* format
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
-	assert(fp != 0);
-	assert(format != 0);
+	assert(self);
+	assert(self->data);
+	assert(fp);
+	assert(format);
 
 	const real_t* src = self->data;
 	for(size_t i = self->row_count; i != 0; --i, src += self->col_count) {
@@ -74,8 +74,8 @@ Matrix_set_coeff(
 	size_t col,
 	real_t value
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
+	assert(self);
+	assert(self->data);
 	assert(row < self->row_count);
 	assert(col < self->col_count);
 
@@ -89,8 +89,8 @@ Matrix_get_coeff(
 	size_t row,
 	size_t col
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
+	assert(self);
+	assert(self->data);
 	assert(row < self->row_count);
 	assert(col < self->col_count);
 
@@ -103,10 +103,10 @@ Matrix_transpose(
 	Matrix* self,
 	const Matrix* other
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
-	assert(other != 0);
-	assert(other->data != 0);
+	assert(self);
+	assert(self->data);
+	assert(other);
+	assert(other->data);
 	assert(self->row_count == other->col_count);
 	assert(self->col_count == other->row_count);
 
@@ -128,8 +128,8 @@ Matrix_fill(
 	Matrix* self,
 	real_t value
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
+	assert(self);
+	assert(self->data);
 
 	array_ops_fill(
 		self->data,
@@ -144,10 +144,10 @@ Matrix_copy(
 	Matrix* self,
 	const Matrix* other
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
-	assert(other != 0);
-	assert(other->data != 0);
+	assert(self);
+	assert(self->data);
+	assert(other);
+	assert(other->data);
 	assert(self->row_count == other->row_count);
 	assert(self->col_count == other->col_count);
 
@@ -163,7 +163,7 @@ void
 Matrix_square(
 	Matrix* self
 ) {
-	assert(self != 0);
+	assert(self);
 
 	array_ops_square(
 		self->data,
@@ -176,7 +176,7 @@ void
 Matrix_sqrt(
 	Matrix* self
 ) {
-	assert(self != 0);
+	assert(self);
 
 	array_ops_sqrt(
 		self->data,
@@ -189,7 +189,7 @@ void
 Matrix_exp(
 	Matrix* self
 ) {
-	assert(self != 0);
+	assert(self);
 
 	array_ops_exp(
 		self->data,
@@ -202,7 +202,7 @@ void
 Matrix_log(
 	Matrix* self
 ) {
-	assert(self != 0);
+	assert(self);
 
 	array_ops_log(
 		self->data,
@@ -211,13 +211,116 @@ Matrix_log(
 }
 
 
+real_t
+Matrix_reduction_min(
+	const Matrix* self
+) {
+	assert(self);
+
+	return
+		array_ops_reduction_min(
+			self->data,
+			self->data_len
+		);
+}
+
+
+real_t
+Matrix_reduction_max(
+	const Matrix* self
+) {
+	assert(self);
+
+	return
+		array_ops_reduction_max(
+			self->data,
+			self->data_len
+		);
+}
+
+
+real_t
+Matrix_reduction_sum(
+	const Matrix* self
+) {
+	assert(self);
+
+	return
+		array_ops_reduction_sum(
+			self->data,
+			self->data_len
+		);
+}
+
+
+real_t
+Matrix_reduction_mean(
+	const Matrix* self
+) {
+	assert(self);
+
+	return
+		array_ops_reduction_mean(
+			self->data,
+			self->data_len
+		);
+}
+
+
+real_t
+Matrix_reduction_average(
+	const Matrix* self,
+	const Matrix* weight
+) {
+	assert(self);
+	assert(weight);
+	assert(self->col_count == weight->col_count);
+	assert(self->row_count == weight->row_count);
+
+	return
+		array_ops_reduction_average(
+			self->data,
+			weight->data,
+			self->data_len
+		);
+}
+
+
+real_t
+Matrix_reduction_square_sum(
+	const Matrix* self
+) {
+	assert(self);
+
+	return
+		array_ops_reduction_square_sum(
+			self->data,
+			self->data_len
+		);
+}
+
+
+real_t
+Matrix_reduction_logsumexp(
+	const Matrix* self
+) {
+	assert(self);
+
+	return
+		array_ops_reduction_logsumexp(
+			self->data,
+			self->data_len
+		);
+}
+
+
 void
 Matrix_inc(
 	Matrix* self,
 	real_t value
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
+	assert(self);
+	assert(self->data);
 
 	array_ops_inc(
 		self->data,
@@ -232,8 +335,8 @@ Matrix_scale(
 	Matrix* self,
 	real_t value
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
+	assert(self);
+	assert(self->data);
 
 	array_ops_scale(
 		self->data,
@@ -248,10 +351,10 @@ Matrix_add(
 	Matrix* self,
 	const Matrix* other
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
-	assert(other != 0);
-	assert(other->data != 0);
+	assert(self);
+	assert(self->data);
+	assert(other);
+	assert(other->data);
 	assert(self->row_count == other->row_count);
 	assert(self->col_count == other->col_count);
 
@@ -268,10 +371,10 @@ Matrix_sub(
 	Matrix* self,
 	const Matrix* other
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
-	assert(other != 0);
-	assert(other->data != 0);
+	assert(self );
+	assert(self->data);
+	assert(other);
+	assert(other->data);
 	assert(self->row_count == other->row_count);
 	assert(self->col_count == other->col_count);
 
@@ -289,10 +392,10 @@ Matrix_scaled_add(
 	const Matrix* other,
 	real_t value
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
-	assert(other != 0);
-	assert(other->data != 0);
+	assert(self);
+	assert(self->data);
+	assert(other);
+	assert(other->data);
 	assert(self->row_count == other->row_count);
 	assert(self->col_count == other->col_count);
 
@@ -310,10 +413,10 @@ Matrix_mul(
 	Matrix* self,
 	const Matrix* other
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
-	assert(other != 0);
-	assert(other->data != 0);
+	assert(self);
+	assert(self->data);
+	assert(other);
+	assert(other->data);
 	assert(self->row_count == other->row_count);
 	assert(self->col_count == other->col_count);
 
@@ -330,10 +433,10 @@ Matrix_div(
 	Matrix* self,
 	const Matrix* other
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
-	assert(other != 0);
-	assert(other->data != 0);
+	assert(self);
+	assert(self->data);
+	assert(other);
+	assert(other->data);
 	assert(self->row_count == other->row_count);
 	assert(self->col_count == other->col_count);
 
@@ -350,10 +453,10 @@ Matrix_min(
 	Matrix* self,
 	const Matrix* other
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
-	assert(other != 0);
-	assert(other->data != 0);
+	assert(self);
+	assert(self->data);
+	assert(other);
+	assert(other->data);
 	assert(self->row_count == other->row_count);
 	assert(self->col_count == other->col_count);
 
@@ -371,10 +474,10 @@ Matrix_scaled_min(
 	const Matrix* other,
 	real_t value
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
-	assert(other != 0);
-	assert(other->data != 0);
+	assert(self);
+	assert(self->data);
+	assert(other);
+	assert(other->data);
 	assert(self->row_count == other->row_count);
 	assert(self->col_count == other->col_count);
 
@@ -392,10 +495,10 @@ Matrix_max(
 	Matrix* self,
 	const Matrix* other
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
-	assert(other != 0);
-	assert(other->data != 0);
+	assert(self);
+	assert(self->data);
+	assert(other);
+	assert(other->data);
 	assert(self->row_count == other->row_count);
 	assert(self->col_count == other->col_count);
 
@@ -413,10 +516,10 @@ Matrix_scaled_max(
 	const Matrix* other,
 	real_t value
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
-	assert(other != 0);
-	assert(other->data != 0);
+	assert(self);
+	assert(self->data);
+	assert(other);
+	assert(other->data);
 	assert(self->row_count == other->row_count);
 	assert(self->col_count == other->col_count);
 
@@ -434,10 +537,10 @@ Matrix_resample_nearest(
 	Matrix* self,
 	const Matrix* other
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
-	assert(other != 0);
-	assert(other->data != 0);
+	assert(self);
+	assert(self->data);
+	assert(other);
+	assert(other->data);
 
 	real_t row_scaling_factor = ((real_t)other->row_count) / ((real_t)self->row_count);
 	real_t col_scaling_factor = ((real_t)other->col_count) / ((real_t)self->col_count);
@@ -463,12 +566,12 @@ Matrix_rowwise_convolution__zero(
 	const Matrix* other,
 	const Vector* kernel
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
-	assert(other != 0);
-	assert(other->data != 0);
-	assert(kernel != 0);
-	assert(kernel->data != 0);
+	assert(self);
+	assert(self->data);
+	assert(other);
+	assert(other->data);
+	assert(kernel);
+	assert(kernel->data);
 	assert(self->row_count == other->row_count);
 	assert(self->col_count == other->col_count);
 
@@ -491,12 +594,12 @@ Matrix_colwise_convolution__zero(
 	const Matrix* other,
 	const Vector* kernel
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
-	assert(other != 0);
-	assert(other->data != 0);
-	assert(kernel != 0);
-	assert(kernel->data != 0);
+	assert(self);
+	assert(self->data);
+	assert(other);
+	assert(other->data);
+	assert(kernel);
+	assert(kernel->data);
 	assert(self->row_count == other->row_count);
 	assert(self->col_count == other->col_count);
 
@@ -521,12 +624,12 @@ Matrix_rowwise_convolution__mirror(
 	const Matrix* other,
 	const Vector* kernel
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
-	assert(other != 0);
-	assert(other->data != 0);
-	assert(kernel != 0);
-	assert(kernel->data != 0);
+	assert(self);
+	assert(self->data);
+	assert(other);
+	assert(other->data);
+	assert(kernel);
+	assert(kernel->data);
 	assert(self->row_count == other->row_count);
 	assert(self->col_count == other->col_count);
 
@@ -549,12 +652,12 @@ Matrix_colwise_convolution__mirror(
 	const Matrix* other,
 	const Vector* kernel
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
-	assert(other != 0);
-	assert(other->data != 0);
-	assert(kernel != 0);
-	assert(kernel->data != 0);
+	assert(self);
+	assert(self->data);
+	assert(other);
+	assert(other->data);
+	assert(kernel);
+	assert(kernel->data);
 	assert(self->row_count == other->row_count);
 	assert(self->col_count == other->col_count);
 
@@ -579,10 +682,10 @@ Matrix_rowwise_box_filter(
 	const Matrix* other,
 	size_t filter_size
 ) {
-	assert(self != 0);
-	assert(self->data != 0);
-	assert(other != 0);
-	assert(other->data != 0);
+	assert(self);
+	assert(self->data);
+	assert(other);
+	assert(other->data);
 	assert(filter_size % 2 == 1);
 	assert(self->row_count == other->row_count);
 	assert(self->col_count == other->col_count);

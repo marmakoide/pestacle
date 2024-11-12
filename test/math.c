@@ -828,6 +828,147 @@ MU_TEST(test_Matrix_exp) {
 }
 
 
+MU_TEST(test_Matrix_reduction_min) {
+	Matrix U;
+
+	for(size_t i = 1; i < 64; ++i) {
+		for(size_t j = 1; j < 64; ++j) {
+			Matrix_init(&U, i, j);
+			Matrix_filler(&U);
+
+			real_t ret = Matrix_reduction_min(&U);
+			real_t ret_expected = Matrix_get_coeff(&U, 0, 0);
+			mu_assert_double_eq(ret_expected, ret);
+			
+			Matrix_destroy(&U);
+		}
+	}
+}
+
+
+MU_TEST(test_Matrix_reduction_max) {
+	Matrix U;
+
+	for(size_t i = 1; i < 64; ++i) {
+		for(size_t j = 1; j < 64; ++j) {
+			Matrix_init(&U, i, j);
+			Matrix_filler(&U);
+
+			real_t ret = Matrix_reduction_max(&U);
+			real_t ret_expected = Matrix_get_coeff(&U, i - 1, j - 1);
+			mu_assert_double_eq(ret_expected, ret);
+			
+			Matrix_destroy(&U);
+		}
+	}
+}
+
+
+MU_TEST(test_Matrix_reduction_sum) {
+	Matrix U;
+
+	for(size_t i = 1; i < 64; ++i) {
+		for(size_t j = 1; j < 64; ++j) {
+			size_t k = i * j - 1;
+
+			Matrix_init(&U, i, j);
+			Matrix_filler(&U);
+
+			real_t ret = Matrix_reduction_sum(&U);
+			real_t ret_expected = (k * (k + 1)) / 2;
+			mu_assert_double_eq(ret_expected, ret);
+
+			Matrix_destroy(&U);
+		}
+	}
+}
+
+
+MU_TEST(test_Matrix_reduction_square_sum) {
+	Matrix U;
+
+	for(size_t i = 1; i < 16; ++i) {
+		for(size_t j = 1; j < 16; ++j) {
+			size_t k = i * j - 1;
+
+			Matrix_init(&U, i, j);
+			Matrix_filler(&U);
+
+			real_t ret = Matrix_reduction_square_sum(&U);
+			real_t ret_expected = (k * (k + 1) * (2 * k + 1)) / 6;
+			mu_assert_double_eq(ret_expected, ret);
+
+			Matrix_destroy(&U);
+		}
+	}
+}
+
+
+MU_TEST(test_Matrix_reduction_logsumexp) {
+	Matrix U;
+
+	for(size_t i = 1; i < 5; ++i) {
+		for(size_t j = 1; j < 16; ++j) {
+			size_t k = i * j;
+
+			Matrix_init(&U, i, j);
+			Matrix_filler(&U);
+
+			real_t ret = Matrix_reduction_logsumexp(&U);
+			real_t ret_expected = logf((1.f - expf(k)) / (1.f - expf(1.f)));
+			mu_assert_double_eq(ret_expected, ret);
+
+			Matrix_destroy(&U);
+		}
+	}
+}
+
+
+MU_TEST(test_Matrix_reduction_mean) {
+	Matrix U;
+
+	for(size_t i = 1; i < 64; ++i) {
+		for(size_t j = 1; j < 64; ++j) {
+			size_t k = i * j - 1;
+
+			Matrix_init(&U, i, j);
+			Matrix_filler(&U);
+
+			real_t ret = Matrix_reduction_mean(&U);
+			real_t ret_expected = (k * (k + 1)) / 2;
+			ret_expected /= k + 1;
+			mu_assert_double_eq(ret_expected, ret);
+
+			Matrix_destroy(&U);
+		}
+	}
+}
+
+
+MU_TEST(test_Matrix_reduction_average) {
+	Matrix U, V;
+
+	for(size_t i = 1; i < 64; ++i) {
+		for(size_t j = 1; j < 64; ++j) {
+			size_t k = i * j - 1;
+
+			Matrix_init(&U, i, j);
+			Matrix_filler(&U);
+
+			Matrix_init(&V, i, j);
+			Matrix_fill(&V, (real_t)1);
+
+			real_t ret = Matrix_reduction_average(&U, &V);
+			real_t ret_expected = (k * (k + 1)) / 2;
+			ret_expected /= k + 1;
+			mu_assert_double_eq(ret_expected, ret);
+
+			Matrix_destroy(&U);
+		}
+	}
+}
+
+
 MU_TEST(test_Matrix_scale) {
 	Matrix U;
 
@@ -924,6 +1065,13 @@ MU_TEST_SUITE(test_Matrix_suite) {
 	MU_RUN_TEST(test_Matrix_sqrt);
 	MU_RUN_TEST(test_Matrix_scale);
 	MU_RUN_TEST(test_Matrix_inc);
+	MU_RUN_TEST(test_Matrix_reduction_min);
+	MU_RUN_TEST(test_Matrix_reduction_max);
+	MU_RUN_TEST(test_Matrix_reduction_sum);
+	MU_RUN_TEST(test_Matrix_reduction_square_sum);
+	MU_RUN_TEST(test_Matrix_reduction_logsumexp);
+	MU_RUN_TEST(test_Matrix_reduction_mean);
+	MU_RUN_TEST(test_Matrix_reduction_average);
 	MU_RUN_TEST(test_Matrix_log);
 	MU_RUN_TEST(test_Matrix_exp);
 }

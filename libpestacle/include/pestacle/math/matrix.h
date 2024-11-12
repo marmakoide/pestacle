@@ -102,6 +102,49 @@ Matrix_log(
 );
 
 
+extern real_t
+Matrix_reduction_min(
+	const Matrix* self
+);
+
+
+extern real_t
+Matrix_reduction_max(
+	const Matrix* self
+);
+
+
+extern real_t
+Matrix_reduction_sum(
+	const Matrix* self
+);
+
+
+extern real_t
+Matrix_reduction_mean(
+	const Matrix* self
+);
+
+
+extern real_t
+Matrix_reduction_average(
+	const Matrix* self,
+	const Matrix* weight
+);
+
+
+extern real_t
+Matrix_reduction_square_sum(
+	const Matrix* self
+);
+
+
+extern real_t
+Matrix_reduction_logsumexp(
+	const Matrix* self
+);
+
+
 extern void
 Matrix_inc(
 	Matrix* self,
