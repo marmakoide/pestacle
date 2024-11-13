@@ -236,13 +236,31 @@ array_ops_reduction_square_sum(
 real_t
 array_ops_reduction_mean(
 	const real_t* src,
-	size_t len
+	size_t len,
+	real_t* out_std
 ) {
-	real_t ret = *src;
-	++src;
+	real_t ret;
 
-	for(size_t i = 2; i <= len; ++i, ++src)
-		ret += ((*src) - ret) / i;
+	if (out_std) {
+		ret = (real_t)0;
+		real_t mean2 = (real_t)0;
+
+		for(size_t i = 1; i <= len; ++i, ++src) {
+			real_t delta = (*src) - ret;
+			ret += delta / i;
+			real_t delta2 = (*src) - ret;
+			mean2 += delta * delta2;
+		}
+
+		*out_std = mean2 / len;
+	}
+	else {
+		ret = *src;
+		++src;
+
+		for(size_t i = 2; i <= len; ++i, ++src)
+			ret += ((*src) - ret) / i;
+	}
 
 	return ret;
 }
@@ -252,17 +270,36 @@ real_t
 array_ops_reduction_average(
 	const real_t* src,
 	const real_t* weight,
-	size_t len
+	size_t len,
+	real_t* out_std
 ) {
-	real_t ret = *src;
-	++src;
+	real_t ret;
 
-	real_t w_sum = *weight;
-	++weight;
+	if (out_std) {
+		ret = (real_t)0;
+		real_t w_sum = (real_t)0;
+		real_t S = (real_t)0;
 
-	for(size_t i = 2; i <= len; ++i, ++src, ++weight) {
-		w_sum += *weight;
-		ret = fmaf(*weight / w_sum, *src - ret, ret);
+		for(size_t i = 1; i <= len; ++i, ++src, ++weight) {
+			w_sum += *weight;
+			real_t prev_ret = ret;
+			ret = fmaf(*weight / w_sum, *src - prev_ret, prev_ret);
+			S = fmaf(*weight * (*src - ret), *src - prev_ret, S);
+		}
+
+		*out_std = S / w_sum;
+	}
+	else {
+		ret = *src;
+		++src;
+
+		real_t w_sum = *weight;
+		++weight;
+
+		for(size_t i = 2; i <= len; ++i, ++src, ++weight) {
+			w_sum += *weight;
+			ret = fmaf(*weight / w_sum, *src - ret, ret);
+		}
 	}
 
 	return ret;

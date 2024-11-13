@@ -255,14 +255,16 @@ Matrix_reduction_sum(
 
 real_t
 Matrix_reduction_mean(
-	const Matrix* self
+	const Matrix* self,
+	real_t* out_std
 ) {
 	assert(self);
 
 	return
 		array_ops_reduction_mean(
 			self->data,
-			self->data_len
+			self->data_len,
+			out_std
 		);
 }
 
@@ -270,7 +272,8 @@ Matrix_reduction_mean(
 real_t
 Matrix_reduction_average(
 	const Matrix* self,
-	const Matrix* weight
+	const Matrix* weight,
+	real_t* out_std
 ) {
 	assert(self);
 	assert(weight);
@@ -281,7 +284,8 @@ Matrix_reduction_average(
 		array_ops_reduction_average(
 			self->data,
 			weight->data,
-			self->data_len
+			self->data_len,
+			out_std
 		);
 }
 

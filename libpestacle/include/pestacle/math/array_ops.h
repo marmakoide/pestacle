@@ -150,7 +150,8 @@ array_ops_reduction_logsumexp(
 extern real_t
 array_ops_reduction_mean(
 	const real_t* src,
-	size_t len
+	size_t len,
+	real_t* out_std
 );
 
 
@@ -158,7 +159,8 @@ extern real_t
 array_ops_reduction_average(
 	const real_t* src,
 	const real_t* weight,
-	size_t len
+	size_t len,
+	real_t* out_std
 );
 
  

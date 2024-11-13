@@ -138,14 +138,16 @@ Vector_reduction_sum(
 
 extern real_t
 Vector_reduction_mean(
-	const Vector* self
+	const Vector* self,
+	real_t* out_std
 );
 
 
 extern real_t
 Vector_reduction_average(
 	const Vector* self,
-	const Vector* weight
+	const Vector* weight,
+	real_t* out_std
 );
 
 

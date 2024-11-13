@@ -392,17 +392,21 @@ MU_TEST(test_Vector_reduction_logsumexp) {
 
 MU_TEST(test_Vector_reduction_mean) {
 	Vector U;
+	real_t ret, ret_expected, std;
 
 	for(size_t i = 1; i < 64; ++i) {
 		Vector_init(&U, i);
 
 		Vector_arange(&U, (real_t)1, (real_t)1);
 
-		real_t ret = Vector_reduction_mean(&U);
-		real_t ret_expected = (i * (i + 1)) / 2;
+		ret = Vector_reduction_mean(&U, 0);
+		ret_expected = (i * (i + 1)) / 2;
 		ret_expected /= i;
 		mu_assert_double_eq(ret_expected, ret);
 		
+		ret = Vector_reduction_mean(&U, &std);
+		mu_assert_double_eq(ret_expected, ret);
+
 		Vector_destroy(&U);
 	}
 }
@@ -410,6 +414,7 @@ MU_TEST(test_Vector_reduction_mean) {
 
 MU_TEST(test_Vector_reduction_average) {
 	Vector U, V;
+	real_t ret, ret_expected, std;
 
 	for(size_t i = 1; i < 64; ++i) {
 		Vector_init(&U, i);
@@ -418,11 +423,14 @@ MU_TEST(test_Vector_reduction_average) {
 		Vector_arange(&U, (real_t)1, (real_t)1);
 		Vector_fill(&V, (real_t)1);
 
-		real_t ret = Vector_reduction_average(&U, &V);
-		real_t ret_expected = (i * (i + 1)) / 2;
+		ret = Vector_reduction_average(&U, &V, 0);
+		ret_expected = (i * (i + 1)) / 2;
 		ret_expected /= i;
 		mu_assert_double_eq(ret_expected, ret);
 		
+		ret = Vector_reduction_average(&U, &V, &std);
+		mu_assert_double_eq(ret_expected, ret);
+
 		Vector_destroy(&U);
 		Vector_destroy(&V);
 	}
@@ -934,7 +942,7 @@ MU_TEST(test_Matrix_reduction_mean) {
 			Matrix_init(&U, i, j);
 			Matrix_filler(&U);
 
-			real_t ret = Matrix_reduction_mean(&U);
+			real_t ret = Matrix_reduction_mean(&U, 0);
 			real_t ret_expected = (k * (k + 1)) / 2;
 			ret_expected /= k + 1;
 			mu_assert_double_eq(ret_expected, ret);
@@ -958,7 +966,7 @@ MU_TEST(test_Matrix_reduction_average) {
 			Matrix_init(&V, i, j);
 			Matrix_fill(&V, (real_t)1);
 
-			real_t ret = Matrix_reduction_average(&U, &V);
+			real_t ret = Matrix_reduction_average(&U, &V, 0);
 			real_t ret_expected = (k * (k + 1)) / 2;
 			ret_expected /= k + 1;
 			mu_assert_double_eq(ret_expected, ret);

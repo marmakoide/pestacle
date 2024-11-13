@@ -122,14 +122,16 @@ Matrix_reduction_sum(
 
 extern real_t
 Matrix_reduction_mean(
-	const Matrix* self
+	const Matrix* self,
+	real_t* out_std
 );
 
 
 extern real_t
 Matrix_reduction_average(
 	const Matrix* self,
-	const Matrix* weight
+	const Matrix* weight,
+	real_t* out_std
 );
 
 
