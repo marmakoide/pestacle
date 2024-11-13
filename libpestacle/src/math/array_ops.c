@@ -252,7 +252,7 @@ array_ops_reduction_mean(
 			mean2 += delta * delta2;
 		}
 
-		*out_std = mean2 / len;
+		*out_std = sqrtf(mean2 / len);
 	}
 	else {
 		ret = *src;
@@ -287,7 +287,7 @@ array_ops_reduction_average(
 			S = fmaf(*weight * (*src - ret), *src - prev_ret, S);
 		}
 
-		*out_std = S / w_sum;
+		*out_std = sqrtf(S / w_sum);
 	}
 	else {
 		ret = *src;
