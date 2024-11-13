@@ -1,0 +1,32 @@
+main-window = window(
+	width  = 512,
+	height = 512,
+	title  = "demo-auto-threshold"
+)
+
+rgb-picture = png.load(
+	path = "demos/pictures/lena.png"
+)
+
+bw-picture = rgb-surface.luminance(
+	width  = 512,
+	height = 512
+)
+
+bw-picture.source = rgb-picture
+
+threshold = matrix.auto-threshold(
+	width  = 512,
+	height = 512
+)
+
+threshold.source = bw-picture
+
+output = matrix.gradient-map(
+	width  = 512,
+	height = 512
+)
+
+output.source = threshold
+
+main-window.display.source = output
