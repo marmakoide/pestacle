@@ -227,9 +227,9 @@ Graph_update(
 ) {
 	assert(self);
 
-	// Update the nodes in topological order
-	Node** node_ptr = self->sorted_nodes;
-	for(size_t i = self->sorted_node_count; i != 0; --i, ++node_ptr)
+	// Update the nodes in reverse topological order
+	Node** node_ptr = self->sorted_nodes + self->sorted_node_count - 1;
+	for(size_t i = self->sorted_node_count; i != 0; --i, --node_ptr)
 		Node_update(*node_ptr);
 }
 
@@ -245,11 +245,11 @@ Graph_update_with_profile(
 	// Update the number of updates
 	profile->update_count += 1;
 
-	// Update the nodes in topological order
-	Node** node_ptr = self->sorted_nodes;
-	NodeProfile* profile_ptr = profile->node_profiles;
+	// Update the nodes in reverse topological order
+	Node** node_ptr = self->sorted_nodes + self->sorted_node_count - 1;
+	NodeProfile* profile_ptr = profile->node_profiles + self->sorted_node_count - 1;
 
-	for(size_t i = self->sorted_node_count; i != 0; --i, ++node_ptr, ++profile_ptr) {
+	for(size_t i = self->sorted_node_count; i != 0; --i, --node_ptr, --profile_ptr) {
 		// Update the node
 		Uint64 start_time = SDL_GetPerformanceCounter();
 		Node_update(*node_ptr);
