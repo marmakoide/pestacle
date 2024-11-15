@@ -68,20 +68,77 @@ mouse_motion_node_delegate = {
 
 // --- Implementation ---------------------------------------------------------
 
+typedef struct {
+	int i;
+	Matrix accumulator[2];
+} MouseMotion;
+
+
+static void
+MouseMotion_init(
+	MouseMotion* self,
+	size_t width,
+	size_t height
+) {
+	self->i = 0;
+	for(int i = 0; i < 2; ++i) {
+		Matrix_init(&(self->accumulator[i]), height, width);
+		Matrix_fill(&(self->accumulator[i]), (real_t)0);
+	}
+}
+
+
+static void
+MouseMotion_destroy(
+	MouseMotion* self
+) {
+	for(int i = 0; i < 2; ++i)
+		Matrix_destroy(&(self->accumulator[i]));
+}
+
+
+static void
+MouseMotion_update(
+	MouseMotion* self,
+	int x,
+	int y,
+	real_t value
+) {
+	Matrix_set_coeff(&(self->accumulator[self->i]), y, x, value);
+}
+
+
+static void
+MouseMotion_swap(
+	MouseMotion* self
+) {
+	self->i = 1 - self->i;
+	Matrix_fill(&(self->accumulator[self->i]), (real_t)0);
+}
+
+
+static Matrix*
+MouseMotion_get(
+	MouseMotion* self
+) {
+	return &(self->accumulator[1 - self->i]);
+}
+
+
 static void
 mouse_motion_on_event(
 	void* listener,
 	SDL_Event* event
 ) {
 	Node* node = (Node*)listener;
-	Matrix* accumulator = (Matrix*)node->data;
+	MouseMotion* mouse_motion = (MouseMotion*)node->data;
 
 	switch(event->type) {
 		case SDL_MOUSEMOTION:
-			Matrix_set_coeff(
-				accumulator,
-				event->motion.y,
+			MouseMotion_update(
+				mouse_motion, 
 				event->motion.x,
+				event->motion.y,
 				node->parameters[VALUE_PARAMETER].real_value
 			);
 			break;
@@ -102,7 +159,7 @@ node_setup(
 	Window* window = (Window*)self->delegate_scope->data;
 
 	// Allocate
-	Matrix* accumulator = (Matrix*)checked_malloc(sizeof(Matrix));
+	MouseMotion* mouse_motion = (MouseMotion*)checked_malloc(sizeof(MouseMotion));
 
 	// Setup node type metadata
 	int w, h;
@@ -110,15 +167,14 @@ node_setup(
 	self->metadata.matrix.width = w;
 	self->metadata.matrix.height = h;
 
-	// Setup the accumulator matrix
-	Matrix_init(accumulator, h, w);
-	Matrix_fill(accumulator, (real_t)0);
+	// Initialize
+	MouseMotion_init(mouse_motion, w, h);
 
 	// Register to windows events
 	Window_add_event_listener(window, self, mouse_motion_on_event);
 
 	// Job done
-	self->data = accumulator;
+	self->data = mouse_motion;
 	return true;
 }
 
@@ -127,10 +183,10 @@ static void
 node_destroy(
 	Node* self
 ) {
-	Matrix* accumulator = (Matrix*)self->data;
-	if (accumulator != 0) {
-		Matrix_destroy(accumulator);
-		free(accumulator);
+	MouseMotion* mouse_motion = (MouseMotion*)self->data;
+	if (mouse_motion) {
+		MouseMotion_destroy(mouse_motion);
+		free(mouse_motion);
 	}
 }
 
@@ -139,11 +195,10 @@ static void
 node_update(
 	Node* self
 ) {
-	// Retrieve the accumulator
-	Matrix* accumulator = (Matrix*)self->data;
+	MouseMotion* mouse_motion = (MouseMotion*)self->data;
 
-	// Empty the accumulator
-	Matrix_fill(accumulator, (real_t)0);
+	// Swap
+	MouseMotion_swap(mouse_motion);
 
 	// Retrieve the window
 	Window* window = (Window*)self->delegate_scope->data;
@@ -161,10 +216,10 @@ node_update(
 
 	// If the mouse is inside the window, mark the pixel under it
 	if ((mouse_x >= win_x) && (mouse_y >= win_y) && (mouse_x < win_x + win_w) && (mouse_y < win_y + win_h))
-		Matrix_set_coeff(
-			accumulator,
-			mouse_y - win_y,
+		MouseMotion_update(
+			mouse_motion,
 			mouse_x - win_x,
+			mouse_y - win_y,
 			self->parameters[VALUE_PARAMETER].real_value
 		);
 }
@@ -174,7 +229,7 @@ static NodeOutput
 node_output(
 	const Node* self
 ) {
-	Matrix* accumulator = (Matrix*)self->data;
-	NodeOutput ret = { .matrix = accumulator };
+	MouseMotion* mouse_motion = (MouseMotion*)self->data;
+	NodeOutput ret = {  .matrix = MouseMotion_get(mouse_motion) };
 	return ret;
 }
