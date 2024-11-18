@@ -118,6 +118,13 @@ Vector_log(
 );
 
 
+extern void
+Vector_heaviside(
+	Vector* self,
+	real_t threshold
+);
+
+
 extern real_t
 Vector_reduction_min(
 	const Vector* self

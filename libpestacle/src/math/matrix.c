@@ -211,6 +211,21 @@ Matrix_log(
 }
 
 
+void
+Matrix_heaviside(
+	Matrix* self,
+	real_t threshold
+) {
+	assert(self);
+
+	array_ops_heaviside(
+		self->data,
+		self->data_len,
+		threshold
+	);
+}
+
+
 real_t
 Matrix_reduction_min(
 	const Matrix* self

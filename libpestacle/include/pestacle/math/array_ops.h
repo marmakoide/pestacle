@@ -88,6 +88,14 @@ array_ops_log(
 
 
 extern void
+array_ops_heaviside(
+	real_t* dst,
+	size_t len,
+	real_t threshold
+);
+
+
+extern void
 array_ops_inc(
 	real_t* dst,
 	size_t len,

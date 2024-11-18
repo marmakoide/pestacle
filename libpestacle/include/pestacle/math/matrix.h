@@ -102,6 +102,13 @@ Matrix_log(
 );
 
 
+extern void
+Matrix_heaviside(
+	Matrix* self,
+	real_t threshold
+);
+
+
 extern real_t
 Matrix_reduction_min(
 	const Matrix* self

@@ -193,6 +193,21 @@ Vector_log(
 
 
 void
+Vector_heaviside(
+	Vector* self,
+	real_t threshold
+) {
+	assert(self);
+
+	array_ops_heaviside(
+		self->data,
+		self->len,
+		threshold
+	);
+}
+
+
+void
 Vector_inc(
 	Vector* self,
 	real_t value

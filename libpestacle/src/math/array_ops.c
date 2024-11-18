@@ -132,6 +132,21 @@ array_ops_log(
 
 
 void
+array_ops_heaviside(
+	real_t* dst,
+	size_t len,
+	real_t threshold
+) {
+	for( ; len != 0; --len, ++dst) {
+		if (*dst < threshold)
+			*dst = (real_t)0;
+		else
+			*dst = (real_t)1;
+	}
+}
+
+
+void
 array_ops_inc(
 	real_t* dst,
 	size_t len,
