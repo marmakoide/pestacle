@@ -25,6 +25,7 @@ enum NodeType {
 typedef struct {
 	enum NodeType type;
 	const char* name;
+	bool is_mandatory;
 } NodeInputDefinition;
 
 
@@ -32,6 +33,7 @@ typedef struct {
 { \
 	NodeType__last, \
 	0, \
+	false \
 }
 
 

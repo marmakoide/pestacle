@@ -37,11 +37,13 @@ static const NodeInputDefinition
 node_inputs[] = {
 	{
 		NodeType__rgb_surface,
-		"source-a"
+		"source-a",
+		true
 	},
 	{
 		NodeType__rgb_surface,
-		"source-b"
+		"source-b",
+		true
 	},
 	NODE_INPUT_DEFINITION_END
 };

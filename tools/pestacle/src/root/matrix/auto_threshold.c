@@ -38,13 +38,20 @@ node_output(
 
 
 #define SOURCE_INPUT 0
+#define WEIGHT_INPUT 0
 
 static const NodeInputDefinition
 node_inputs[] = {
 	{
 		NodeType__matrix,
-		"source"
+		"source",
+		true
 	},
+	{
+		NodeType__matrix,
+		"weight",
+		false
+	},	
 	NODE_INPUT_DEFINITION_END
 };
 

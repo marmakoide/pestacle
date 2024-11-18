@@ -176,7 +176,7 @@ Node_is_complete(
 	Node* const* input_ptr = self->inputs;
 	const NodeInputDefinition* input_def = self->delegate->input_defs;
 	for( ; input_def->type != NodeType__last; ++input_ptr, ++input_def)
-		if (*input_ptr == 0)
+		if ((*input_ptr == 0) && (input_def->is_mandatory))
 			return false;
 
 	return true;

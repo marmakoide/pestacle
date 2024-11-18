@@ -20,7 +20,8 @@ static const NodeInputDefinition
 node_inputs[] = {
 	{
 		NodeType__rgb_surface,
-		"source"
+		"source",
+		true
 	},
 	NODE_INPUT_DEFINITION_END
 }; // display_inputs

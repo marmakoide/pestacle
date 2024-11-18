@@ -34,6 +34,7 @@ node_inputs[] = {
 	{
 		NodeType__rgb_surface,
 		"source",
+		true
 	},
 	NODE_INPUT_DEFINITION_END
 };

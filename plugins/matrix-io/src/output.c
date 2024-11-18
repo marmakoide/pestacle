@@ -31,7 +31,8 @@ static const NodeInputDefinition
 node_inputs[] = {
 	{
 		NodeType__matrix,
-		"source"
+		"source",
+		true
 	},
 	NODE_INPUT_DEFINITION_END
 };

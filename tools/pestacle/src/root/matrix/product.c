@@ -36,11 +36,13 @@ static const NodeInputDefinition
 node_inputs[] = {
 	{
 		NodeType__matrix,
-		"source-a"
+		"source-a",
+		true
 	},
 	{
 		NodeType__matrix,
-		"source-b"
+		"source-b",
+		true
 	},	
 	NODE_INPUT_DEFINITION_END
 };
