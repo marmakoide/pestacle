@@ -155,7 +155,7 @@ node_destroy(
 ) {
 	HeatDiffusionData* data = (HeatDiffusionData*)self->data;
 
-	if (data != 0) {
+	if (data) {
 		Matrix_destroy(&(data->U));
 		Matrix_destroy(&(data->U_tmp));
 		Vector_destroy(&(data->diff_kernel));

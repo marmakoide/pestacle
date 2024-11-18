@@ -1,7 +1,12 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
+#ifndef  M_PI
+#define  M_PI  3.1415926535897932384626433
+#endif
+
 #include <pestacle/memory.h>
+#include <pestacle/math/univariate_optim.h>
 
 #include "root/matrix/auto_threshold.h"
 
@@ -82,12 +87,13 @@ root_matrix_auto_threshold_node_delegate = {
 
 typedef struct {
 	Matrix out;
-    Matrix P[2];
-    Matrix P_sum;
-    real_t theta[2];
-    real_t mu[2];
-    real_t sigma[2];
-    size_t iterations_per_update;
+	Matrix P[2];
+	Matrix P_sum;
+	real_t theta[2];
+	real_t mu[2];
+	real_t sigma[2];
+	bool initialized;
+	size_t iterations_per_update;
 } AutoThreshold;
 
 
@@ -117,7 +123,8 @@ AutoThreshold_init(
 	self->sigma[0] = (real_t)1;
 	self->sigma[1] = (real_t)1;
 
-	self->iterations_per_update = 10;
+	self->initialized = false;
+	self->iterations_per_update = 1;
 }
 
 
@@ -135,9 +142,44 @@ AutoThreshold* self
 
 
 static void
+AutoThreshold_em_initialization(
+	AutoThreshold* self,
+	const Matrix* input
+) {
+	// Compute extremum values
+	real_t coeff_min = Matrix_reduction_min(input);
+	real_t coeff_max = Matrix_reduction_max(input);
+
+	// Compute mean, sigma, theta with Welford's algorithm
+	size_t count[2] = { 0, 0 };
+	for(int i = 0; i < 2; ++i) {
+		self->mu[i] = (real_t)0;
+		self->sigma[i] = (real_t)0;
+	}
+
+	const real_t* coeff = input->data;
+	for(size_t i = 0; i < input->row_count; ++i) {
+		for(size_t j = 0; j < input->col_count; ++j, ++coeff) {
+			int k = fabsf((*coeff) - coeff_min) > fabsf((*coeff) - coeff_max);
+
+			real_t delta = (*coeff) - self->mu[k];
+			count[k] += 1;
+			self->mu[k] += delta / count[k];
+			self->sigma[k] += delta * ((*coeff)- self->mu[k]);
+		}
+	}
+
+	for(int i = 0; i < 2; ++i) {
+		self->sigma[i] = sqrtf(self->sigma[i] / count[i]);
+		self->theta[i] = ((real_t)count[i]) / ((real_t)input->data_len);
+	}
+}
+
+
+static void
 AutoThreshold_em_iteration(
-    AutoThreshold* self,
-    const Matrix* input
+	AutoThreshold* self,
+	const Matrix* input
 ) {
 	// Compute P, ie. membership for each input coeff
 	for(int i = 0; i < 2; ++i) {
@@ -169,13 +211,81 @@ AutoThreshold_em_iteration(
 }
 
 
+static real_t
+square(
+	real_t x
+) {
+	return x * x;
+}
+
+
+static real_t
+threshold_fitness_func(
+	real_t x,
+	void* data
+) {
+	AutoThreshold* self = (AutoThreshold*)data;
+
+	real_t p0 = expf(-.5 * square((x - self->mu[0]) / self->sigma[0]));
+    p0 *= self->theta[0] / (sqrtf(2 * M_PI) * self->sigma[0]);
+
+	real_t p1 = expf(-.5 * square((x - self->mu[1]) / self->sigma[1]));
+    p1 *= self->theta[1] / (sqrtf(2 * M_PI) * self->sigma[1]);
+
+    real_t p = p1 + p0;
+    return p;
+}
+
+
+static real_t
+AutoThreshold_get_threshold(
+	AutoThreshold* self
+) {
+	UnivariateOptimResult optim_out;
+	univariate_optim_golden_section(
+		threshold_fitness_func,
+		self,
+		self->mu[0],
+		self->mu[1],
+		1e-4f,
+		300,
+		&optim_out
+	);
+
+	printf("threshold = %f iterations = %zu\n", optim_out.x, optim_out.iteration_count);
+	return optim_out.x;
+}
+
+
 static void
 AutoThreshold_update(
-    AutoThreshold* self,
-    const Matrix* input
+	AutoThreshold* self,
+	const Matrix* input
 ) {
-	for(size_t iteration_count = self->iterations_per_update; iteration_count != 0; --iteration_count)
-		AutoThreshold_em_iteration(self, input);
+	// EM iterations
+	for(size_t iteration_count = self->iterations_per_update; iteration_count != 0; --iteration_count) {
+		if (!(self->initialized)) {
+			AutoThreshold_em_initialization(self, input);
+			self->initialized = true;
+		}
+		else
+			AutoThreshold_em_iteration(self, input);
+
+		printf(
+			"theta = [%f, %f] mu = [%f, %f] sigma = [%f, %f]\n",
+			self->theta[0],
+			self->theta[1],
+			self->mu[0],
+			self->mu[1],
+			self->sigma[0],
+			self->sigma[1]
+		);
+	}
+
+	// Thresholding
+	real_t threshold = AutoThreshold_get_threshold(self);
+	Matrix_copy(&(self->out), input);
+	Matrix_heaviside(&(self->out), threshold);
 }
 
 
@@ -224,11 +334,6 @@ node_update(
 
 	AutoThreshold_update(
 		data,
-		Node_output(self->inputs[SOURCE_INPUT]).matrix
-	);
-
-	Matrix_copy(
-		&(data->out),
 		Node_output(self->inputs[SOURCE_INPUT]).matrix
 	);
 }

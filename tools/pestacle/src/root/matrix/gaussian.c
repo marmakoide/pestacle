@@ -182,7 +182,7 @@ node_destroy(
 ) {
 	GaussianData* data = (GaussianData*)self->data;
 
-	if (data != 0) {
+	if (data) {
 		GaussianData_destroy(data);
 		free(data);
 	}

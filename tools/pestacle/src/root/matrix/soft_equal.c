@@ -100,12 +100,12 @@ typedef struct {
 	Matrix out;
 	real_t value;
 	real_t factor;
-} SoftEqualData;
+} SoftEqual;
 
 
 static void
-SoftEqualData_init(
-	SoftEqualData* self,
+SoftEqual_init(
+	SoftEqual* self,
 	size_t width,
 	size_t height,
 	real_t value,
@@ -121,16 +121,16 @@ SoftEqualData_init(
 
 
 static void
-SoftEqualData_destroy(
-	SoftEqualData* self
+SoftEqual_destroy(
+	SoftEqual* self
 ) {
 	Matrix_destroy(&(self->out));
 }
 
 
 static void
-SoftEqualData_transform(
-	SoftEqualData* self,
+SoftEqual_transform(
+	SoftEqual* self,
 	Matrix* out
 ) {
 	Matrix_inc(out, -self->value);
@@ -169,14 +169,14 @@ node_setup(
 	}
 
 	// Allocate data
-	SoftEqualData* data =
-		(SoftEqualData*)checked_malloc(sizeof(SoftEqualData));
+	SoftEqual* data =
+		(SoftEqual*)checked_malloc(sizeof(SoftEqual));
 
 	if (!data)
 		return false;
 
 	// Setup data
-	SoftEqualData_init(data, width, height, value, radius, ratio);
+	SoftEqual_init(data, width, height, value, radius, ratio);
 
 	// Job done
 	self->data = data;
@@ -188,10 +188,10 @@ static void
 node_destroy(
 	Node* self
 ) {
-	SoftEqualData* data = (SoftEqualData*)self->data;
+	SoftEqual* data = (SoftEqual*)self->data;
 
-	if (data != 0) {
-		SoftEqualData_destroy(data);
+	if (data) {
+		SoftEqual_destroy(data);
 		free(data);
 	}
 }
@@ -201,14 +201,14 @@ static void
 node_update(
 	Node* self
 ) {
-	SoftEqualData* data = (SoftEqualData*)self->data;
+	SoftEqual* data = (SoftEqual*)self->data;
 
 	Matrix_copy(
 		&(data->out),
 		Node_output(self->inputs[SOURCE_INPUT]).matrix
 	);
 
-	SoftEqualData_transform(
+	SoftEqual_transform(
 		data,
 		&(data->out)
 	);
@@ -219,7 +219,7 @@ static NodeOutput
 node_output(
 	const Node* self
 ) {
-	const SoftEqualData* data = (const SoftEqualData*)self->data;
+	const SoftEqual* data = (const SoftEqual*)self->data;
 
 	NodeOutput ret = { .matrix = &(data->out) };
 	return ret;
