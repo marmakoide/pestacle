@@ -176,7 +176,7 @@ AutoThreshold_em_initialization(
 }
 
 
-static void
+static bool
 AutoThreshold_em_iteration(
 	AutoThreshold* self,
 	const Matrix* input
@@ -208,6 +208,14 @@ AutoThreshold_em_iteration(
 				&(self->P[i]),
 				&(self->sigma[i]));
 	}
+
+	// If theta, mu, or sigma is nan, something went wrong
+	for(int i = 0; i < 2; ++i)
+		if (isnan(self->theta[i]) || isnan(self->mu[i]) || isnan(self->sigma[i]))
+			return false;
+
+	// Job done
+	return true;
 }
 
 
@@ -269,8 +277,12 @@ AutoThreshold_update(
 			self->initialized = true;
 		}
 		else
-			AutoThreshold_em_iteration(self, input);
+			if (!AutoThreshold_em_iteration(self, input))
+				self->initialized = false;
 
+		if (!self->initialized)
+			break;
+		
 		printf(
 			"theta = [%f, %f] mu = [%f, %f] sigma = [%f, %f]\n",
 			self->theta[0],
@@ -283,9 +295,12 @@ AutoThreshold_update(
 	}
 
 	// Thresholding
-	real_t threshold = AutoThreshold_get_threshold(self);
-	Matrix_copy(&(self->out), input);
-	Matrix_heaviside(&(self->out), threshold);
+	if (self->initialized) {
+		real_t threshold = AutoThreshold_get_threshold(self);
+		Matrix_copy(&(self->out), input);
+		Matrix_scale(&(self->out), -1);
+		Matrix_heaviside(&(self->out), -threshold);
+	}
 }
 
 
