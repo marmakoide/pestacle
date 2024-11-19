@@ -1,4 +1,4 @@
-#include <math.h>
+#include <tgmath.h>
 #include <pestacle/memory.h>
 
 #include "root/matrix/resize.h"
@@ -111,20 +111,20 @@ typedef struct {
 
 #define PASS_COUNT 3
 
-static float
+static real_t
 get_ideal_filter_size(
-	float sigma,
+	real_t sigma,
 	int pass_count
 ) {
-	return sqrtf(((real_t)1) + (((real_t)12) * (sigma * sigma)) / pass_count);
+	return sqrt(((real_t)1) + (((real_t)12) * (sigma * sigma)) / pass_count);
 }
 
 
 static size_t
 get_lo_filter_size(
-	float ideal_filter_size
+	real_t ideal_filter_size
 ) {
-	size_t ret = floorf(ideal_filter_size);
+	size_t ret = floor(ideal_filter_size);
 	if (ret % 2 == 0)
 		ret -= 1;
 	return ret;
@@ -133,29 +133,14 @@ get_lo_filter_size(
 
 static size_t
 get_hi_filter_size(
-	float ideal_filter_size
+	real_t ideal_filter_size
 ) {
-	size_t ret = ceilf(ideal_filter_size);
+	size_t ret = ceil(ideal_filter_size);
 	if (ret % 2 == 0)
 		ret += 1;
 	return ret;
 }
 
-/*
-static int
-get_lo_pass_count(
-	size_t lo_filter_size,
-	float sigma,
-	int pass_count
-) {
-	float k = 12 * sigma * sigma;
-	k -= pass_count * lo_filter_size * lo_filter_size;
-	k -= 4 * pass_count * lo_filter_size;
-	k -= 3 * pass_count;
-	k /= -4 * (lo_filter_size + 1);
-	return (int)floorf(k);
-}
-*/
 
 static void
 matrix_resize_data_init(
@@ -180,22 +165,19 @@ matrix_resize_data_init(
 	Matrix_init(&(self->out), output_height, output_width);
 	Matrix_fill(&(self->out), (real_t)0);
 
-	float x_factor = ((float)input_width) / ((float)output_width);
-	float y_factor = ((float)input_height) / ((float)output_height);
+	real_t x_factor = ((float)input_width) / ((float)output_width);
+	real_t y_factor = ((float)input_height) / ((float)output_height);
 
-	float kernel_x_sigma = (x_factor - 1) / 2;
-	float kernel_y_sigma = (y_factor - 1) / 2;
+	real_t kernel_x_sigma = (x_factor - 1) / 2;
+	real_t kernel_y_sigma = (y_factor - 1) / 2;
 
-	float ideal_filter_size_x = get_ideal_filter_size(kernel_x_sigma, PASS_COUNT);
-	float ideal_filter_size_y = get_ideal_filter_size(kernel_y_sigma, PASS_COUNT);
+	real_t ideal_filter_size_x = get_ideal_filter_size(kernel_x_sigma, PASS_COUNT);
+	real_t ideal_filter_size_y = get_ideal_filter_size(kernel_y_sigma, PASS_COUNT);
 
 	self->lo_filter_size_x = get_lo_filter_size(ideal_filter_size_x);
 	self->lo_filter_size_y = get_lo_filter_size(ideal_filter_size_y);
 	self->hi_filter_size_x = get_hi_filter_size(ideal_filter_size_x);
 	self->hi_filter_size_y = get_hi_filter_size(ideal_filter_size_y);
-
-	//int k = get_lo_pass_count(self->lo_filter_size_x, kernel_x_sigma, PASS_COUNT);
-	//printf("ideal size = %f, lo size = %zu, hi size = %zu, k = %d\n",  ideal_filter_size_x, self->lo_filter_size_x,  self->hi_filter_size_y, k);
 }
 
 

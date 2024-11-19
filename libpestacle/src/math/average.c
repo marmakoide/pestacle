@@ -1,4 +1,4 @@
-#include <math.h>
+#include <tgmath.h>
 #include <assert.h>
 #include <pestacle/math/average.h>
 
@@ -59,7 +59,7 @@ AverageResult_stddev(
 ) {
 	assert(self);
 
-	return sqrtf(self->mean2 / self->count);
+	return sqrt(self->mean2 / self->count);
 }
 
 
@@ -91,8 +91,8 @@ WeightedAverageResult_accumulate(
 	self->weight_sum += w;
 	real_t prev_mean = self->mean;
 	real_t delta = x - prev_mean;
-	self->mean = fmaf(w / self->weight_sum, delta, prev_mean);
-	self->mean2 = fmaf(w, delta * (x - self->mean), self->mean2);
+	self->mean = fma(w / self->weight_sum, delta, prev_mean);
+	self->mean2 = fma(w, delta * (x - self->mean), self->mean2);
 }
 
 
@@ -122,5 +122,5 @@ WeightedAverageResult_stddev(
 ) {
 	assert(self);
 
-	return sqrtf(self->mean2 / self->weight_sum);
+	return sqrt(self->mean2 / self->weight_sum);
 }

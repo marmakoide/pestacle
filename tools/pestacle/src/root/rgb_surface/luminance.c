@@ -1,3 +1,4 @@
+#include <tgmath.h>
 #include <pestacle/memory.h>
 
 #include "root/rgb_surface/luminance.h"
@@ -125,7 +126,7 @@ sRGB_to_linear(real_t x) {
 	if (x <= ((real_t).04045))
 		return x / ((real_t)12.92);
 
-	return powf(((x + ((real_t).055)) / ((real_t)1.055)), ((real_t)2.4));
+	return pow(((x + ((real_t).055)) / ((real_t)1.055)), ((real_t)2.4));
 }
 
 

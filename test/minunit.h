@@ -63,7 +63,7 @@
 #endif
 
 #include <stdio.h>
-#include <math.h>
+#include <tgmath.h>
 
 /*  Maximum length of last message */
 #define MINUNIT_MESSAGE_LEN 1024

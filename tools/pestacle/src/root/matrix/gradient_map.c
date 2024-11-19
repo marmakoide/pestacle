@@ -1,3 +1,4 @@
+#include <tgmath.h>
 #include <pestacle/memory.h>
 
 #include "root/matrix/gradient_map.h"
@@ -143,7 +144,7 @@ node_update(
 	for(int i = dst->h; i != 0; --i, pixel_row += dst->pitch) {
 		uint8_t* pixel = pixel_row;
 		for(int j = dst->w; j != 0; --j, pixel += 4, ++coeff) {
-			uint8_t level = (uint8_t)fmaxf(fminf(255.f * (*coeff), 255.f), 0.f);
+			uint8_t level = (uint8_t)fmax(fmin(255.f * (*coeff), 255.f), 0.f);
 
 			for(int k = 0; k < 3; ++k)
 				pixel[k] = level;

@@ -1,4 +1,4 @@
-#include <math.h>
+#include <tgmath.h>
 #include <assert.h>
 #include <pestacle/image/gaussian.h>
 
@@ -21,7 +21,7 @@ GaussianFilter_init(
 	Matrix_fill(&(self->U), (real_t)0);
 
 	// Compute the Gaussian kernel
-	size_t kernel_size = 6 * ((size_t)floorf(sigma)) + 1;
+	size_t kernel_size = 6 * ((size_t)floor(sigma)) + 1;
 	Vector_init(&(self->kernel), kernel_size);
 	Vector_set_gaussian_kernel(&(self->kernel), sigma);
 }

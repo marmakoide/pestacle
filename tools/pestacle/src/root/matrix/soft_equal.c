@@ -1,4 +1,7 @@
+#include <tgmath.h>
+
 #include <pestacle/memory.h>
+
 #include <pestacle/math/special.h>
 
 #include "root/matrix/soft_equal.h"
@@ -117,7 +120,7 @@ SoftEqual_init(
 	Matrix_fill(&(self->out), (real_t)0);
 
 	self->value = value;
-	self->factor = -powf(erfinv(ratio) / radius, 2);
+	self->factor = -pow(erfinv(ratio) / radius, 2);
 }
 
 

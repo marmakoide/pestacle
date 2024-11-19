@@ -15,7 +15,7 @@ MU_TEST(test_special_erfinv) {
 
 	for(size_t i = 0; i < step_count; ++i) {
 		real_t x = start + ((end - start) / (step_count - 1)) * i;
-		real_t y = erfinv(erff(x));
+		real_t y = erfinv(erf(x));
 		mu_assert_double_eq(x, y);
 	}
 }
@@ -237,7 +237,7 @@ MU_TEST(test_Vector_log) {
 		
 		for(size_t j = 0; j < i; ++j)
 			mu_assert_double_eq(
-				logf(j),
+				log(j),
 				Vector_get_coeff(&U, j)
 			);
 
@@ -257,7 +257,7 @@ MU_TEST(test_Vector_exp) {
 
 		for(size_t j = 0; j < i; ++j)
 			mu_assert_double_eq(
-				expf(j),
+				exp((real_t)j),
 				Vector_get_coeff(&U, j)
 			);
 
@@ -382,7 +382,7 @@ MU_TEST(test_Vector_reduction_logsumexp) {
 
 		Vector_arange(&U, (real_t)0, (real_t)1);
 		real_t ret = Vector_reduction_logsumexp(&U);
-		real_t ret_expected = logf((1.f - expf(i)) / (1.f - expf(1.f)));
+		real_t ret_expected = log((1 - exp(i)) / (1 - exp(1)));
 		mu_assert_double_eq(ret_expected, ret);
 		
 		Vector_destroy(&U);
@@ -476,7 +476,7 @@ MU_TEST(test_Vector_convolution__zero) {
 				real_t sum = (real_t)0;
 				for(size_t n = 0; n < kernel_len; ++n)
 					if ((k + n >= i) && (k + n < vector_len + i))
-						sum = fmaf(
+						sum = fma(
 							Vector_get_coeff(&U, k + n - i),
 							Vector_get_coeff(&W, n),
 							sum
@@ -526,7 +526,7 @@ MU_TEST(test_Vector_convolution__mirror) {
 						index += 2 * (vector_len - 1);
 					}
 
-					sum = fmaf(
+					sum = fma(
 						Vector_get_coeff(&U, index),
 						Vector_get_coeff(&W, n),
 						sum
@@ -803,7 +803,7 @@ MU_TEST(test_Matrix_log) {
 			for(size_t ui = 0; ui < i; ++ui)
 				for(size_t uj = 0; uj < j; ++uj, ++uk)
 					mu_assert_double_eq(
-						logf(uk),
+						log(uk),
 						Matrix_get_coeff(&U, ui, uj)
 					);
 
@@ -826,7 +826,7 @@ MU_TEST(test_Matrix_exp) {
 			for(size_t ui = 0; ui < i; ++ui)
 				for(size_t uj = 0; uj < j; ++uj, ++uk)
 					mu_assert_double_eq(
-						expf(uk),
+						exp(((real_t)uk)),
 						Matrix_get_coeff(&U, ui, uj)
 					);
 
@@ -923,7 +923,7 @@ MU_TEST(test_Matrix_reduction_logsumexp) {
 			Matrix_filler(&U);
 
 			real_t ret = Matrix_reduction_logsumexp(&U);
-			real_t ret_expected = logf((1.f - expf(k)) / (1.f - expf(1.f)));
+			real_t ret_expected = log((1 - exp(k)) / (1 - exp(1)));
 			mu_assert_double_eq(ret_expected, ret);
 
 			Matrix_destroy(&U);

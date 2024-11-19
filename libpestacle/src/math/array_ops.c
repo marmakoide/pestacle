@@ -1,4 +1,4 @@
-#include <math.h>
+#include <tgmath.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <pestacle/math/array_ops.h>
@@ -55,7 +55,7 @@ array_ops_arange(
 	*dst = start;
 	dst += 1;
 	for(size_t i = 1; i < len; ++i, ++dst)
-		*dst = fmaf(i, step, start);
+		*dst = fma(i, step, start);
 }
 
 
@@ -83,7 +83,7 @@ array_ops_set_gaussian_kernel(
 	
 	real_t* ptr = dst;
 	for(size_t i = len; i != 0; --i, ++ptr, ++x) {
-		*ptr = expf(k * square(x));
+		*ptr = exp(k * square(x));
 		sum += *ptr;
 	}
 
@@ -97,7 +97,7 @@ array_ops_abs(
 	size_t len
 ) {
 	for( ; len != 0; --len, ++dst)
-		*dst = fabsf(*dst);
+		*dst = fabs(*dst);
 }
 
 
@@ -117,7 +117,7 @@ array_ops_sqrt(
 	size_t len
 ) {
 	for( ; len != 0; --len, ++dst)
-		*dst = sqrtf(*dst);
+		*dst = sqrt(*dst);
 }
 
 
@@ -127,7 +127,7 @@ array_ops_exp(
 	size_t len
 ) {
 	for( ; len != 0; --len, ++dst)
-		*dst = expf(*dst);
+		*dst = exp(*dst);
 }
 
 
@@ -137,7 +137,7 @@ array_ops_log(
 	size_t len
 ) {
 	for( ; len != 0; --len, ++dst)
-		*dst = logf(*dst);
+		*dst = log(*dst);
 }
 
 
@@ -198,7 +198,7 @@ array_ops_reduction_min(
 ) {
 	real_t ret = *src;
 	for(--len, ++src; len != 0; --len, ++src)
-		ret = fminf(ret, *src);
+		ret = fmin(ret, *src);
 
 	return ret;
 }
@@ -211,7 +211,7 @@ array_ops_reduction_max(
 ) {
 	real_t ret = *src;
 	for(--len, ++src; len != 0; --len, ++src)
-		ret = fmaxf(ret, *src);
+		ret = fmax(ret, *src);
 
 	return ret;
 }
@@ -237,11 +237,11 @@ array_ops_reduction_logsumexp(
 ) {
 	real_t max_val = array_ops_reduction_max(src, len);
 
-	real_t ret = expf(*src - max_val);
+	real_t ret = exp(*src - max_val);
 	for(--len, ++src; len != 0; --len, ++src)
-		ret += expf(*src - max_val);
+		ret += exp(*src - max_val);
 
-	return logf(ret) + max_val;
+	return log(ret) + max_val;
 }
 
 
@@ -252,7 +252,7 @@ array_ops_reduction_square_sum(
 ) {
 	real_t ret = (*src) * (*src);
 	for(--len, ++src; len != 0; --len, ++src)
-		ret = fmaf(*src, *src, ret);
+		ret = fma(*src, *src, ret);
 
 	return ret;
 }
@@ -277,7 +277,7 @@ array_ops_reduction_mean(
 			mean2 += delta * delta2;
 		}
 
-		*out_std = sqrtf(mean2 / len);
+		*out_std = sqrt(mean2 / len);
 	}
 	else {
 		ret = *src;
@@ -308,11 +308,11 @@ array_ops_reduction_average(
 		for(size_t i = 1; i <= len; ++i, ++src, ++weight) {
 			w_sum += *weight;
 			real_t prev_ret = ret;
-			ret = fmaf(*weight / w_sum, *src - prev_ret, prev_ret);
-			S = fmaf(*weight * (*src - ret), *src - prev_ret, S);
+			ret = fma(*weight / w_sum, *src - prev_ret, prev_ret);
+			S = fma(*weight * (*src - ret), *src - prev_ret, S);
 		}
 
-		*out_std = sqrtf(S / w_sum);
+		*out_std = sqrt(S / w_sum);
 	}
 	else {
 		ret = *src;
@@ -323,7 +323,7 @@ array_ops_reduction_average(
 
 		for(size_t i = 2; i <= len; ++i, ++src, ++weight) {
 			w_sum += *weight;
-			ret = fmaf(*weight / w_sum, *src - ret, ret);
+			ret = fma(*weight / w_sum, *src - ret, ret);
 		}
 	}
 
@@ -339,7 +339,7 @@ array_ops_dot(
 ) {
 	real_t sum = (*src) * (*other);
 	for(--len, ++src, ++other; len != 0; --len, ++src, ++other)
-		sum = fmaf(*src, *other, sum);
+		sum = fma(*src, *other, sum);
 	return sum;
 }
 
@@ -374,7 +374,7 @@ array_ops_scaled_add(
 	real_t factor
 ) {
 	for( ; len != 0; --len, ++dst, ++src)
-		*dst = fmaf(factor, *src, *dst);
+		*dst = fma(factor, *src, *dst);
 }
 
 
@@ -407,7 +407,7 @@ array_ops_min(
 	size_t len
 ) {
 	for( ; len != 0; --len, ++dst, ++src)
-		*dst = fminf(*dst, *src);
+		*dst = fmin(*dst, *src);
 }
 
 
@@ -419,7 +419,7 @@ array_ops_scaled_min(
 	real_t factor
 ) {
 	for( ; len != 0; --len, ++dst, ++src)
-		*dst = factor * fminf(*dst, *src);
+		*dst = factor * fmin(*dst, *src);
 }
 
 
@@ -430,7 +430,7 @@ array_ops_max(
 	size_t len
 ) {
 	for( ; len != 0; --len, ++dst, ++src)
-		*dst = fmaxf(*dst, *src);
+		*dst = fmax(*dst, *src);
 }
 
 
@@ -442,7 +442,7 @@ array_ops_scaled_max(
 	real_t factor
 ) {
 	for( ; len != 0; --len, ++dst, ++src)
-		*dst = factor * fmaxf(*dst, *src);
+		*dst = factor * fmax(*dst, *src);
 }
 
 
@@ -463,7 +463,7 @@ array_ops_convolution__zero(
 		_src += 1;
 		_kernel += 1;
 		for(size_t j = kernel_len - 1 - i; j != 0; --j, ++_src, ++_kernel)
-			sum = fmaf(*_kernel, *_src, sum);
+			sum = fma(*_kernel, *_src, sum);
 
 		*dst = sum;
 	}
@@ -477,7 +477,7 @@ array_ops_convolution__zero(
 		_src += 1;
 		_kernel += 1;
 		for(size_t j = kernel_len - 1; j != 0; --j, ++_src, ++_kernel)
-			sum = fmaf(*_kernel, *_src, sum);
+			sum = fma(*_kernel, *_src, sum);
 
 		*dst = sum;
 	}
@@ -491,7 +491,7 @@ array_ops_convolution__zero(
 		_src += 1;
 		_kernel += 1;
 		for(size_t j = kernel_len - 2 - i; j != 0; --j, ++_src, ++_kernel)
-			sum = fmaf(*_kernel, *_src, sum);
+			sum = fma(*_kernel, *_src, sum);
 
 		*dst = sum;
 	}
@@ -517,13 +517,13 @@ array_ops_convolution__mirror(
 		_kernel += 1;
 	
 		for(size_t j = kernel_len - 1 - i; j != 0; --j, ++_src, ++_kernel)
-			sum = fmaf(*_kernel, *_src, sum);
+			sum = fma(*_kernel, *_src, sum);
 
 		_src = src + 1;
 		_kernel = kernel + i - 1;
 
 		for(size_t j = i; j != 0; --j, ++_src, --_kernel)
-			sum = fmaf(*_kernel, *_src, sum);
+			sum = fma(*_kernel, *_src, sum);
 
 		*dst = sum;
 	}
@@ -537,7 +537,7 @@ array_ops_convolution__mirror(
 		_src += 1;
 		_kernel += 1;
 		for(size_t j = kernel_len - 1; j != 0; --j, ++_src, ++_kernel)
-			sum = fmaf(*_kernel, *_src, sum);
+			sum = fma(*_kernel, *_src, sum);
 
 		*dst = sum;
 	}
@@ -553,11 +553,11 @@ array_ops_convolution__mirror(
 		_kernel += 1;
 
 		for(size_t j = kernel_len - 2 - i; j != 0; --j, ++_src, ++_kernel)
-			sum = fmaf(*_kernel, *_src, sum);
+			sum = fma(*_kernel, *_src, sum);
 
 		_src -= 2;
 		for(size_t j = i + 1; j != 0; --j, --_src, ++_kernel)
-			sum = fmaf(*_kernel, *_src, sum);
+			sum = fma(*_kernel, *_src, sum);
 
 		*dst = sum;
 	}
@@ -583,7 +583,7 @@ array_ops_strided_convolution__zero(
 		_src += src_stride;
 		_kernel += 1;
 		for(size_t j = kernel_len - 1 - i; j != 0; --j, _src += src_stride, ++_kernel)
-			sum = fmaf(*_kernel, *_src, sum);
+			sum = fma(*_kernel, *_src, sum);
 
 		*dst = sum;
 	}
@@ -597,7 +597,7 @@ array_ops_strided_convolution__zero(
 		_src += src_stride;
 		_kernel += 1;
 		for(size_t j = kernel_len - 1; j != 0; --j, _src += src_stride, ++_kernel)
-			sum = fmaf(*_kernel, *_src, sum);
+			sum = fma(*_kernel, *_src, sum);
 
 		*dst = sum;
 	}
@@ -611,7 +611,7 @@ array_ops_strided_convolution__zero(
 		_src += src_stride;
 		_kernel += 1;
 		for(size_t j = kernel_len - 2 - i; j != 0; --j, _src += src_stride, ++_kernel)
-			sum = fmaf(*_kernel, *_src, sum);
+			sum = fma(*_kernel, *_src, sum);
 
 		*dst = sum;
 	}
@@ -639,13 +639,13 @@ array_ops_strided_convolution__mirror(
 		_kernel += 1;
 
 		for(size_t j = kernel_len - 1 - i; j != 0; --j, _src += src_stride, ++_kernel)
-			sum = fmaf(*_kernel, *_src, sum);
+			sum = fma(*_kernel, *_src, sum);
 
 		_src = src + src_stride;
 		_kernel = kernel + i - 1;
 
 		for(size_t j = i; j != 0; --j, _src += src_stride, --_kernel)
-			sum = fmaf(*_kernel, *_src, sum);
+			sum = fma(*_kernel, *_src, sum);
 		
 		*dst = sum;
 	}
@@ -659,7 +659,7 @@ array_ops_strided_convolution__mirror(
 		_src += src_stride;
 		_kernel += 1;
 		for(size_t j = kernel_len - 1; j != 0; --j, _src += src_stride, ++_kernel)
-			sum = fmaf(*_kernel, *_src, sum);
+			sum = fma(*_kernel, *_src, sum);
 
 		*dst = sum;
 	}
@@ -675,11 +675,11 @@ array_ops_strided_convolution__mirror(
 		_kernel += 1;
 
 		for(size_t j = kernel_len - 2 - i; j != 0; --j, _src += src_stride, ++_kernel)
-			sum = fmaf(*_kernel, *_src, sum);
+			sum = fma(*_kernel, *_src, sum);
 
 		_src -= 2 * src_stride;
 		for(size_t j = i + 1; j != 0; --j, _src -= src_stride, ++_kernel)
-			sum = fmaf(*_kernel, *_src, sum);
+			sum = fma(*_kernel, *_src, sum);
 		
 		*dst = sum;
 	}
