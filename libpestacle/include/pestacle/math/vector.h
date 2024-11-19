@@ -95,6 +95,12 @@ Vector_scale(
 
 
 extern void
+Vector_abs(
+	Vector* self
+);
+
+
+extern void
 Vector_square(
 	Vector* self
 );

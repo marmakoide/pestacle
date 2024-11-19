@@ -92,6 +92,16 @@ array_ops_set_gaussian_kernel(
 
 
 void
+array_ops_abs(
+	real_t* dst,
+	size_t len
+) {
+	for( ; len != 0; --len, ++dst)
+		*dst = fabsf(*dst);
+}
+
+
+void
 array_ops_square(
 	real_t* dst,
 	size_t len

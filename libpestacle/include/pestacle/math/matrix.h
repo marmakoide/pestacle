@@ -79,6 +79,12 @@ Matrix_copy(
 
 
 extern void
+Matrix_abs(
+	Matrix* self
+);
+
+
+extern void
 Matrix_square(
 	Matrix* self
 );

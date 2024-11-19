@@ -160,6 +160,19 @@ Matrix_copy(
 
 
 void
+Matrix_abs(
+	Matrix* self
+) {
+	assert(self);
+
+	array_ops_abs(
+		self->data,
+		self->data_len
+	);
+}
+
+
+void
 Matrix_square(
 	Matrix* self
 ) {

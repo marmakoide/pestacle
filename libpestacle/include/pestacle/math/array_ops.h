@@ -60,6 +60,13 @@ array_ops_set_gaussian_kernel(
 
 
 extern void
+array_ops_abs(
+	real_t* dst,
+	size_t len
+);
+
+
+extern void
 array_ops_square(
 	real_t* dst,
 	size_t len

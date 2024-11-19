@@ -141,6 +141,19 @@ Vector_arange(
 
 
 void
+Vector_abs(
+	Vector* self
+) {
+	assert(self);
+
+	array_ops_abs(
+		self->data,
+		self->len
+	);
+}
+
+
+void
 Vector_square(
 	Vector* self
 ) {
