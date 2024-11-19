@@ -55,7 +55,7 @@ array_ops_arange(
 	*dst = start;
 	dst += 1;
 	for(size_t i = 1; i < len; ++i, ++dst)
-		*dst = start + i * step;
+		*dst = fmaf(i, step, start);
 }
 
 
