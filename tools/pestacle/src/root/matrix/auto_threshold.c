@@ -6,6 +6,7 @@
 #endif
 
 #include <pestacle/memory.h>
+#include <pestacle/math/average.h>
 #include <pestacle/math/univariate_optim.h>
 
 #include "root/matrix/auto_threshold.h"
@@ -38,7 +39,7 @@ node_output(
 
 
 #define SOURCE_INPUT 0
-#define WEIGHT_INPUT 0
+#define WEIGHT_INPUT 1
 
 static const NodeInputDefinition
 node_inputs[] = {
@@ -157,28 +158,57 @@ AutoThreshold_em_initialization(
 	real_t coeff_min = Matrix_reduction_min(input);
 	real_t coeff_max = Matrix_reduction_max(input);
 
-	// Compute mean, sigma, theta with Welford's algorithm
-	size_t count[2] = { 0, 0 };
-	for(int i = 0; i < 2; ++i) {
-		self->mu[i] = (real_t)0;
-		self->sigma[i] = (real_t)0;
-	}
+	// Compute mean, sigma, theta
+	AverageResult avg[2];
+	for(int i = 0; i < 2; ++i)
+		AverageResult_init(&(avg[i]));
 
 	const real_t* coeff = input->data;
-	for(size_t i = 0; i < input->row_count; ++i) {
+	for(size_t i = 0; i < input->row_count; ++i)
 		for(size_t j = 0; j < input->col_count; ++j, ++coeff) {
 			int k = fabsf((*coeff) - coeff_min) > fabsf((*coeff) - coeff_max);
-
-			real_t delta = (*coeff) - self->mu[k];
-			count[k] += 1;
-			self->mu[k] += delta / count[k];
-			self->sigma[k] += delta * ((*coeff)- self->mu[k]);
+			AverageResult_accumulate(&(avg[k]), *coeff);
 		}
-	}
 
 	for(int i = 0; i < 2; ++i) {
-		self->sigma[i] = sqrtf(self->sigma[i] / count[i]);
-		self->theta[i] = ((real_t)count[i]) / ((real_t)input->data_len);
+		self->mu[i] = AverageResult_mean(&(avg[i]));
+		self->sigma[i] = AverageResult_stddev(&(avg[i]));
+		self->theta[i] = ((real_t)AverageResult_count(&(avg[i]))) / ((real_t)input->data_len);
+	}
+}
+
+
+static void
+AutoThreshold_weighted_em_initialization(
+	AutoThreshold* self,
+	const Matrix* input,
+	const Matrix* weight
+) {
+	// Compute extremum values
+	real_t coeff_min = Matrix_reduction_min(input);
+	real_t coeff_max = Matrix_reduction_max(input);
+
+	// Compute mean, sigma, theta
+	KahanSum weight_sum;
+	KahanSum_init(&weight_sum);
+
+	WeightedAverageResult avg[2];
+	for(int i = 0; i < 2; ++i)
+		WeightedAverageResult_init(&(avg[i]));
+
+	const real_t* w = weight->data;
+	const real_t* coeff = input->data;
+	for(size_t i = 0; i < input->row_count; ++i)
+		for(size_t j = 0; j < input->col_count; ++j, ++coeff, ++w) {
+			int k = fabsf((*coeff) - coeff_min) > fabsf((*coeff) - coeff_max);
+			KahanSum_accumulate(&weight_sum, *w);
+			WeightedAverageResult_accumulate(&(avg[k]), *w, *coeff);
+		}
+
+	for(int i = 0; i < 2; ++i) {
+		self->mu[i] = WeightedAverageResult_mean(&(avg[i]));
+		self->sigma[i] = WeightedAverageResult_stddev(&(avg[i]));
+		self->theta[i] = WeightedAverageResult_weight_sum(&(avg[i])) / KahanSum_sum(&weight_sum);
 	}
 }
 
@@ -213,7 +243,62 @@ AutoThreshold_em_iteration(
 			Matrix_reduction_average(
 				input,
 				&(self->P[i]),
-				&(self->sigma[i]));
+				&(self->sigma[i])
+			);
+	}
+
+	// If theta, mu, or sigma is nan, something went wrong
+	for(int i = 0; i < 2; ++i)
+		if (isnan(self->theta[i]) || isnan(self->mu[i]) || isnan(self->sigma[i]))
+			return false;
+
+	// Job done
+	return true;
+}
+
+
+static bool
+AutoThreshold_weighted_em_iteration(
+	AutoThreshold* self,
+	const Matrix* weight,
+	const Matrix* input
+) {
+	// Compute P, ie. membership for each input coeff
+	for(int i = 0; i < 2; ++i) {
+		Matrix_copy(&(self->P[i]), input);
+		Matrix_inc(&(self->P[i]), -self->mu[i]);
+		Matrix_scale(&(self->P[i]), ((real_t)1) / self->sigma[i]);
+		Matrix_square(&(self->P[i]));
+		Matrix_scale(&(self->P[i]), (real_t)-.5);
+		Matrix_inc(&(self->P[i]), -logf((sqrtf(2 * M_PI) * self->sigma[i])));
+		Matrix_exp(&(self->P[i]));
+		Matrix_scale(&(self->P[i]), self->theta[i]);
+	}
+
+	// Normalize P
+	Matrix_copy(&(self->P_sum), &(self->P[0]));
+	Matrix_add(&(self->P_sum), &(self->P[1]));
+	for(int i = 0; i < 2; ++i)
+		Matrix_div(&(self->P[i]), &(self->P_sum));
+	
+	// Apply weights
+	for(int i = 0; i < 2; ++i)
+		Matrix_mul(&(self->P[i]), weight);
+
+	// Update mu and sigma
+	for(int i = 0; i < 2; ++i) {
+		self->theta[i] =
+			Matrix_reduction_average(
+				&(self->P[i]),
+				weight,
+				0
+			);
+		self->mu[i] = 
+			Matrix_reduction_average(
+				input,
+				&(self->P[i]),
+				&(self->sigma[i])
+			);
 	}
 
 	// If theta, mu, or sigma is nan, something went wrong
@@ -311,6 +396,46 @@ AutoThreshold_update(
 }
 
 
+static void
+AutoThreshold_weighted_update(
+	AutoThreshold* self,
+	const Matrix* weight,	
+	const Matrix* input
+) {
+	// EM iterations
+	for(size_t iteration_count = self->iterations_per_update; iteration_count != 0; --iteration_count) {
+		if (!(self->initialized)) {
+			AutoThreshold_weighted_em_initialization(self, weight, input);
+			self->initialized = true;
+		}
+		else
+			if (!AutoThreshold_weighted_em_iteration(self, weight, input))
+				self->initialized = false;
+
+		if (!self->initialized)
+			break;
+		
+		printf(
+			"theta = [%f, %f] mu = [%f, %f] sigma = [%f, %f]\n",
+			self->theta[0],
+			self->theta[1],
+			self->mu[0],
+			self->mu[1],
+			self->sigma[0],
+			self->sigma[1]
+		);
+	}
+
+	// Thresholding
+	if (self->initialized) {
+		real_t threshold = AutoThreshold_get_threshold(self);
+		Matrix_copy(&(self->out), input);
+		Matrix_scale(&(self->out), -1);
+		Matrix_heaviside(&(self->out), -threshold);
+	}
+}
+
+
 static bool
 node_setup(
 	Node* self
@@ -354,10 +479,18 @@ node_update(
 ) {
 	AutoThreshold* data = (AutoThreshold*)self->data;
 
-	AutoThreshold_update(
-		data,
-		Node_output(self->inputs[SOURCE_INPUT]).matrix
-	);
+	if (self->inputs[WEIGHT_INPUT])
+		AutoThreshold_weighted_update(
+			data,
+			Node_output(self->inputs[WEIGHT_INPUT]).matrix,
+			Node_output(self->inputs[SOURCE_INPUT]).matrix
+		);
+
+	else		
+		AutoThreshold_update(
+			data,
+			Node_output(self->inputs[SOURCE_INPUT]).matrix
+		);
 }
 
 
