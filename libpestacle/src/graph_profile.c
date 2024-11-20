@@ -1,4 +1,3 @@
-#include <tgmath.h>
 #include <assert.h>
 #include <pestacle/memory.h>
 #include <pestacle/graph.h>
