@@ -258,8 +258,7 @@ Graph_update_with_profile(
 		// Track the running time for that node
 		NodeProfile_update(
 			profile_ptr,
-			((float)(end_time - start_time)) / SDL_GetPerformanceFrequency(),
-			profile->update_count
+			((real_t)(end_time - start_time)) / SDL_GetPerformanceFrequency()
 		);
 	}
 }

@@ -1,4 +1,4 @@
-#include <math.h>
+#include <tgmath.h>
 #include <assert.h>
 #include <pestacle/memory.h>
 #include <pestacle/graph.h>
@@ -13,25 +13,19 @@ NodeProfile_init(
 ) {
 	assert(self);
 
-	self->mean_time = 0;
-	self->m2_time = 0;
+	AverageResult_init(&(self->time));
 }
 
 
 void
 NodeProfile_update(
 	NodeProfile* self,
-	float time_interval,
-	size_t update_count
+	real_t time_interval
 ) {
 	assert(self);
 	assert(time_interval >= 0);
 
-	// Welford's online algorithm
-    float delta = time_interval - self->mean_time;
-    self->mean_time += delta / update_count;
-    float delta2 = time_interval - self->mean_time;
-    self->m2_time += delta * delta2;
+	AverageResult_accumulate(&(self->time), time_interval);
 }
 
 
@@ -115,8 +109,8 @@ GraphProfile_print_report(
 		fprintf(
 			fp,
 			" => %.3f msec (+/- %.3f)\n",
-			1e3f * profile_ptr->mean_time,
-			sqrtf(3 * 1e3f * profile_ptr->m2_time / self->update_count)
+			1e3f * AverageResult_mean(&(profile_ptr->time)),
+			3 * 1e3f * AverageResult_stddev(&(profile_ptr->time))
 		);
 	}
 }

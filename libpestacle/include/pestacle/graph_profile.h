@@ -6,19 +6,18 @@ extern "C" {
 #endif
 
 #include <SDL.h>
+#include <pestacle/math/average.h>
 
 
 typedef struct {
-	float mean_time; // Mean running time
-	float m2_time;   // Squared distance from the mean running time
+	AverageResult time;
 } NodeProfile;
 
 
 extern void
 NodeProfile_update(
 	NodeProfile* self,
-	float time_interval,
-	size_t update_count
+	real_t time_interval
 );
 
 
