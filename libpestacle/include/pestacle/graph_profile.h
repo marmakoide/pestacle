@@ -24,7 +24,7 @@ NodeProfile_update(
 struct s_Graph;
 
 typedef struct {
-	size_t update_count;
+	AverageResult time;
 	NodeProfile* node_profiles;
 } GraphProfile;
 

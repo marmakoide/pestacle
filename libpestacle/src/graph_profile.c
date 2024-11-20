@@ -23,6 +23,7 @@ NodeProfile_update(
 ) {
 	assert(self);
 	assert(time_interval >= 0);
+	assert(!isnan(time_interval));
 
 	AverageResult_accumulate(&(self->time), time_interval);
 }
@@ -38,7 +39,8 @@ GraphProfile_init(
 	assert(self);
 	assert(graph);
 
-	self->update_count = 0;
+	AverageResult_init(&(self->time));
+
 	self->node_profiles =
 		(NodeProfile*)checked_malloc(graph->sorted_node_count * sizeof(NodeProfile));
 
@@ -65,11 +67,11 @@ GraphProfile_print_report(
 	FILE* fp
 ) {
 	assert(self);
+	assert(graph);
 	assert(fp);
 
 	Node** node_ptr;
 	NodeProfile* profile_ptr;
-
 
 	// Compute the max length for the node identification field
 	size_t node_id_max_len = 0;
@@ -86,7 +88,7 @@ GraphProfile_print_report(
 	}
 
 	// Print the report
-	fprintf(fp, "%zu updates\n", self->update_count);
+	fprintf(fp, "%zu updates\n", AverageResult_count(&self->time));
 
 	node_ptr = graph->sorted_nodes;
 	profile_ptr = self->node_profiles;
@@ -112,4 +114,12 @@ GraphProfile_print_report(
 			3 * 1e3f * AverageResult_stddev(&(profile_ptr->time))
 		);
 	}
+
+	fprintf(
+		fp,
+		"total %.3f msec (+/- %.3f)\n",
+		1e3f * AverageResult_mean(&(self->time)),
+		3 * 1e3f * AverageResult_stddev(&(self->time))
+	);
+
 }

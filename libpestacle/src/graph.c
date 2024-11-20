@@ -242,23 +242,28 @@ Graph_update_with_profile(
 	assert(self);
 	assert(profile);
 
-	// Update the number of updates
-	profile->update_count += 1;
-
 	// Update the nodes in reverse topological order
 	Node** node_ptr = self->sorted_nodes + self->sorted_node_count - 1;
 	NodeProfile* profile_ptr = profile->node_profiles + self->sorted_node_count - 1;
 
+	Uint64 start_time = SDL_GetPerformanceCounter();
+
 	for(size_t i = self->sorted_node_count; i != 0; --i, --node_ptr, --profile_ptr) {
 		// Update the node
-		Uint64 start_time = SDL_GetPerformanceCounter();
+		Uint64 node_start_time = SDL_GetPerformanceCounter();
 		Node_update(*node_ptr);
-		Uint64 end_time = SDL_GetPerformanceCounter();
+		Uint64 node_end_time = SDL_GetPerformanceCounter();
 
 		// Track the running time for that node
 		NodeProfile_update(
 			profile_ptr,
-			((real_t)(end_time - start_time)) / SDL_GetPerformanceFrequency()
+			((real_t)(node_end_time - node_start_time)) / SDL_GetPerformanceFrequency()
 		);
 	}
+
+	Uint64 end_time = SDL_GetPerformanceCounter();
+	AverageResult_accumulate(
+		&(profile->time),
+		((real_t)(end_time - start_time)) / SDL_GetPerformanceFrequency()
+	);
 }
