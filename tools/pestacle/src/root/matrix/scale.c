@@ -44,7 +44,7 @@ node_inputs[] = {
 
 #define WIDTH_PARAMETER  0
 #define HEIGHT_PARAMETER 1
-#define SCALE_PARAMETER  2
+#define FACTOR_PARAMETER  2
 
 static const ParameterDefinition
 node_parameters[] = {
@@ -60,8 +60,8 @@ node_parameters[] = {
 	},
 	{
 		ParameterType__real,
-		"scale",
-		{ .real_value = 0. }
+		"factor",
+		{ .real_value = 1 }
 	},
 	PARAMETER_DEFINITION_END
 };
@@ -126,7 +126,7 @@ static void
 node_update(
 	Node* self
 ) {
-	real_t scale = (real_t)self->parameters[SCALE_PARAMETER].real_value;
+	real_t factor = (real_t)self->parameters[FACTOR_PARAMETER].real_value;
 
 	Matrix* data = (Matrix*)self->data;
 
@@ -136,7 +136,7 @@ node_update(
 	);
 	Matrix_scale(
 		data,
-		scale
+		factor
 	);
 }
 
