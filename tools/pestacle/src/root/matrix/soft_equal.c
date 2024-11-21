@@ -1,7 +1,6 @@
 #include <tgmath.h>
 
 #include <pestacle/memory.h>
-
 #include <pestacle/math/special.h>
 
 #include "root/matrix/soft_equal.h"
