@@ -125,7 +125,7 @@ struct ToFCameraData {
 		for(size_t i = 0; i < out.row_count; ++i, dst_row += out.col_count) {
 			float* dst = dst_row;
 			for(size_t j = 0; j < out.col_count; ++j, src += 1, dst += 1)
-				*dst = *src / 4000.f;
+				*dst = *src;
 		}
 		
 		tof.releaseFrame(frame);
