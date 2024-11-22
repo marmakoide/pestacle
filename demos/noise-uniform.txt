@@ -1,0 +1,21 @@
+main-window = window(
+	width  = 512,
+	height = 512,
+	title  = "demo-noise-uniform"
+)
+
+noise = matrix.random.uniform(
+	width  = 512,
+	height = 512,
+	seed = 42	
+)
+
+
+output = matrix.gradient-map(
+	width  = 512,
+	height = 512
+)
+
+output.source = noise
+
+main-window.display.source = output

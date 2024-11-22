@@ -23,7 +23,7 @@ scope_instance_delegate_list[] = {
 	&root_matrix_scope_delegate,
 	&root_rgb_surface_scope_delegate,
 	0
-}; // scope_list
+}; // scope_instance_delegate_list
 
 
 static const ParameterDefinition

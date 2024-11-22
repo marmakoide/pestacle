@@ -8,6 +8,8 @@
 #include "root/matrix/soft_equal.h"
 #include "root/matrix/stddev.h"
 
+#include "root/matrix/random/scope.h"
+
 #include "root/matrix/scope.h"
 
 
@@ -32,6 +34,13 @@ node_delegate_list[] = {
 	&root_matrix_stddev_node_delegate,
 	0
 }; // node_delegate_list
+
+
+static const ScopeDelegate*
+scope_instance_delegate_list[] = {
+	&root_matrix_random_scope_delegate,
+	0
+}; // scope_instance_delegate_list
 
 
 static const ParameterDefinition
@@ -62,6 +71,6 @@ scope_setup(
 			self,
 			 node_delegate_list,
 			 0,
-			 0
+			 scope_instance_delegate_list
 		);
 }
