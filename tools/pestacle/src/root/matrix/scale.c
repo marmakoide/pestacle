@@ -100,7 +100,7 @@ node_setup(
 		return false;
 
 	// Setup data
-	Matrix_init(data, width, height);
+	Matrix_init(data, height, width);
 	Matrix_fill(data, (real_t)0);
 
 	// Job done
