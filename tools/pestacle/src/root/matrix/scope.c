@@ -1,6 +1,7 @@
 #include "root/matrix/auto_threshold.h"
 #include "root/matrix/gaussian.h"
 #include "root/matrix/gradient_map.h"
+#include "root/matrix/heaviside.h"
 #include "root/matrix/heat_diffusion.h"
 #include "root/matrix/product.h"
 #include "root/matrix/resize.h"
@@ -27,6 +28,7 @@ node_delegate_list[] = {
 	&root_matrix_auto_threshold_node_delegate,
 	&root_matrix_gaussian_node_delegate,
 	&root_matrix_gradient_map_node_delegate,
+	&root_matrix_heaviside_node_delegate,
 	&root_matrix_heat_diffusion_node_delegate,
 	&root_matrix_product_node_delegate,
 	&root_matrix_resize_node_delegate,
