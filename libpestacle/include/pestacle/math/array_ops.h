@@ -8,7 +8,7 @@ extern "C" {
 
 #include <stddef.h>
 #include <stdio.h>
-#include <pestacle/math/real.h>
+#include <pestacle/math/randomizer.h>
 
 
 extern real_t*
@@ -40,6 +40,22 @@ array_ops_arange(
 	size_t len,
 	real_t start,
 	real_t step
+);
+
+
+extern void
+array_ops_random_uniform(
+	real_t* dst,
+	size_t len,
+	Randomizer* rng
+);
+
+
+extern void
+array_ops_random_normal(
+	real_t* dst,
+	size_t len,
+	Randomizer* rng
 );
 
 

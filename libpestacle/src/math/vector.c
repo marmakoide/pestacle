@@ -141,6 +141,38 @@ Vector_arange(
 
 
 void
+Vector_random_uniform(
+	Vector* self,
+	Randomizer* rng
+) {
+	assert(self);
+	assert(rng);
+
+	array_ops_random_uniform(
+		self->data,
+		self->len,
+		rng
+	);
+}
+
+
+void
+Vector_random_normal(
+	Vector* self,
+	Randomizer* rng
+) {
+	assert(self);
+	assert(rng);
+
+	array_ops_random_normal(
+		self->data,
+		self->len,
+		rng
+	);
+}
+
+
+void
 Vector_abs(
 	Vector* self
 ) {

@@ -99,6 +99,38 @@ Matrix_get_coeff(
 
 
 void
+Matrix_random_uniform(
+	Matrix* self,
+	Randomizer* rng
+) {
+	assert(self);
+	assert(rng);
+
+	array_ops_random_uniform(
+		self->data,
+		self->data_len,
+		rng
+	);
+}
+
+
+void
+Matrix_random_normal(
+	Matrix* self,
+	Randomizer* rng
+) {
+	assert(self);
+	assert(rng);
+
+	array_ops_random_normal(
+		self->data,
+		self->data_len,
+		rng
+	);
+}
+
+
+void
 Matrix_transpose(
 	Matrix* self,
 	const Matrix* other

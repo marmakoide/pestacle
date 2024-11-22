@@ -60,6 +60,51 @@ array_ops_arange(
 
 
 void
+array_ops_random_uniform(
+	real_t* dst,
+	size_t len,
+	Randomizer* rng
+) {
+	for( ; len != 0; --len, ++dst)
+		*dst = Randomizer_next_uniform(rng);
+}
+
+
+void
+array_ops_random_normal(
+	real_t* dst,
+	size_t len,
+	Randomizer* rng
+) {
+	static const real_t two_pi = 2 * M_PI;
+
+	// Use Box-Muller transform
+	for(size_t i = len / 2; i != 0; --i, dst += 2) {
+		real_t u1;
+		do {
+			u1 = Randomizer_next_uniform(rng);
+		} while(u1 <= 0);
+		real_t u2 = Randomizer_next_uniform(rng);
+
+		real_t mag = sqrt(-2 * log(u1));
+		dst[0] = mag * cos(two_pi * u2);
+		dst[1] = mag * sin(two_pi * u2);
+	}
+
+	if (len % 2) {
+		real_t u1;
+		do {
+			u1 = Randomizer_next_uniform(rng);
+		} while(u1 <= 0);
+		real_t u2 = Randomizer_next_uniform(rng);
+
+		real_t mag = sqrt(-2 * log(u1));
+		*dst = mag * cos(two_pi * u2);		
+	}
+}
+
+
+void
 array_ops_copy(
 	real_t* dst,
 	const real_t* src,

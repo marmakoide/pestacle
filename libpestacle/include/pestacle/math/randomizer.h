@@ -78,14 +78,6 @@ Randomizer_next_uniform(
 );
 
 
-
-extern real_t
-Randomizer_next_gaussian(
-	Randomizer* self,
-	real_t sigma
-);
-
-
 #ifdef __cplusplus
 }
 #endif

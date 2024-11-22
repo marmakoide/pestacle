@@ -1,9 +1,4 @@
-#define _USE_MATH_DEFINES
-#include <math.h>
-
-#ifndef  M_PI
-#define  M_PI  3.1415926535897932384626433
-#endif
+#include <tgmath.h>
 
 #include <pestacle/memory.h>
 #include <pestacle/math/average.h>

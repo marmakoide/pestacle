@@ -9,6 +9,11 @@ extern "C" {
 typedef float real_t;
 
 
+#ifndef  M_PI
+#define  M_PI  3.1415926535897932384626433
+#endif
+
+
 #ifdef __cplusplus
 }
 #endif

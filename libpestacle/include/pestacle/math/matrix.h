@@ -58,6 +58,20 @@ Matrix_get_coeff(
 
 
 extern void
+Matrix_random_uniform(
+	Matrix* self,
+	Randomizer* rng
+);
+
+
+extern void
+Matrix_random_normal(
+	Matrix* self,
+	Randomizer* rng
+);
+
+
+extern void
 Matrix_transpose(
 	Matrix* self,
 	const Matrix* other

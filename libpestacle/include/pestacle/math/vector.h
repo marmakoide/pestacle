@@ -81,6 +81,20 @@ Vector_arange(
 
 
 extern void
+Vector_random_uniform(
+	Vector* self,
+	Randomizer* rng
+);
+
+
+extern void
+Vector_random_normal(
+	Vector* self,
+	Randomizer* rng
+);
+
+
+extern void
 Vector_inc(
 	Vector* self,
 	real_t value
