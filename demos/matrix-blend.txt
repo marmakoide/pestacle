@@ -1,0 +1,62 @@
+main-window = window(
+	width  = 512,
+	height = 512,
+	title  = "demo-gaussian"
+)
+
+
+rgb-picture-a = png.load(
+	path = "demos/pictures/boat.png"
+)
+
+bw-picture-a = rgb-surface.luminance(
+	width  = 512,
+	height = 512
+)
+
+bw-picture-a.source = rgb-picture-a
+
+
+
+rgb-picture-b = png.load(
+	path = "demos/pictures/mandrill.png"
+)
+
+bw-picture-b = rgb-surface.luminance(
+	width  = 512,
+	height = 512
+)
+
+bw-picture-b.source = rgb-picture-b
+
+
+rgb-mask = png.load(
+	path = "demos/pictures/checkerboard-8x8.png"
+)
+
+bw-mask = rgb-surface.luminance(
+	width  = 512,
+	height = 512
+)
+
+bw-mask.source = rgb-mask
+
+
+blend = matrix.blend(
+	width  = 512,
+	height = 512
+)
+
+blend.mask = bw-mask
+blend.source-a = bw-picture-a
+blend.source-b = bw-picture-b
+
+
+output = matrix.gradient-map(
+	width  = 512,
+	height = 512
+)
+
+output.source = blend
+
+main-window.display.source = output

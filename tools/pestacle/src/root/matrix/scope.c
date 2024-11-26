@@ -1,4 +1,5 @@
 #include "root/matrix/auto_threshold.h"
+#include "root/matrix/blend.h"
 #include "root/matrix/gaussian.h"
 #include "root/matrix/gradient_map.h"
 #include "root/matrix/heaviside.h"
@@ -26,6 +27,7 @@ scope_setup(
 static const NodeDelegate*
 node_delegate_list[] = {
 	&root_matrix_auto_threshold_node_delegate,
+	&root_matrix_blend_node_delegate,
 	&root_matrix_gaussian_node_delegate,
 	&root_matrix_gradient_map_node_delegate,
 	&root_matrix_heaviside_node_delegate,
