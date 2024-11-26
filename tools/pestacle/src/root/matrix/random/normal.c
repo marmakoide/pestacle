@@ -37,7 +37,9 @@ node_inputs[] = {
 
 #define WIDTH_PARAMETER  0
 #define HEIGHT_PARAMETER 1
-#define SEED_PARAMETER 2
+#define MEAN_PARAMETER   2
+#define SIGMA_PARAMETER  3
+#define SEED_PARAMETER   4
 
 static const ParameterDefinition
 node_parameters[] = {
@@ -52,10 +54,20 @@ node_parameters[] = {
 		{ .int64_value = 32 }
 	},
 	{
+		ParameterType__real,
+		"mean",
+		{ .real_value = (real_t)0 }
+	},
+	{
+		ParameterType__real,
+		"sigma",
+		{ .real_value = (real_t)1 }
+	},
+	{
 		ParameterType__integer,
 		"seed",
 		{ .int64_value = 0 }
-	},
+	},	
 	PARAMETER_DEFINITION_END
 };
 
@@ -156,8 +168,13 @@ static void
 node_update(
 	Node* self
 ) {
+	real_t mean = (real_t)self->parameters[MEAN_PARAMETER].real_value;
+	real_t sigma = (real_t)self->parameters[SIGMA_PARAMETER].real_value;
+
 	Normal* data = (Normal*)self->data;
 	Normal_update(data);
+	Matrix_inc(&(data->data), mean);
+	Matrix_scale(&(data->data), sigma);
 }
 
 
