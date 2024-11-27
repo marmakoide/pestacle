@@ -1,6 +1,7 @@
 #include "minunit.h"
 
 #include <pestacle/macros.h>
+#include <pestacle/math/average.h>
 #include <pestacle/math/kahan_sum.h>
 #include <pestacle/math/vector.h>
 #include <pestacle/math/matrix.h>
@@ -18,6 +19,36 @@ MU_TEST(test_special_erfinv) {
 		real_t x = start + ((end - start) / (step_count - 1)) * i;
 		real_t y = erfinv(erf(x));
 		mu_assert_double_eq(x, y);
+	}
+}
+
+
+// --- Averaging test ---------------------------------------------------------
+
+MU_TEST(test_average) {
+	AverageResult avg;
+
+	for(size_t i = 1; i < 1024; ++i) {
+		AverageResult_init(&avg);
+		for(size_t j = 1; j <= i; ++j)
+			AverageResult_accumulate(&avg, j);
+
+		size_t expected_value = (i * (i + 1)) / 2;
+		mu_assert_double_eq(expected_value, i * AverageResult_mean(&avg));
+	}
+}
+
+
+MU_TEST(test_weighted_average) {
+	WeightedAverageResult avg;
+
+	for(size_t i = 1; i < 1024; ++i) {
+		WeightedAverageResult_init(&avg);
+		for(size_t j = 1; j <= i; ++j)
+			WeightedAverageResult_accumulate(&avg, 1, j);
+
+		size_t expected_value = (i * (i + 1)) / 2;
+		mu_assert_double_eq(expected_value, i * WeightedAverageResult_mean(&avg));
 	}
 }
 
@@ -1056,6 +1087,12 @@ MU_TEST_SUITE(test_kahan_sum_suite) {
 }
 
 
+MU_TEST_SUITE(test_average_suite) {
+	MU_RUN_TEST(test_average);
+	MU_RUN_TEST(test_weighted_average);	
+}
+
+
 MU_TEST_SUITE(test_Vector_suite) {
 	MU_RUN_TEST(test_Vector_fill);
 	MU_RUN_TEST(test_Vector_copy);
@@ -1063,11 +1100,11 @@ MU_TEST_SUITE(test_Vector_suite) {
 	MU_RUN_TEST(test_Vector_sub);
 	MU_RUN_TEST(test_Vector_scaled_add);
 	MU_RUN_TEST(test_Vector_mul);
-	MU_RUN_TEST(test_Vector_div);	
+	MU_RUN_TEST(test_Vector_div);
 	MU_RUN_TEST(test_Vector_square);
 	MU_RUN_TEST(test_Vector_sqrt);
 	MU_RUN_TEST(test_Vector_log);
-	MU_RUN_TEST(test_Vector_exp);	
+	MU_RUN_TEST(test_Vector_exp);
 	MU_RUN_TEST(test_Vector_scale);
 	MU_RUN_TEST(test_Vector_inc);
 	MU_RUN_TEST(test_Vector_reduction_min);
@@ -1079,7 +1116,7 @@ MU_TEST_SUITE(test_Vector_suite) {
 	MU_RUN_TEST(test_Vector_reduction_average);
 	MU_RUN_TEST(test_Vector_dot);
 	MU_RUN_TEST(test_Vector_convolution__zero);
-	MU_RUN_TEST(test_Vector_convolution__mirror);	
+	MU_RUN_TEST(test_Vector_convolution__mirror);
 	MU_RUN_TEST(test_Vector_box_filter);
 }
 
@@ -1110,7 +1147,8 @@ MU_TEST_SUITE(test_Matrix_suite) {
 int
 main(ATTRIBUTE_UNUSED int argc, ATTRIBUTE_UNUSED char *argv[]) {
 	MU_RUN_SUITE(test_special_suite);
-	MU_RUN_SUITE(test_kahan_sum_suite);	
+	MU_RUN_SUITE(test_kahan_sum_suite);
+	MU_RUN_SUITE(test_average_suite);
 	MU_RUN_SUITE(test_Vector_suite);
 	MU_RUN_SUITE(test_Matrix_suite);
 	MU_REPORT();
