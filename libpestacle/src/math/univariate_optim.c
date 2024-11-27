@@ -27,7 +27,7 @@ univariate_optim_golden_section(
 	assert(func);
 	assert(out);
 
-	const real_t phi = (sqrtf(5.f) - 1.f) / 2;
+	const real_t inv_phi = (sqrtf(5.f) - 1.f) / 2;
 
 	UnivariateOptimResult_init(out);
 
@@ -38,46 +38,39 @@ univariate_optim_golden_section(
 		b = tmp;
 	}
 
-	// Initialization
-	real_t x1 = a + (((real_t)1) - phi) * (b - a);
-	real_t f1 = func(x1, func_data);
+	// Initialisation
+	real_t c = b - (b - a) * inv_phi;
+	real_t fc = func(c, func_data);
 
-	real_t x2 = a + phi * (b - a);
-	real_t f2 = func(x2, func_data);
-
-	out->iteration_count = 0;
+	real_t d = a + (b - a) * inv_phi;
+	real_t fd = func(d, func_data);
 
 	// Iterations
+	out->iteration_count = 0;
 	while(true) {
 		out->iteration_count += 1;
 
 		// Termination conditions
-		if ((b - a) < tolerance) {
-			out->x = x1;
-			out->fx = f1;
-			break;
-		}
-
-		if (out->iteration_count == max_iteration_count) {
-			out->x = x1;
-			out->fx = f1;			
+		if (((b - a) < tolerance) || (out->iteration_count == max_iteration_count)) {
+			out->x = (b + a) / 2;
+			out->fx = func(out->x, func_data);
 			break;
 		}
 
 		// Interval selection
-		if (f1 > f2) {
-			a = x1;
-			x1 = x2;
-			f1 = f2;
-			x2 = a + phi * (b - a);
-			f2 = func(x2, func_data);
+		if (fc < fd) {
+			b = d;
+			d = c;
+			fd = fc;
+			c = b - (b - a) * inv_phi;
+			fc = func(c, func_data);
 		}
 		else {
-			b = x2;
-			x2 = x1;
-			f2 = x1;
-			x1 = a + (((real_t)1) - phi) * (b - a);
-			f1 = func(x1, func_data);
+			a = c;
+			c = d;
+			fc = fd;
+			d = a + (b - a) * inv_phi;
+			fd = func(d, func_data);
 		}
 	}
 }
