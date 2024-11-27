@@ -173,8 +173,8 @@ node_update(
 
 	Normal* data = (Normal*)self->data;
 	Normal_update(data);
-	Matrix_inc(&(data->data), mean);
 	Matrix_scale(&(data->data), sigma);
+	Matrix_inc(&(data->data), mean);
 }
 
 
