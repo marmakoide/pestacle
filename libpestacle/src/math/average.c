@@ -88,11 +88,13 @@ WeightedAverageResult_accumulate(
 	assert(!isnan(w));
 	assert(!isnan(x));
 
-	self->weight_sum += w;
-	real_t prev_mean = self->mean;
-	real_t delta = x - prev_mean;
-	self->mean = fma(w / self->weight_sum, delta, prev_mean);
-	self->mean2 = fma(w, delta * (x - self->mean), self->mean2);
+	if (w != 0) {
+		self->weight_sum += w;
+		real_t prev_mean = self->mean;
+		real_t delta = x - prev_mean;
+		self->mean = fma(w / self->weight_sum, delta, prev_mean);
+		self->mean2 = fma(w, delta * (x - self->mean), self->mean2);
+	}
 }
 
 
