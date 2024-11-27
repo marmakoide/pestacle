@@ -1,6 +1,7 @@
 #include "minunit.h"
 
 #include <pestacle/macros.h>
+#include <pestacle/math/kahan_sum.h>
 #include <pestacle/math/vector.h>
 #include <pestacle/math/matrix.h>
 #include <pestacle/math/special.h>
@@ -17,6 +18,22 @@ MU_TEST(test_special_erfinv) {
 		real_t x = start + ((end - start) / (step_count - 1)) * i;
 		real_t y = erfinv(erf(x));
 		mu_assert_double_eq(x, y);
+	}
+}
+
+
+// --- Kahan sum test ---------------------------------------------------------
+
+MU_TEST(test_kahan_sum) {
+	KahanSum sum;
+
+	for(size_t i = 1; i < 1024; ++i) {
+		KahanSum_init(&sum);
+		for(size_t j = 1; j <= i; ++j)
+			KahanSum_accumulate(&sum, j);
+
+		size_t expected_value = (i * (i + 1)) / 2;
+		mu_assert_double_eq(expected_value, KahanSum_sum(&sum));
 	}
 }
 
@@ -1034,6 +1051,11 @@ MU_TEST_SUITE(test_special_suite) {
 }
 
 
+MU_TEST_SUITE(test_kahan_sum_suite) {
+	MU_RUN_TEST(test_kahan_sum);
+}
+
+
 MU_TEST_SUITE(test_Vector_suite) {
 	MU_RUN_TEST(test_Vector_fill);
 	MU_RUN_TEST(test_Vector_copy);
@@ -1088,6 +1110,7 @@ MU_TEST_SUITE(test_Matrix_suite) {
 int
 main(ATTRIBUTE_UNUSED int argc, ATTRIBUTE_UNUSED char *argv[]) {
 	MU_RUN_SUITE(test_special_suite);
+	MU_RUN_SUITE(test_kahan_sum_suite);	
 	MU_RUN_SUITE(test_Vector_suite);
 	MU_RUN_SUITE(test_Matrix_suite);
 	MU_REPORT();
