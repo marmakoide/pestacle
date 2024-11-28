@@ -161,7 +161,7 @@ AutoThreshold_em_initialization(
 	const real_t* coeff = input->data;
 	for(size_t i = 0; i < input->row_count; ++i)
 		for(size_t j = 0; j < input->col_count; ++j, ++coeff) {
-			int k = fabsf((*coeff) - coeff_min) > fabsf((*coeff) - coeff_max);
+			int k = fabs((*coeff) - coeff_min) > fabs((*coeff) - coeff_max);
 			AverageResult_accumulate(&(avg[k]), *coeff);
 		}
 
@@ -176,8 +176,8 @@ AutoThreshold_em_initialization(
 static void
 AutoThreshold_weighted_em_initialization(
 	AutoThreshold* self,
-	const Matrix* input,
-	const Matrix* weight
+	const Matrix* weight,
+	const Matrix* input
 ) {
 	// Compute extremum values
 	real_t coeff_min = Matrix_reduction_min(input);
@@ -195,11 +195,11 @@ AutoThreshold_weighted_em_initialization(
 	const real_t* coeff = input->data;
 	for(size_t i = 0; i < input->row_count; ++i)
 		for(size_t j = 0; j < input->col_count; ++j, ++coeff, ++w) {
-			int k = fabsf((*coeff) - coeff_min) > fabsf((*coeff) - coeff_max);
+			int k = fabs((*coeff) - coeff_min) > fabs((*coeff) - coeff_max);
 			KahanSum_accumulate(&weight_sum, *w);
 			WeightedAverageResult_accumulate(&(avg[k]), *w, *coeff);
 		}
-
+	
 	for(int i = 0; i < 2; ++i) {
 		self->mu[i] = WeightedAverageResult_mean(&(avg[i]));
 		self->sigma[i] = WeightedAverageResult_stddev(&(avg[i]));
@@ -322,13 +322,13 @@ threshold_fitness_func(
 	AutoThreshold* self = (AutoThreshold*)data;
 
 	real_t p0 = expf(-.5 * square((x - self->mu[0]) / self->sigma[0]));
-    p0 *= self->theta[0] / (sqrtf(2 * M_PI) * self->sigma[0]);
+	p0 *= self->theta[0] / (sqrtf(2 * M_PI) * self->sigma[0]);
 
 	real_t p1 = expf(-.5 * square((x - self->mu[1]) / self->sigma[1]));
-    p1 *= self->theta[1] / (sqrtf(2 * M_PI) * self->sigma[1]);
+	p1 *= self->theta[1] / (sqrtf(2 * M_PI) * self->sigma[1]);
 
-    real_t p = p1 + p0;
-    return p;
+	real_t p = p1 + p0;
+	return p;
 }
 
 

@@ -4,23 +4,70 @@ main-window = window(
 	title  = "demo-auto-threshold"
 )
 
-rgb-picture = png.load(
-	path = "demos/pictures/lenna.png"
+
+
+rgb-weights = png.load(
+	path = "demos/pictures/checkerboard-32x32.png"
 )
 
-bw-picture = rgb-surface.luminance(
+weights = rgb-surface.luminance(
 	width  = 512,
 	height = 512
 )
 
-bw-picture.source = rgb-picture
+weights.source = rgb-weights
+
+
+rgb-mask = png.load(
+	path = "demos/pictures/checkerboard-8x8.png"
+)
+
+mask = rgb-surface.luminance(
+	width  = 512,
+	height = 512
+)
+
+mask.source = rgb-mask
+
+
+
+noise-a = matrix.random.normal(
+	width  = 512,
+	height = 512,
+	mean   = 2,
+	sigma =  2,
+	seed   = 42
+)
+
+
+noise-b = matrix.random.normal(
+	width  = 512,
+	height = 512,
+	mean   = 8,
+	sigma =  2,
+	seed   = 69
+)
+
+noise = matrix.blend(
+	width  = 512,
+	height = 512
+)
+
+noise.mask = mask
+noise.source-a = noise-a
+noise.source-b = noise-b
+
+
 
 threshold = matrix.auto-threshold(
 	width  = 512,
 	height = 512
 )
 
-threshold.source = bw-picture
+threshold.weight = weights
+threshold.source = noise
+
+
 
 output = matrix.gradient-map(
 	width  = 512,
