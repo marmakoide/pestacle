@@ -31,6 +31,19 @@ univariate_optim_golden_section(
 );
 
 
+extern void
+univariate_optim_brent(
+	UnivariateFunc func,
+	void* func_data,
+	real_t a,
+	real_t b,
+	real_t epsilon,
+	real_t tolerance,
+	size_t max_iteration_count,
+	UnivariateOptimResult* out
+);
+
+
 #ifdef __cplusplus
 }
 #endif

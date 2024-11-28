@@ -337,11 +337,13 @@ AutoThreshold_get_threshold(
 	AutoThreshold* self
 ) {
 	UnivariateOptimResult optim_out;
-	univariate_optim_golden_section(
+
+	univariate_optim_brent(
 		threshold_fitness_func,
 		self,
 		self->mu[0],
 		self->mu[1],
+		FLT_EPSILON,
 		1e-4f,
 		300,
 		&optim_out
