@@ -351,10 +351,12 @@ array_ops_reduction_average(
 		real_t S = (real_t)0;
 
 		for(size_t i = 1; i <= len; ++i, ++src, ++weight) {
-			w_sum += *weight;
-			real_t prev_ret = ret;
-			ret = fma(*weight / w_sum, *src - prev_ret, prev_ret);
-			S = fma(*weight * (*src - ret), *src - prev_ret, S);
+			if (*weight != 0) {
+				w_sum += *weight;
+				real_t prev_ret = ret;
+				ret = fma(*weight / w_sum, *src - prev_ret, prev_ret);
+				S = fma(*weight * (*src - ret), *src - prev_ret, S);
+			}
 		}
 
 		*out_std = sqrt(S / w_sum);
@@ -367,8 +369,10 @@ array_ops_reduction_average(
 		++weight;
 
 		for(size_t i = 2; i <= len; ++i, ++src, ++weight) {
-			w_sum += *weight;
-			ret = fma(*weight / w_sum, *src - ret, ret);
+			if (*weight != 0) {
+				w_sum += *weight;
+				ret = fma(*weight / w_sum, *src - ret, ret);
+			}
 		}
 	}
 
