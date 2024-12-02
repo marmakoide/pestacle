@@ -5,6 +5,10 @@
   Return tokens from an input file
  *****************************************************************************/
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -82,5 +86,9 @@ extern void
 Lexer_test();
 #endif // DEBUG
 
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* PESTACLE_PARSER_LEXER_H */
