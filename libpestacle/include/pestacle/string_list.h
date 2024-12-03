@@ -41,6 +41,13 @@ StringList_clear(
 );
 
 
+extern void
+StringList_copy(
+	StringList* self,
+	const StringList* src
+);
+
+
 extern bool
 StringList_empty(
 	const StringList* self

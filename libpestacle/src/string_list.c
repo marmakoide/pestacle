@@ -72,6 +72,36 @@ StringList_clear(
 }
 
 
+void
+StringList_copy(
+	StringList* self,
+	const StringList* src
+) {
+	assert(self);
+	assert(src);
+
+	// Destroy all current items
+	StringList_destroy_items(self);
+
+	// Reallocate item array if necessary
+	if (self->physical_len < src->logical_len) {
+		free(self->items);
+		self->physical_len = src->logical_len;
+		self->items = (char**)checked_malloc(self->physical_len * sizeof(char*));
+	}
+
+	// Copy each string
+	char** dst_str = self->items;
+	char* const* src_str = src->items;
+	for(size_t i = src->logical_len; i != 0; --i, ++src_str, ++dst_str)
+		*dst_str = strclone(*src_str);
+
+	// Update logical len
+	self->logical_len = src->logical_len;
+
+}
+
+
 bool
 StringList_empty(
 	const StringList* self
