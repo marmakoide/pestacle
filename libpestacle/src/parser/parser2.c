@@ -1,5 +1,8 @@
 #include <assert.h>
+#include <stdlib.h>
+#include <pestacle/memory.h>
 #include <pestacle/errors.h>
+#include <pestacle/strings.h>
 #include <pestacle/parser/parser2.h>
 
 
@@ -7,6 +10,167 @@
 // --- Recursive descent parsing ---------------------------------------------
 
 #define MAX_PARSING_ERROR_COUNT 16
+
+
+static bool
+parse_AST_node_instanciation_parameter(
+	Lexer* lexer,
+	AST_Statement* stat
+) {
+	assert(lexer);
+	assert(stat);
+	assert(stat->type == AST_StatementType__node_instanciation);
+
+	bool ret = true;
+
+	// Parse an identifier
+	if (lexer->token.type != TokenType__identifier)
+		handle_processing_error(
+			&(lexer->token.location),
+			"expected an identifier, got '%s' instead",
+			lexer->token.text
+		);
+
+	// Create parameter
+	AST_Parameter* parameter =
+		(AST_Parameter*)checked_malloc(sizeof(AST_Parameter*));
+
+	AST_Parameter_init(parameter, Lexer_token_text(lexer));
+	parameter->location = lexer->token.location;
+
+	// Parse '='
+	Lexer_next_token(lexer);
+	if (lexer->token.type != TokenType__equal)
+		handle_processing_error(
+			&(lexer->token.location),
+			"expected '=', got '%s' instead",
+			lexer->token.text
+		);
+
+	// Parse atomic value
+	Lexer_next_token(lexer);
+	switch(lexer->token.type) {
+		case TokenType__bool:
+			AST_AtomicValue_init_bool(
+				&(parameter->value),
+				lexer->token.value.bool_value
+			);
+			break;
+
+		case TokenType__integer:
+			AST_AtomicValue_init_int64(
+				&(parameter->value),
+				lexer->token.value.int64_value
+			);
+			break;
+
+		case TokenType__real:
+			AST_AtomicValue_init_real(
+				&(parameter->value),
+				lexer->token.value.real_value
+			);
+			break;
+
+		case TokenType__string:
+			AST_AtomicValue_init_string(
+				&(parameter->value),
+				Lexer_token_text(lexer)
+			);
+			break;
+
+		default:
+			handle_processing_error(
+				&(lexer->token.location),
+				"expected a parameter value, got '%s' instead",
+				lexer->token.text
+			);
+
+			AST_Parameter_destroy(parameter);
+			free(parameter);
+			parameter = 0;
+			break;
+	}
+
+	if (parameter)
+		parameter->value.location = lexer->token.location;
+
+	// Append the parameter
+	if (!AST_NodeInstanciation_add_parameter(&(stat->node_instanciation), parameter)) {
+		handle_processing_error(
+			&(parameter->location),
+			"parameter '%s' assigned more than once",
+			parameter->name
+		);
+		AST_Parameter_destroy(parameter);
+		free(parameter);
+		parameter = 0;
+	}
+
+	// Job done
+	return ret;
+}
+
+
+static bool
+parse_AST_node_instanciation(
+	Lexer* lexer,
+	AST_Statement* stat
+) {
+	assert(lexer);
+	assert(stat);
+	assert(stat->type == AST_StatementType__node_instanciation);
+
+	bool ret = true;
+
+	// Parse '('
+	if (lexer->token.type != TokenType__pth_open)
+		handle_processing_error(
+			&(lexer->token.location),
+			"expected '(', got '%s' instead",
+			lexer->token.text
+		);
+
+	// Parse each parameter one by one
+	bool first = true;
+	for(bool done = false; !done; first = false) {
+		Lexer_next_token(lexer);
+		switch(lexer->token.type) {
+			case TokenType__pth_close:
+				done = true;
+				break;
+
+			case TokenType__eof:
+				done = true;
+				ret = false;
+				break;
+
+			default:
+				if (!first) {
+					if (lexer->token.type != TokenType__comma)
+						handle_processing_error(
+							&(lexer->token.location),
+							"expected ')', got '%s' instead",
+							lexer->token.text
+						);
+					Lexer_next_token(lexer);
+				}
+
+				if (!parse_AST_node_instanciation_parameter(lexer, stat))
+					ret = false;
+		}
+	}
+
+	// Parse ')'
+	if (lexer->token.type != TokenType__pth_close)
+		handle_processing_error(
+			&(lexer->token.location),
+			"expected ')', got '%s' instead",
+			lexer->token.text
+		);
+
+	// Job done
+	return ret;
+}
 
 
 static bool
@@ -27,7 +191,7 @@ parse_AST_Path(
 			lexer->token.text
 		);	
 	}
-	StringList_append(&(path->str_list), Lexer_token_text(lexer));
+	StringList_append(&(path->string_list), Lexer_token_text(lexer));
 	Lexer_next_token(lexer);
 
 	// Parse the following identifiers
@@ -40,7 +204,7 @@ parse_AST_Path(
 				lexer->token.text
 			);
 		}
-		StringList_append(&(path->str_list), Lexer_token_text(lexer));
+		StringList_append(&(path->string_list), Lexer_token_text(lexer));
 		Lexer_next_token(lexer);
 	}
 	
@@ -91,23 +255,22 @@ parse_AST_Statement(
 		AST_Statement* stat =
 			AST_Unit_append_node_instanciation(
 				unit,
-				&src,
-				&dst
+				&src_path,
+				&dst_path
 			);
 
 		if (!parse_AST_node_instanciation(lexer, stat))
 			ret = false;
 
-		Lexer_next_token(context->lexer);
+		Lexer_next_token(lexer);
 	}
 	// Slot assignment
 	else
-		AST_Statement* stat =
-			AST_Unit_append_slot_assignment(
-				unit,
-				&src,
-				&dst
-			);
+		AST_Unit_append_slot_assignment(
+			unit,
+			&src_path,
+			&dst_path
+		);
 
 termination:
 	// Free ressources

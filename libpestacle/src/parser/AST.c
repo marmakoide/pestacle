@@ -8,6 +8,17 @@
 
 // --- AST_AtomicValue -------------------------------------------------------
 
+static void
+AST_AtomicValue_init(
+	AST_AtomicValue* self
+) {
+	assert(self);
+
+	self->type = AST_AtomicValueType__invalid;
+	self->location.line = 0;
+}
+
+
 void
 AST_AtomicValue_init_bool(
 	AST_AtomicValue* self,
@@ -17,6 +28,7 @@ AST_AtomicValue_init_bool(
 
 	self->type = AST_AtomicValueType__bool;
 	self->bool_value = value;
+	self->location.line = 0;
 }
 
 
@@ -29,6 +41,7 @@ AST_AtomicValue_init_int64(
 
 	self->type = AST_AtomicValueType__integer;
 	self->int64_value = value;
+	self->location.line = 0;
 }
 
 
@@ -41,6 +54,7 @@ AST_AtomicValue_init_real(
 
 	self->type = AST_AtomicValueType__real;
 	self->real_value = value;
+	self->location.line = 0;
 }
 
 
@@ -53,6 +67,7 @@ AST_AtomicValue_init_string(
 
 	self->type = AST_AtomicValueType__string;
 	self->string_value = strclone(value);
+	self->location.line = 0;
 }
 
 
@@ -68,6 +83,33 @@ AST_AtomicValue_destroy(
 		free(self->string_value);
 		self->string_value = 0;
 	}
+}
+
+
+// --- AST_Parameter ---------------------------------------------------------
+
+void
+AST_Parameter_init(
+	AST_Parameter* self,
+	const char* name
+) {
+	assert(self);
+	assert(name);
+
+	AST_AtomicValue_init(&(self->value));
+	self->name = strclone(name);
+	self->location.line = 0;
+}
+
+
+void
+AST_Parameter_destroy(
+	AST_Parameter* self
+) {
+	assert(self);
+
+	if (self->name)
+		free(self->name);
 }
 
 
@@ -134,7 +176,36 @@ AST_NodeInstanciation_destroy(
 
 	AST_Path_destroy(&(self->src));
 	AST_Path_destroy(&(self->dst));
+
+	DictIterator it;
+	DictIterator_init(&it, &(self->parameters));
+	for( ; DictIterator_has_next(&it); DictIterator_next(&it)) {
+		AST_Parameter* parameter = (AST_Parameter*)it.entry->value;
+		AST_Parameter_destroy(parameter);
+		free(parameter);
+	}
+
+
 	Dict_destroy(&(self->parameters));
+}
+
+
+bool
+AST_NodeInstanciation_add_parameter(
+	AST_NodeInstanciation* self,
+	AST_Parameter* parameter
+) {
+	assert(self);
+	assert(parameter);
+	assert(parameter->name);
+
+	DictEntry* entry = Dict_insert(&(self->parameters), parameter->name);
+	if (!entry)
+		return false;
+
+	entry->value = parameter;
+
+	return true;
 }
 
 

@@ -70,6 +70,28 @@ AST_AtomicValue_destroy(
 );
 
 
+// --- AST_Parameter ---------------------------------------------------------
+
+typedef struct {
+	char* name;
+	AST_AtomicValue value;
+	FileLocation location;
+} AST_Parameter;
+
+
+extern void
+AST_Parameter_init(
+	AST_Parameter* self,
+	const char* name
+);
+
+
+extern void
+AST_Parameter_destroy(
+	AST_Parameter* self
+);
+
+
 // --- AST_Path --------------------------------------------------------------
 
 typedef struct {
@@ -104,6 +126,13 @@ typedef struct {
 	AST_Path dst;
 	Dict parameters;
 } AST_NodeInstanciation;
+
+
+extern bool
+AST_NodeInstanciation_add_parameter(
+	AST_NodeInstanciation* self,
+	AST_Parameter* parameter
+);
 
 
 // --- AST_SlotAssignment ---------------------------------------------------0
