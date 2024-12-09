@@ -6,7 +6,7 @@ extern "C" {
 #endif
 
 
-#include <SDL.h>
+#include <SDL_video.h>
 #include <pestacle/parameter.h>
 #include <pestacle/math/matrix.h>
 

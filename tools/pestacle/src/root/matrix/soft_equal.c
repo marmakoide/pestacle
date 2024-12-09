@@ -1,5 +1,5 @@
 #include <tgmath.h>
-
+#include <SDL_log.h>
 #include <pestacle/memory.h>
 #include <pestacle/math/special.h>
 

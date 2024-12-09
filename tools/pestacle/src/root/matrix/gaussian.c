@@ -1,3 +1,4 @@
+#include <SDL_log.h>
 #include <pestacle/memory.h>
 #include <pestacle/image/gaussian.h>
 

@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <stdlib.h>
+#include <SDL_log.h>
 #include <pestacle/memory.h>
 #include <pestacle/errors.h>
 #include <pestacle/strings.h>

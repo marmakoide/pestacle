@@ -1,5 +1,9 @@
 #include <pestacle/memory.h>
 
+#include <SDL_log.h>
+#include <SDL_video.h>
+#include <SDL_render.h>
+
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 #include <libavutil/avutil.h>

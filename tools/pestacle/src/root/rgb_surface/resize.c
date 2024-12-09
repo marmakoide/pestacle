@@ -1,3 +1,4 @@
+#include <SDL_log.h>
 #include "root/rgb_surface/resize.h"
 
 

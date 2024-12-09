@@ -1,3 +1,4 @@
+#include <SDL_log.h>
 #include <tgmath.h>
 #include <pestacle/memory.h>
 

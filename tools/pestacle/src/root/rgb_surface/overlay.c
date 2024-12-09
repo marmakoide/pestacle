@@ -1,3 +1,4 @@
+#include <SDL_log.h>
 #include <pestacle/memory.h>
 
 #include "root/rgb_surface/overlay.h"

@@ -1,5 +1,5 @@
 #include <pestacle/memory.h>
-
+#include <SDL_log.h>
 #include "root/rgb_surface/blend.h"
 
 

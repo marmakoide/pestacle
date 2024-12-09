@@ -1,5 +1,6 @@
 #include <errno.h>
 #include <pestacle/memory.h>
+#include <SDL_log.h>
 
 #include "ieee764.h"
 #include "output.h"
