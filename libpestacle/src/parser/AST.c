@@ -86,6 +86,43 @@ AST_AtomicValue_destroy(
 }
 
 
+static void
+AST_AtomicValue_print(
+	AST_AtomicValue* self,
+	FILE* out
+) {
+	assert(value);
+	assert(out);
+	assert(self->type != AtomicValueType__invalid);
+
+	switch(self->type) {
+		case AST_AtomicValueType__bool:
+			if (self->bool_value)
+				fputs("true", out);
+			else
+				fputs("false", out);
+			break;
+		
+		case AST_AtomicValueType__integer:
+			fprintf(out, "%lld", self->int64_value);
+			break;
+		
+		case AST_AtomicValueType__real:
+			fprintf(out, "%f", self->real_value);
+			break;
+		
+		case AST_AtomicValueType__string:
+			fputc('"', out);
+			fputs(self->string_value, out);
+			fputc('"', out);
+			break;
+		
+		default:
+			assert(0);
+	}
+}
+
+
 // --- AST_Parameter ---------------------------------------------------------
 
 void
@@ -110,6 +147,20 @@ AST_Parameter_destroy(
 
 	if (self->name)
 		free(self->name);
+}
+
+
+static void
+AST_Parameter_print(
+	AST_Parameter* self,
+	FILE* out
+) {
+	assert(self);
+	assert(out);
+
+	fputs(self->name, out);
+	fputs(" = ", out);
+	AST_AtomicValue_print(&(self->value), out);
 }
 
 
@@ -146,6 +197,23 @@ AST_Path_copy(
 
 	self->location = src->location;
 	StringList_copy(&(self->string_list), &(src->string_list));
+}
+
+
+static void
+AST_Path_print(
+	AST_Path* self,
+	FILE* out
+) {
+	assert(self);
+	assert(out);
+
+	for(size_t i = 0; i < StringList_length(&(self->string_list)); ++i) {
+		if (i > 0)
+			fputc('.', out);
+		
+		fputs(StringList_at(&(self->string_list), i), out);
+	}
 }
 
 
@@ -209,6 +277,35 @@ AST_NodeInstanciation_add_parameter(
 }
 
 
+static void
+AST_NodeInstanciation_print(
+	AST_NodeInstanciation* self,
+	FILE* out
+) {
+	assert(self);
+	assert(out);
+
+	AST_Path_print(&(self->dst), out);
+	fputs(" = ", out);
+	AST_Path_print(&(self->src), out);
+
+	fputs(" (\n", out);
+	DictIterator it;
+	DictIterator_init(&it, &(self->parameters));
+	for( ; DictIterator_has_next(&it); DictIterator_next(&it)) {
+		AST_Parameter* parameter = (AST_Parameter*)it.entry->value;
+
+		fputs("  ", out);
+		AST_Parameter_print(parameter, out);
+		if (DictIterator_has_next(&it))
+			fputs(",\n", out);
+		else
+			fputs("\n", out);
+	}
+	fputc(')', out);
+}
+
+
 // --- AST_SlotAssignment ----------------------------------------------------
 
 static void
@@ -235,6 +332,20 @@ AST_SlotAssignment_destroy(
 
 	AST_Path_destroy(&(self->src));
 	AST_Path_destroy(&(self->dst));
+}
+
+
+static void
+AST_SlotAssignment_print(
+	AST_SlotAssignment* self,
+	FILE* out
+) {
+	assert(self);
+	assert(out);
+
+	AST_Path_print(&(self->dst), out);
+	fputs(" = ", out);
+	AST_Path_print(&(self->src), out);
 }
 
 
@@ -361,4 +472,32 @@ AST_Unit_append_slot_assignment(
 	AST_SlotAssignment_init(&(ret->slot_assignment), src, dst);
 
 	return ret;
+}
+
+
+void
+AST_Unit_print(
+	AST_Unit* self,
+	FILE* out
+) {
+	assert(self);
+	assert(out);
+
+	// For each statement
+	for(AST_Statement* stat = self->head; stat; stat = stat->next) {
+		switch(stat->type) {
+			case AST_StatementType__node_instanciation:
+				AST_NodeInstanciation_print(&(stat->node_instanciation), out);
+				fputc('\n', out);
+				break;
+			
+			case AST_StatementType__slot_assignment:
+				AST_SlotAssignment_print(&(stat->slot_assignment), out);
+				fputc('\n', out);
+				break;
+			
+			default:
+				assert(0);
+		}
+	}
 }

@@ -5,6 +5,7 @@
 extern "C" {
 #endif
 
+#include <stdio.h>
 #include <stdint.h>
 
 #include <pestacle/dict.h>
@@ -184,6 +185,13 @@ AST_Unit_init(
 extern void
 AST_Unit_destroy(
 	AST_Unit* self
+);
+
+
+extern void
+AST_Unit_print(
+	AST_Unit* self,
+	FILE* out
 );
 
 
