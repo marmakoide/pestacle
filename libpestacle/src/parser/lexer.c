@@ -242,7 +242,7 @@ Lexer_next_token(Lexer* self) {
 						Lexer_accept_and_next_char(self);
 					break;
 					default:
-						Lexer_accept_char(self);
+						Lexer_accept_and_next_char(self);
 						return;
 				}
 				break;

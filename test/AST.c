@@ -1,11 +1,14 @@
 #include <stdlib.h>
 
+#include <SDL.h>
 #include <pestacle/macros.h>
 #include <pestacle/parser/parser2.h>
 
 
 int
 main(ATTRIBUTE_UNUSED int argc, ATTRIBUTE_UNUSED char *argv[]) {
+	SDL_LogSetAllPriority(SDL_LOG_PRIORITY_INFO);
+
     Lexer lexer;
     Lexer_init(&lexer, stdin);
 
@@ -13,8 +16,8 @@ main(ATTRIBUTE_UNUSED int argc, ATTRIBUTE_UNUSED char *argv[]) {
 
     if (unit) {
         AST_Unit_print(unit, stdout);
-        //AST_Unit_destroy(unit);
-        //free(unit);
+        AST_Unit_destroy(unit);
+        free(unit);
     }
 
     return EXIT_SUCCESS;
