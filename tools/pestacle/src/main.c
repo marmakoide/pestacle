@@ -208,7 +208,7 @@ main(int argc, char* argv[]) {
 	int exit_code = EXIT_SUCCESS;
 
 	// SDL logging settings
-	 SDL_LogSetAllPriority(SDL_LOG_PRIORITY_INFO);
+	SDL_LogSetAllPriority(SDL_LOG_PRIORITY_INFO);
 
 	// Command line parsing
 	CmdParameters_init(&params);
