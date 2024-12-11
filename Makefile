@@ -215,9 +215,14 @@ endif
 # ------ Unit testing ---------------------------------------------------------
 
 test: \
-$(BUILD_DIR)/test_math
+$(BUILD_DIR)/test_math \
+$(BUILD_DIR)/test_AST
 
 $(BUILD_DIR)/test_math: $(BUILD_DIR)/test/math.o $(BUILD_DIR)/$(LIBPESTACLE_FILENAME)
+	@mkdir -p $(BUILD_DIR)/test
+	$(CC) -o $@ $< $(PESTACLE_LIBS)
+
+$(BUILD_DIR)/test_AST: $(BUILD_DIR)/test/AST.o $(BUILD_DIR)/$(LIBPESTACLE_FILENAME)
 	@mkdir -p $(BUILD_DIR)/test
 	$(CC) -o $@ $< $(PESTACLE_LIBS)
 

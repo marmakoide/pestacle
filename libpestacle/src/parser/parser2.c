@@ -34,7 +34,7 @@ parse_AST_node_instanciation_parameter(
 
 	// Create parameter
 	AST_Parameter* parameter =
-		(AST_Parameter*)checked_malloc(sizeof(AST_Parameter*));
+		(AST_Parameter*)checked_malloc(sizeof(AST_Parameter));
 
 	AST_Parameter_init(parameter, Lexer_token_text(lexer));
 	parameter->location = lexer->token.location;
@@ -329,7 +329,7 @@ parse(
 	assert(lexer);
 
 	// Allocation
-	AST_Unit* ret = (AST_Unit*)checked_malloc(sizeof(AST_Unit*));
+	AST_Unit* ret = (AST_Unit*)checked_malloc(sizeof(AST_Unit));
 	AST_Unit_init(ret);
 
 	// Parsing

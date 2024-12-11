@@ -76,7 +76,7 @@ AST_AtomicValue_destroy(
 	AST_AtomicValue* self
 ) {
 	assert(self);
-	assert(self->type != AtomicValueType__invalid);
+	assert(self->type != AST_AtomicValueType__invalid);
 
 	if (self->type == AST_AtomicValueType__string) {
 		assert(self->string_value);
@@ -91,9 +91,9 @@ AST_AtomicValue_print(
 	AST_AtomicValue* self,
 	FILE* out
 ) {
-	assert(value);
+	assert(self);
 	assert(out);
-	assert(self->type != AtomicValueType__invalid);
+	assert(self->type != AST_AtomicValueType__invalid);
 
 	switch(self->type) {
 		case AST_AtomicValueType__bool:
@@ -289,20 +289,22 @@ AST_NodeInstanciation_print(
 	fputs(" = ", out);
 	AST_Path_print(&(self->src), out);
 
-	fputs(" (\n", out);
+	fputc('(', out);
+
 	DictIterator it;
 	DictIterator_init(&it, &(self->parameters));
-	for( ; DictIterator_has_next(&it); DictIterator_next(&it)) {
+	for(size_t i = 0; DictIterator_has_next(&it); DictIterator_next(&it), ++i) {
 		AST_Parameter* parameter = (AST_Parameter*)it.entry->value;
+
+		if (i > 0)
+			fputc(',', out);
+		fputc('\n', out);
 
 		fputs("  ", out);
 		AST_Parameter_print(parameter, out);
-		if (DictIterator_has_next(&it))
-			fputs(",\n", out);
-		else
-			fputs("\n", out);
 	}
-	fputc(')', out);
+
+	fputs("\n)", out);
 }
 
 
