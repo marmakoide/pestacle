@@ -486,16 +486,18 @@ AST_Unit_print(
 	assert(out);
 
 	// For each statement
-	for(AST_Statement* stat = self->head; stat; stat = stat->next) {
+	size_t i = 0;
+	for(AST_Statement* stat = self->head; stat; stat = stat->next, ++i) {
+		if (i > 0)
+			fputc('\n', out);
+		
 		switch(stat->type) {
 			case AST_StatementType__node_instanciation:
 				AST_NodeInstanciation_print(&(stat->node_instanciation), out);
-				fputc('\n', out);
 				break;
 			
 			case AST_StatementType__slot_assignment:
 				AST_SlotAssignment_print(&(stat->slot_assignment), out);
-				fputc('\n', out);
 				break;
 			
 			default:

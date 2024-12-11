@@ -13,7 +13,6 @@ main(ATTRIBUTE_UNUSED int argc, ATTRIBUTE_UNUSED char *argv[]) {
 
     if (unit) {
         AST_Unit_print(unit, stdout);
-        printf("\n");
         //AST_Unit_destroy(unit);
         //free(unit);
     }
