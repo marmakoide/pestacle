@@ -361,7 +361,7 @@ AST_Statement_init(
 
 	self->type = AST_StatementType__invalid;
 	self->next = 0;
-	self->location.line = 0;	
+	self->location.line = 0;
 }
 
 
