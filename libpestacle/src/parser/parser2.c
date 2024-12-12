@@ -38,7 +38,7 @@ handle_parsing_error(
 #define MAX_PARSING_ERROR_COUNT 16
 
 
-static bool
+static int
 parse_AST_node_instanciation_parameter(
 	Lexer* lexer,
 	AST_Statement* stat
@@ -47,34 +47,42 @@ parse_AST_node_instanciation_parameter(
 	assert(stat);
 	assert(stat->type == AST_StatementType__node_instanciation);
 
-	bool ret = true;
-
-	// Parse an identifier
-	if (lexer->token.type != TokenType__identifier)
-		handle_processing_error(
-			&(lexer->token.location),
-			"expected an identifier, got '%s' instead",
-			lexer->token.text
-		);
+	int error_count = 0;
 
 	// Create parameter
 	AST_Parameter* parameter =
 		(AST_Parameter*)checked_malloc(sizeof(AST_Parameter));
 
-	AST_Parameter_init(parameter, Lexer_token_text(lexer));
+	// Parse an identifier
+	if (lexer->token.type == TokenType__identifier) {
+		AST_Parameter_init(parameter, Lexer_token_text(lexer));
+	}
+	else {
+		error_count += 1;
+		handle_parsing_error(
+			&(lexer->token.location),
+			"expected an identifier, got '%s' instead",
+			lexer->token.text
+		);
+		AST_Parameter_init(parameter, "");
+	}
+
 	parameter->location = lexer->token.location;
 
 	// Parse '='
 	Lexer_next_token(lexer);
-	if (lexer->token.type != TokenType__equal)
-		handle_processing_error(
+	if (lexer->token.type == TokenType__equal)
+		Lexer_next_token(lexer);
+	else {
+		error_count += 1;
+		handle_parsing_error(
 			&(lexer->token.location),
 			"expected '=', got '%s' instead",
 			lexer->token.text
 		);
+	}
 
 	// Parse atomic value
-	Lexer_next_token(lexer);
 	switch(lexer->token.type) {
 		case TokenType__bool:
 			AST_AtomicValue_init_bool(
@@ -105,7 +113,8 @@ parse_AST_node_instanciation_parameter(
 			break;
 
 		default:
-			handle_processing_error(
+			error_count += 1;
+			handle_parsing_error(
 				&(lexer->token.location),
 				"expected a parameter value, got '%s' instead",
 				lexer->token.text
@@ -121,8 +130,9 @@ parse_AST_node_instanciation_parameter(
 		parameter->value.location = lexer->token.location;
 
 	// Append the parameter
-	if (!AST_NodeInstanciation_add_parameter(&(stat->node_instanciation), parameter)) {
-		handle_processing_error(
+	if (parameter && (!AST_NodeInstanciation_add_parameter(&(stat->node_instanciation), parameter))) {
+		error_count += 1;
+		handle_parsing_error(
 			&(parameter->location),
 			"parameter '%s' assigned more than once",
 			parameter->name
@@ -133,11 +143,11 @@ parse_AST_node_instanciation_parameter(
 	}
 
 	// Job done
-	return ret;
+	return error_count;
 }
 
 
-static bool
+static int
 parse_AST_node_instanciation(
 	Lexer* lexer,
 	AST_Statement* stat
@@ -146,15 +156,17 @@ parse_AST_node_instanciation(
 	assert(stat);
 	assert(stat->type == AST_StatementType__node_instanciation);
 
-	bool ret = true;
+	int error_count = 0;
 
 	// Parse '('
-	if (lexer->token.type != TokenType__pth_open)
-		handle_processing_error(
+	if (lexer->token.type != TokenType__pth_open) {
+		error_count += 1;
+		handle_parsing_error(
 			&(lexer->token.location),
 			"expected '(', got '%s' instead",
 			lexer->token.text
 		);
+	}
 
 	// Parse each parameter one by one
 	bool first = true;
@@ -167,78 +179,93 @@ parse_AST_node_instanciation(
 
 			case TokenType__eof:
 				done = true;
-				ret = false;
+				error_count += 1;
 				break;
 
 			default:
 				if (!first) {
-					if (lexer->token.type != TokenType__comma)
-						handle_processing_error(
+					// Expect a comma
+					if (lexer->token.type == TokenType__comma)
+						Lexer_next_token(lexer);
+					else {
+						error_count += 1;
+						handle_parsing_error(
 							&(lexer->token.location),
-							"expected ')', got '%s' instead",
+							"expected ',' or ')', got '%s' instead",
 							lexer->token.text
 						);
-					Lexer_next_token(lexer);
+
+						// Skip the invalid token if it is not an identifier
+						if (lexer->token.type != TokenType__identifier)
+							Lexer_next_token(lexer);
+					}
 				}
 
-				if (!parse_AST_node_instanciation_parameter(lexer, stat))
-					ret = false;
+				error_count += parse_AST_node_instanciation_parameter(lexer, stat);
 		}
 	}
 
 	// Parse ')'
-	if (lexer->token.type != TokenType__pth_close)
-		handle_processing_error(
+	if (lexer->token.type != TokenType__pth_close) {
+		error_count += 1;
+		handle_parsing_error(
 			&(lexer->token.location),
 			"expected ')', got '%s' instead",
 			lexer->token.text
 		);
+	}
 
 	// Job done
-	return ret;
+	return error_count;
 }
 
 
-static bool
+static int
 parse_AST_Path(
 	Lexer* lexer,
 	AST_Path* path
 ) {
-	bool ret = true;
+	int error_count = 0;
 
 	// Set the location
 	path->location = lexer->token.location;
 
 	// Parse first identifier
-	if (lexer->token.type != TokenType__identifier) {
-		handle_processing_error(
+	if (lexer->token.type == TokenType__identifier)
+		StringList_append(&(path->string_list), Lexer_token_text(lexer));
+	else {
+		error_count += 1;
+		handle_parsing_error(
 			&(lexer->token.location),
 			"expected an identifier, got '%s' instead",
 			lexer->token.text
-		);	
+		);
 	}
-	StringList_append(&(path->string_list), Lexer_token_text(lexer));
 	Lexer_next_token(lexer);
 
-	// Parse the following identifiers
+	// Parse the following identifiers as long as '.' tokens are seen
 	while(lexer->token.type == TokenType__dot) {
 		Lexer_next_token(lexer);
-		if (lexer->token.type != TokenType__identifier) {
-			handle_processing_error(
+		if (lexer->token.type == TokenType__identifier)
+			StringList_append(&(path->string_list), Lexer_token_text(lexer));
+		else {
+			error_count += 1;
+			handle_parsing_error(
 				&(lexer->token.location),
 				"expected an identifier, got '%s' instead",
 				lexer->token.text
 			);
+			return false;
 		}
-		StringList_append(&(path->string_list), Lexer_token_text(lexer));
 		Lexer_next_token(lexer);
 	}
 	
-	return ret;
+	// Job done
+	return error_count;
 }
 
 
-static bool
+static int
 parse_AST_Statement(
 	Lexer* lexer,
 	AST_Unit* unit
@@ -246,7 +273,7 @@ parse_AST_Statement(
 	assert(lexer);
 	assert(unit);
 
-	int ret = true;
+	int error_count = 0;
 
 	// Allocation
 	AST_Path src_path;
@@ -256,25 +283,22 @@ parse_AST_Statement(
 	AST_Path_init(&dst_path);
 
 	// Parse destination path
-	if (!parse_AST_Path(lexer, &dst_path)) {
-		ret = false;
-		goto termination;
-	}
+	error_count += parse_AST_Path(lexer, &dst_path);
 
 	// Parse '='
-	if (lexer->token.type != TokenType__equal)
-		handle_processing_error(
+	if (lexer->token.type == TokenType__equal)
+		Lexer_next_token(lexer);
+	else {
+		error_count += 1;
+		handle_parsing_error(
 			&(lexer->token.location),
 			"expected '=', got '%s' instead",
 			lexer->token.text
 		);
-	 Lexer_next_token(lexer);
+	}
 
 	// Parse source path
-	if (!parse_AST_Path(lexer, &src_path)) {
-		ret = false;
-		goto termination;
-	}
+	error_count += parse_AST_Path(lexer, &src_path);
 
 	// Determine the type of statement
 	if (lexer->token.type == TokenType__pth_open) {
@@ -285,9 +309,7 @@ parse_AST_Statement(
 				&dst_path
 			);
 
-		if (!parse_AST_node_instanciation(lexer, stat))
-			ret = false;
-
+		error_count += parse_AST_node_instanciation(lexer, stat);
 		Lexer_next_token(lexer);
 	}
 	// Slot assignment
@@ -298,17 +320,16 @@ parse_AST_Statement(
 			&dst_path
 		);
 
-termination:
 	// Free ressources
 	AST_Path_destroy(&src_path);
 	AST_Path_destroy(&dst_path);
 
 	// Job done
-	return ret;	
+	return error_count;	
 }
 
 
-static bool
+static int
 parse_AST_Unit(
 	Lexer* lexer,
 	AST_Unit* unit
@@ -329,24 +350,23 @@ parse_AST_Unit(
 
 			// Invalid token => signal the error and move on
 			case TokenType__invalid:
+				error_count += 1;
 				handle_parsing_error(
 					&(lexer->token.location),
 					"unexpected '%s'",
 					lexer->token.text
 				);
-				error_count += 1;
 				Lexer_next_token(lexer);
 				break;
 
 			// Assume we are about to parse a statement
 			default:
-				if (!parse_AST_Statement(lexer, unit))
-					error_count += 1;
+				error_count += parse_AST_Statement(lexer, unit);
 		}
 	}
 
 	// Job done
-	return error_count == 0;
+	return error_count;
 }
 
 
@@ -363,7 +383,7 @@ parse(
 	AST_Unit_init(ret);
 
 	// Parsing
-	if (!parse_AST_Unit(lexer, ret)) {
+	if (parse_AST_Unit(lexer, ret) != 0) {
 		AST_Unit_destroy(ret);
 		ret = 0;
 	}
