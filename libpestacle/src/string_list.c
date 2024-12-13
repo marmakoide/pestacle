@@ -187,3 +187,42 @@ StringList_print(
 			fputc('.', out);
 	}
 }
+
+
+char*
+StringList_join(
+	const StringList* self,
+	char c
+) {
+	assert(self);
+
+	// Compute output size
+	size_t out_len = 1;
+	
+	if (self->logical_len > 0)
+		out_len += self->logical_len - 1;
+
+	const char** str = (const char**)self->items;
+	for(size_t i = self->logical_len; i != 0; --i, ++str)
+		out_len += strlen(*str);
+
+	// Build output
+	char* out = checked_malloc(out_len);
+	char* out_ptr = out;
+
+	str = (const char**)self->items;
+	for(size_t i = self->logical_len; i != 0; --i, ++str) {
+		size_t str_len = strlen(*str);
+		memcpy(out_ptr, *str, str_len);
+		out_ptr += str_len;
+
+		if (i > 1) {
+			*out_ptr = c;
+			out_ptr += 1;
+		}
+	}
+	*out_ptr = '\0';
+
+	// Job done
+	return out;
+}

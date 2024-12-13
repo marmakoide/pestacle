@@ -80,6 +80,13 @@ StringList_append(
 );
 
 
+extern char*
+StringList_join(
+	const StringList* self,
+	char c
+);
+
+
 #ifdef __cplusplus
 }
 #endif
