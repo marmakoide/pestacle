@@ -292,10 +292,10 @@ main(int argc, char* argv[]) {
 	}
 
 	// Setup graph profiling if required
-	graph_profile = (GraphProfile*)checked_malloc(sizeof(GraphProfile));
-
-	if (params.profile_mode)
+	if (params.profile_mode) {
+		graph_profile = (GraphProfile*)checked_malloc(sizeof(GraphProfile));
 		GraphProfile_init(graph_profile, graph);
+	}
 
 	// If we are in dry-run mode, terminate now
 	if (params.dry_run)
