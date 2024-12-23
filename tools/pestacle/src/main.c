@@ -203,7 +203,7 @@ load_script(
 	ret = Scope_populate_from_AST(root_scope, unit);
 
 termination:
-	if (!unit)
+	if (unit)
 		AST_Unit_destroy(unit);
 
 	// Job done
