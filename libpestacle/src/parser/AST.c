@@ -145,8 +145,14 @@ AST_Parameter_destroy(
 ) {
 	assert(self);
 
-	if (self->name)
+	AST_AtomicValue_destroy(&(self->value));
+
+	if (self->name) {
 		free(self->name);
+		#ifdef DEBUG
+		self->name = 0;
+		#endif
+	}
 }
 
 
