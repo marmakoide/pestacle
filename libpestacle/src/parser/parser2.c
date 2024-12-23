@@ -39,13 +39,13 @@ handle_parsing_error(
 
 
 static int
-parse_AST_node_instanciation_parameter(
+parse_AST_instanciation_parameter(
 	Lexer* lexer,
 	AST_Statement* stat
 ) {
 	assert(lexer);
 	assert(stat);
-	assert(stat->type == AST_StatementType__node_instanciation);
+	assert(stat->type == AST_StatementType__instanciation);
 
 	int error_count = 0;
 
@@ -130,7 +130,7 @@ parse_AST_node_instanciation_parameter(
 		parameter->value.location = lexer->token.location;
 
 	// Append the parameter
-	if (parameter && (!AST_NodeInstanciation_add_parameter(&(stat->node_instanciation), parameter))) {
+	if (parameter && (!AST_Instanciation_add_parameter(&(stat->instanciation), parameter))) {
 		error_count += 1;
 		handle_parsing_error(
 			&(parameter->location),
@@ -148,13 +148,13 @@ parse_AST_node_instanciation_parameter(
 
 
 static int
-parse_AST_node_instanciation(
+parse_AST_instanciation(
 	Lexer* lexer,
 	AST_Statement* stat
 ) {
 	assert(lexer);
 	assert(stat);
-	assert(stat->type == AST_StatementType__node_instanciation);
+	assert(stat->type == AST_StatementType__instanciation);
 
 	int error_count = 0;
 
@@ -201,7 +201,7 @@ parse_AST_node_instanciation(
 					}
 				}
 
-				error_count += parse_AST_node_instanciation_parameter(lexer, stat);
+				error_count += parse_AST_instanciation_parameter(lexer, stat);
 		}
 	}
 
@@ -303,13 +303,13 @@ parse_AST_Statement(
 	// Determine the type of statement
 	if (lexer->token.type == TokenType__pth_open) {
 		AST_Statement* stat =
-			AST_Unit_append_node_instanciation(
+			AST_Unit_append_instanciation(
 				unit,
 				&src_path,
 				&dst_path
 			);
 
-		error_count += parse_AST_node_instanciation(lexer, stat);
+		error_count += parse_AST_instanciation(lexer, stat);
 		Lexer_next_token(lexer);
 	}
 	// Slot assignment

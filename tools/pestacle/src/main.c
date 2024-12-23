@@ -8,6 +8,9 @@
 #include <pestacle/memory.h>
 #include <pestacle/plugin_manager.h>
 #include <pestacle/parser/parser.h>
+#include <pestacle/parser/parser2.h>
+#include <pestacle/parser/scope_populate.h>
+
 
 #include "cmdline.h"
 #include "root/scope.h"
@@ -186,9 +189,24 @@ load_script(
 	}
 
 	// Parse the file
+	bool ret = true;
+
 	Lexer lexer;
 	Lexer_init(&lexer, fp);
-	bool ret = Parser_parse(&lexer, root_scope);
+	//bool ret = Parser_parse(&lexer, root_scope);
+
+	AST_Unit* unit = 0;
+	unit = parse(&lexer);
+	if (!unit) {
+		ret = false;
+		goto termination;
+	}
+
+	ret = Scope_populate_from_AST(root_scope, unit);
+
+termination:
+	if (!unit)
+		AST_Unit_destroy(unit);
 
 	// Job done
 	fclose(fp);

@@ -16,9 +16,22 @@ typedef struct {
 } StringList;
 
 
+typedef struct {
+	size_t logical_len;
+	char** items;
+} StringListView;
+
+
 extern void
 StringList_print(
 	const StringList* self,
+	FILE* out
+);
+
+
+extern void
+StringListView_print(
+	const StringListView* self,
 	FILE* out
 );
 
@@ -32,6 +45,20 @@ StringList_init(
 extern void
 StringList_destroy(
 	StringList* self
+);
+
+
+extern void
+StringListView_init(
+	StringListView* self,
+	const StringList* list
+);
+
+
+extern void
+StringListView_head(
+	StringListView* self,
+	size_t len
 );
 
 
@@ -60,6 +87,12 @@ StringList_length(
 );
 
 
+extern size_t
+StringListView_length(
+	const StringListView* self
+);
+
+
 extern const char**
 StringList_items(
 	const StringList* self
@@ -69,6 +102,13 @@ StringList_items(
 extern const char*
 StringList_at(
 	const StringList* self,
+	size_t i
+);
+
+
+extern const char*
+StringListView_at(
+	const StringListView* self,
 	size_t i
 );
 
@@ -83,6 +123,13 @@ StringList_append(
 extern char*
 StringList_join(
 	const StringList* self,
+	char c
+);
+
+
+extern char*
+StringListView_join(
+	const StringListView* self,
 	char c
 );
 

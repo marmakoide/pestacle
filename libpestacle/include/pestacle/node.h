@@ -7,6 +7,7 @@ extern "C" {
 
 
 #include <SDL_video.h>
+#include <pestacle/dict.h>
 #include <pestacle/parameter.h>
 #include <pestacle/math/matrix.h>
 
@@ -114,7 +115,7 @@ struct s_Node {
  * Creates a new node instance
  *   name : name of the instance, will make a copy of the string
  *   delegate : delegate for this node
-  *  delegate_scope : scope owning the delegate
+ *   delegate_scope : scope owning the delegate
  */
 
 extern Node*

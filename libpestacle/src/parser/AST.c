@@ -217,11 +217,11 @@ AST_Path_print(
 }
 
 
-// --- AST_NodeInstanciation -------------------------------------------------
+// --- AST_Instanciation -----------------------------------------------------
 
 static void
-AST_NodeInstanciation_init(
-	AST_NodeInstanciation* self,
+AST_Instanciation_init(
+	AST_Instanciation* self,
 	const AST_Path* src,
 	const AST_Path* dst
 ) {
@@ -237,8 +237,8 @@ AST_NodeInstanciation_init(
 
 
 static void
-AST_NodeInstanciation_destroy(
-	AST_NodeInstanciation* self
+AST_Instanciation_destroy(
+	AST_Instanciation* self
 ) {
 	assert(self);
 
@@ -259,8 +259,8 @@ AST_NodeInstanciation_destroy(
 
 
 bool
-AST_NodeInstanciation_add_parameter(
-	AST_NodeInstanciation* self,
+AST_Instanciation_add_parameter(
+	AST_Instanciation* self,
 	AST_Parameter* parameter
 ) {
 	assert(self);
@@ -278,8 +278,8 @@ AST_NodeInstanciation_add_parameter(
 
 
 static void
-AST_NodeInstanciation_print(
-	AST_NodeInstanciation* self,
+AST_Instanciation_print(
+	AST_Instanciation* self,
 	FILE* out
 ) {
 	assert(self);
@@ -376,8 +376,8 @@ AST_Statement_destroy(
 			assert(0);
 			break;
 
-		case AST_StatementType__node_instanciation:
-			AST_NodeInstanciation_destroy(&(self->node_instanciation));
+		case AST_StatementType__instanciation:
+			AST_Instanciation_destroy(&(self->instanciation));
 			break;
 
 		case AST_StatementType__slot_assignment:
@@ -442,7 +442,7 @@ AST_Unit_append_statement(
 
 
 AST_Statement*
-AST_Unit_append_node_instanciation(
+AST_Unit_append_instanciation(
 	AST_Unit* self,
 	const AST_Path* src,
 	const AST_Path* dst
@@ -452,8 +452,8 @@ AST_Unit_append_node_instanciation(
 	assert(dst);
 
 	AST_Statement* ret = AST_Unit_append_statement(self);
-	ret->type = AST_StatementType__node_instanciation;
-	AST_NodeInstanciation_init(&(ret->node_instanciation), src, dst);
+	ret->type = AST_StatementType__instanciation;
+	AST_Instanciation_init(&(ret->instanciation), src, dst);
 
 	return ret;
 }
@@ -490,16 +490,16 @@ AST_Unit_print(
 	for(AST_Statement* stat = self->head; stat; stat = stat->next, ++i) {
 		if (i > 0)
 			fputc('\n', out);
-		
+
 		switch(stat->type) {
-			case AST_StatementType__node_instanciation:
-				AST_NodeInstanciation_print(&(stat->node_instanciation), out);
+			case AST_StatementType__instanciation:
+				AST_Instanciation_print(&(stat->instanciation), out);
 				break;
-			
+
 			case AST_StatementType__slot_assignment:
 				AST_SlotAssignment_print(&(stat->slot_assignment), out);
 				break;
-			
+
 			default:
 				assert(0);
 		}

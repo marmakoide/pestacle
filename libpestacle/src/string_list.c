@@ -61,6 +61,31 @@ StringList_destroy(
 
 
 void
+StringListView_init(
+	StringListView* self,
+	const StringList* list
+) {
+	assert(self);
+	assert(list);
+
+	self->items = list->items;
+	self->logical_len = list->logical_len;
+}
+
+
+void
+StringListView_head(
+	StringListView* self,
+	size_t len
+) {
+	assert(self);
+	assert(len <= self->logical_len);
+
+	self->logical_len = len;
+}
+
+
+void
 StringList_clear(
 	StringList* self
 ) {
@@ -124,6 +149,17 @@ StringList_length(
 }
 
 
+size_t
+StringListView_length(
+	const StringListView* self
+) {
+	assert(self);
+	assert(self->items);
+
+	return self->logical_len;
+}
+
+
 extern const char**
 StringList_items(
 	const StringList* self
@@ -138,6 +174,18 @@ StringList_items(
 const char*
 StringList_at(
 	const StringList* self,
+	size_t i
+) {
+	assert(self);
+	assert(i < self->logical_len);
+
+	return self->items[i];
+}
+
+
+const char*
+StringListView_at(
+	const StringListView* self,
 	size_t i
 ) {
 	assert(self);
@@ -172,6 +220,21 @@ StringList_append(
 }
 
 
+static void
+char_array_print(
+	const char** char_array,
+	size_t len,
+	FILE* out
+)
+{
+	for(size_t i = len; i != 0; --i, ++char_array) {
+		fputs(*char_array, out);
+		if (i > 1)
+			fputc('.', out);
+	}
+}
+
+ 
 void
 StringList_print(
 	const StringList* self,
@@ -180,38 +243,44 @@ StringList_print(
 	assert(self);
 	assert(out);
 
-	const char** str = (const char**)self->items;
-	for(size_t i = self->logical_len; i != 0; --i, ++str) {
-		fputs(*str, out);
-		if (i > 1)
-			fputc('.', out);
-	}
+	char_array_print((const char**)self->items, self->logical_len, out);
 }
 
 
-char*
-StringList_join(
-	const StringList* self,
-	char c
+void
+StringListView_print(
+	const StringListView* self,
+	FILE* out
 ) {
 	assert(self);
+	assert(out);
 
+	char_array_print((const char**)self->items, self->logical_len, out);
+}
+
+
+static char*
+char_array_join(
+	const char** char_array,
+	size_t len,
+	char c
+) {
 	// Compute output size
 	size_t out_len = 1;
 	
-	if (self->logical_len > 0)
-		out_len += self->logical_len - 1;
+	if (len > 0)
+		out_len += len - 1;
 
-	const char** str = (const char**)self->items;
-	for(size_t i = self->logical_len; i != 0; --i, ++str)
+	const char** str = char_array;
+	for(size_t i = len; i != 0; --i, ++str)
 		out_len += strlen(*str);
 
 	// Build output
 	char* out = checked_malloc(out_len);
 	char* out_ptr = out;
 
-	str = (const char**)self->items;
-	for(size_t i = self->logical_len; i != 0; --i, ++str) {
+	str = char_array;
+	for(size_t i = len; i != 0; --i, ++str) {
 		size_t str_len = strlen(*str);
 		memcpy(out_ptr, *str, str_len);
 		out_ptr += str_len;
@@ -225,4 +294,28 @@ StringList_join(
 
 	// Job done
 	return out;
+}
+
+
+char*
+StringList_join(
+	const StringList* self,
+	char c
+) {
+	assert(self);
+
+	return
+		char_array_join((const char**)self->items, self->logical_len, c);
+}
+
+
+char*
+StringListView_join(
+	const StringListView* self,
+	char c
+) {
+	assert(self);
+
+	return
+		char_array_join((const char**)self->items, self->logical_len, c);	
 }

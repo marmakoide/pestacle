@@ -1,3 +1,4 @@
+
 #include <stdlib.h>
 #include <assert.h>
 #include <SDL_log.h>
@@ -48,11 +49,10 @@ ParseContext_destroy(
 static ScopeMember*
 Parser_get_scope_member(
 	ParseContext* context,
-	const char** path,
-	size_t path_len
+	const StringListView* path
 ) {
 	ScopeMember* member =
-		Scope_get_member(context->scope, path, path_len);
+		Scope_get_member(context->scope, path);
 
 	if (!member)
 		SDL_LogError(
@@ -68,11 +68,10 @@ Parser_get_scope_member(
 static Node*
 Parser_get_node(
 	ParseContext* context,
-	const char** path,
-	size_t path_len
+	const StringListView* path
 ) {
 	ScopeMember* member =
-		Parser_get_scope_member(context, path, path_len);
+		Parser_get_scope_member(context, path);
 
 	if (!member)
 		return 0;
@@ -416,11 +415,10 @@ Parser_parse_instanciation(
 	}
 
 	// Check that the name is not taken already
-	if (Scope_get_member(
-		context->scope,
-		StringList_items(left_path),
-		StringList_length(left_path)
-	)) {
+	StringListView left_path_view;
+	StringListView_init(&left_path_view, left_path);
+
+	if (Scope_get_member(context->scope, &left_path_view)) {
 		SDL_LogError(
 			SDL_LOG_CATEGORY_SYSTEM,
 			"line %d : path to an already defined item\n",
@@ -431,12 +429,11 @@ Parser_parse_instanciation(
 	}
 	
 	// Evaluate the path
+	StringListView right_path_view;
+	StringListView_init(&right_path_view, &right_path);
+
 	ScopeMember* member = 
-		Scope_get_member(
-			context->scope,
-			StringList_items(&right_path),
-			StringList_length(&right_path)
-		);
+		Scope_get_member(context->scope, &right_path_view);
 
 	if (!member) { // TODO : invalid path should be printed
 		SDL_LogError(
@@ -501,11 +498,13 @@ Parser_parse_input_assignment(
 	}
 
 	// Retrieve destination node
+	StringListView left_path_view;
+	StringListView_init(&left_path_view, left_path);
+	StringListView_head(&left_path_view, StringList_length(left_path) - 1);
 	Node* dst_node = 
 		Parser_get_node(
 			context,
-			StringList_items(left_path),
-			StringList_length(left_path) - 1
+			&left_path_view
 		);
 
 	if (!dst_node) {
@@ -514,12 +513,10 @@ Parser_parse_input_assignment(
 	}
 
 	// Retrieve source node
-	Node* src_node = 
-		Parser_get_node(
-			context,
-			StringList_items(&right_path),
-			StringList_length(&right_path)
-		);
+	StringListView right_path_view;
+	StringListView_init(&right_path_view, &right_path);
+
+	Node* src_node = Parser_get_node(context, &right_path_view);
 
 	if (!src_node) {
 		ret = false;

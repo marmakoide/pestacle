@@ -9,6 +9,7 @@ extern "C" {
 #include <pestacle/dict.h>
 #include <pestacle/node.h>
 #include <pestacle/stack.h>
+#include <pestacle/string_list.h>
 
 
 struct s_Scope;
@@ -110,8 +111,7 @@ Scope_get_parameter_by_name(
 extern ScopeMember*
 Scope_get_member(
 	Scope* self,
-	const char** path,
-	size_t path_len
+	const StringListView* path
 );
 
 

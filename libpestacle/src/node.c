@@ -50,7 +50,7 @@ Node_new(
 	ret->data = 0;
 	ret->name = strclone(name);
 	ret->delegate = delegate;
-	ret->delegate_scope = delegate_scope;	
+	ret->delegate_scope = delegate_scope;
 
 	// Setup inputs array
 	if (NodeDelegate_has_inputs(delegate)) {
@@ -127,7 +127,7 @@ Node_get_parameter_by_name(
 
 	ParameterValue* param_value = self->parameters;
 	const ParameterDefinition* param_def = self->delegate->parameter_defs;
-	
+
 	for( ; param_def->type != ParameterType__last; ++param_value, ++param_def)
 		if (strcmp(name, param_def->name) == 0) {
 			if (param_def_ptr)
@@ -138,7 +138,7 @@ Node_get_parameter_by_name(
 
 			return true;
 		}
-		
+
 	return false;
 }
 

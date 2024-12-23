@@ -120,18 +120,18 @@ AST_Path_copy(
 );
 
 
-// --- AST_NodeInstanciation -------------------------------------------------
+// --- AST_Instanciation -----------------------------------------------------
 
 typedef struct {
 	AST_Path src;
 	AST_Path dst;
 	Dict parameters;
-} AST_NodeInstanciation;
+} AST_Instanciation;
 
 
 extern bool
-AST_NodeInstanciation_add_parameter(
-	AST_NodeInstanciation* self,
+AST_Instanciation_add_parameter(
+	AST_Instanciation* self,
 	AST_Parameter* parameter
 );
 
@@ -148,7 +148,7 @@ typedef struct {
 
 enum AST_StatementType {
 	AST_StatementType__invalid = 0,         // Used as a debugging help
-	AST_StatementType__node_instanciation,
+	AST_StatementType__instanciation,
 	AST_StatementType__slot_assignment
 }; // enum AST_StatementType
 
@@ -160,7 +160,7 @@ typedef struct s_AST_Statement AST_Statement;
 struct s_AST_Statement {
 	enum AST_StatementType type;
 	union {
-		AST_NodeInstanciation node_instanciation;
+		AST_Instanciation instanciation;
         AST_SlotAssignment slot_assignment;
     };
 	struct s_AST_Statement* next;
@@ -196,7 +196,7 @@ AST_Unit_print(
 
 
 extern AST_Statement*
-AST_Unit_append_node_instanciation(
+AST_Unit_append_instanciation(
 	AST_Unit* self,
 	const AST_Path* src,
 	const AST_Path* dst

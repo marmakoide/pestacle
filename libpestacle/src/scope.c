@@ -269,16 +269,15 @@ Scope_get_parameter_by_name(
 extern ScopeMember*
 Scope_get_member(
 	Scope* self,
-	const char** path,
-	size_t path_len
+	const StringListView* path
 ) {
 	assert(self);
 	assert(path);
 
 	Scope* current = self;
 	ScopeMember* member = 0;
-	const char** name_ptr = path;
-	for(size_t i = path_len; i != 0; --i, ++name_ptr) {
+	const char** name_ptr = (const char**)path->items;
+	for(size_t i = StringListView_length(path); i != 0; --i, ++name_ptr) {
 		DictEntry* entry = Dict_find(&(current->members), *name_ptr);
 		if (!entry)
 			return 0;
