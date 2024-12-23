@@ -387,7 +387,7 @@ process_slot_assignment(
 	StringListView_init(&dst_path, &(stat->slot_assignment.dst.string_list));
 
 	StringListView dst_path_head;
-	StringListView_init(&dst_path, &(stat->slot_assignment.dst.string_list));
+	StringListView_init(&dst_path_head, &(stat->slot_assignment.dst.string_list));
 	StringListView_head(&dst_path_head, StringListView_length(&dst_path) - 1);
 
 	Node* dst_node = get_node(
