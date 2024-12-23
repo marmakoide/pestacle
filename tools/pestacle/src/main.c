@@ -193,8 +193,7 @@ load_script(
 	Lexer lexer;
 	Lexer_init(&lexer, fp);
 
-	AST_Unit* unit = 0;
-	unit = parse(&lexer);
+	AST_Unit* unit = parse(&lexer);
 	if (!unit) {
 		ret = false;
 		goto termination;
@@ -203,8 +202,10 @@ load_script(
 	ret = Scope_populate_from_AST(root_scope, unit);
 
 termination:
-	if (unit)
+	if (unit) {
 		AST_Unit_destroy(unit);
+		free(unit);
+	}
 
 	// Job done
 	fclose(fp);
