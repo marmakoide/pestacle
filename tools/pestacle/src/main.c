@@ -7,7 +7,6 @@
 #include <pestacle/scope.h>
 #include <pestacle/memory.h>
 #include <pestacle/plugin_manager.h>
-#include <pestacle/parser/parser.h>
 #include <pestacle/parser/parser2.h>
 #include <pestacle/parser/scope_populate.h>
 
@@ -193,7 +192,6 @@ load_script(
 
 	Lexer lexer;
 	Lexer_init(&lexer, fp);
-	//bool ret = Parser_parse(&lexer, root_scope);
 
 	AST_Unit* unit = 0;
 	unit = parse(&lexer);
