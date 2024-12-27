@@ -1,7 +1,7 @@
 main-window = window(
 	width  = 256,
-	height = 256,
-	title  = "demo-mouse-motion"
+	height = 256, 
+	title  = "demo-mouse-motion" 
 )
 
 input = main-window.mouse-motion(

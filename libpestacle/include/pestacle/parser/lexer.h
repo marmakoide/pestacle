@@ -21,6 +21,7 @@ extern "C" {
 
 enum TokenType {
 	TokenType__invalid = 0, // debugging help
+	TokenType__error,       // erroneous token
 	TokenType__identifier,  // identifier
 	TokenType__bool,        // boolean constant
 	TokenType__integer,     // integer constant
@@ -33,6 +34,12 @@ enum TokenType {
 	TokenType__equal,       // =
 	TokenType__eof          // end of file
 }; // enum TokenType
+
+
+extern const char*
+TokenType_get_description(
+	enum TokenType type
+);
 
 
 #define LEXER_TOKEN_TEXT_MAX_SIZE 1024

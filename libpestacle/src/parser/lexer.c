@@ -18,6 +18,58 @@ static const size_t
 str_false_len = 5;
 
 
+const char*
+TokenType_get_description(
+	enum TokenType type
+) {
+	const char* ret = 0;
+
+	switch(type) {
+		case TokenType__invalid:
+			ret = "an invalid token";
+			break;
+		case TokenType__error:
+			ret = "an erroneous token";
+			break;
+		case TokenType__identifier:
+			ret = "an identifier";
+			break;
+		case TokenType__bool:
+			ret = "a boolean constant";
+			break;
+		case TokenType__integer:
+			ret = "an integer constant";
+			break;
+		case TokenType__real:
+			ret = "a floating point constant";
+			break;
+		case TokenType__string:
+			ret = "a string constant";
+			break;
+		case TokenType__comma:
+			ret = "','";
+			break;
+		case TokenType__pth_open:
+			ret = "'('";			
+			break;
+		case TokenType__pth_close:
+			ret = "')'";
+			break;
+		case TokenType__dot:
+			ret = "'.'";
+			break;
+		case TokenType__equal:
+			ret = "'='";
+			break;
+		case TokenType__eof:
+			ret = "end of file";
+			break;
+	}
+
+	return ret;
+}
+
+
 void
 Lexer_init(
 	Lexer* self,
@@ -61,15 +113,17 @@ Lexer_clear_token_text(Lexer* self) {
 
 static void
 Lexer_accept(Lexer* self, InputBuffer_char c) {
-    if (Lexer_token_text_len(self) == LEXER_TOKEN_TEXT_MAX_SIZE)
-		handle_processing_error(
+    if (Lexer_token_text_len(self) == LEXER_TOKEN_TEXT_MAX_SIZE) {
+		handle_parsing_error(
 			&(self->location),
 			"token '%s%c' too long (more than %d characters)",
 			self->token.text_data,
 			c,
 			LEXER_TOKEN_TEXT_MAX_SIZE - 1
 		);
-    
+		self->token.type = TokenType__error;
+    }
+
 	*(self->token.text_end) = (char)c;
 	self->token.text_end += 1;
 	*(self->token.text_end) = '\0';
@@ -104,21 +158,25 @@ Lexer_parse_real(Lexer* self) {
 
 static void
 Lexer_parse_decimal_integer(Lexer* self) {
-	uint32_t value = 0;
+	uint64_t value = 0;
 
 	for(const char* str = self->token.text_data; *str != '\0'; ++str) {
-		if ((value >= 429496729) && (*str > '5'))
-			handle_processing_error(
+		value *= 10;
+		value += *str - '0';
+
+		if (value >= 4294967295) {
+			handle_parsing_error(
 				&(self->location),
 				"decimal integer %s is too large, does not fit in 32 bits",
 				self->token.text
 			);
-
-		value *= 10;
-		value += *str - '0';
+			self->token.type = TokenType__error;
+			return;
+		}
 	}
 
 	self->token.value.int64_value = value;
+	self->token.type = TokenType__integer;
 }
 
 
@@ -133,18 +191,22 @@ Lexer_parse_hexadecimal_integer(Lexer* self) {
 	uint32_t value = 0; 
 
 	for(const char* str = self->token.text_data + 2; *str != '\0'; ++str) {
-		if ((value & 0x10000000) != 0)
-			handle_processing_error(
+		if ((value & 0x10000000) != 0) {
+			handle_parsing_error(
 				&(self->location),
 				"hexadecimal integer %s is too large, does not fit in 32 bits",
 				self->token.text
 			);
+			self->token.type = TokenType__error;
+			return;
+		}
 
 		value <<= 4;
 		value |= hex_char_to_digit[toupper(*str) - '0'];
 	}
 
 	self->token.value.int64_value = value;
+	self->token.type = TokenType__integer;
 }
 
 
@@ -243,6 +305,8 @@ Lexer_next_token(Lexer* self) {
 					break;
 					default:
 						Lexer_accept_and_next_char(self);
+
+						self->token.type = TokenType__error;
 						return;
 				}
 				break;
@@ -250,7 +314,8 @@ Lexer_next_token(Lexer* self) {
 			case LexerParsingState__string:
 				switch(current_char) {
 					case '"':
-						self->token.type = TokenType__string;
+						if (self->token.type != TokenType__error)
+							self->token.type = TokenType__string;
 						Lexer_skip_char(self);
 						return;
 					case '\n':
@@ -262,11 +327,12 @@ Lexer_next_token(Lexer* self) {
 						Lexer_skip_char(self);
 						break;
 					case EOF:
-						handle_processing_error(
+						handle_parsing_error(
 							&(self->location),
-							"unterminated string constant"
+							"unterminated string constant", 0
 						);
-						break;
+						self->token.type = TokenType__error;
+						return;
 					default:
 						Lexer_accept_and_next_char(self);
 				}
@@ -284,10 +350,11 @@ Lexer_next_token(Lexer* self) {
 						Lexer_accept(self, '\"');
 						break;
 					default:
-						handle_processing_error(
+						handle_parsing_error(
 							&(self->location),
-							"unsupported string escape sequence"
+							"unsupported string escape sequence", 0
 						);
+						self->token.type = TokenType__error;
 						break;
 				}
 				Lexer_skip_char(self);
@@ -341,11 +408,12 @@ Lexer_next_token(Lexer* self) {
 						Lexer_skip_char(self);
 						break;
 					case EOF:
-						handle_processing_error(
+						handle_parsing_error(
 							&(self->location),
-							"unterminated multi-line comment"
+							"unterminated multi-line comment", 0
 						);
-						break;
+						self->token.type = TokenType__error;
+						return;
 					case '\n':
 						self->location.line += 1;
 						Lexer_skip_char(self);
@@ -422,7 +490,6 @@ Lexer_next_token(Lexer* self) {
 							break;
 						default:
 							Lexer_parse_decimal_integer(self);
-							self->token.type = TokenType__integer;
 							return;
 					}
 					break;
@@ -439,7 +506,6 @@ Lexer_next_token(Lexer* self) {
 							break;
 						default:
 							Lexer_parse_decimal_integer(self);
-							self->token.type = TokenType__integer;
 							return;
 					}
 					break;
@@ -449,7 +515,6 @@ Lexer_next_token(Lexer* self) {
 						Lexer_accept_and_next_char(self);
 					else {
 						Lexer_parse_hexadecimal_integer(self);
-						self->token.type = TokenType__integer;
 						return;
 					}
 					break;

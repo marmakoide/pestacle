@@ -76,7 +76,6 @@ AST_AtomicValue_destroy(
 	AST_AtomicValue* self
 ) {
 	assert(self);
-	assert(self->type != AST_AtomicValueType__invalid);
 
 	if (self->type == AST_AtomicValueType__string) {
 		assert(self->string_value);

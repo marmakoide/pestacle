@@ -29,14 +29,6 @@ log_error(
 	log_error("line %d : " format, (location)->line + 1, __VA_ARGS__)
 
 
-extern noreturn void 
-handle_processing_error(
-	const FileLocation* location,
-	const char* format,
-	...
-);
-
-
 #ifdef __cplusplus
 }
 #endif
