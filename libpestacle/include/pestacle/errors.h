@@ -18,6 +18,17 @@ extern noreturn void
 handle_input_read_error();
 
 
+extern void
+log_error(
+	const char* format,
+	...
+);
+
+
+#define handle_parsing_error(location, format, ...) \
+	log_error("line %d : " format, (location)->line + 1, __VA_ARGS__)
+
+
 extern noreturn void 
 handle_processing_error(
 	const FileLocation* location,

@@ -24,6 +24,23 @@ handle_out_of_memory_error() {
 
 
 void 
+log_error(
+	const char* format,
+	...
+) {
+	va_list args;
+	va_start(args, format);
+	SDL_LogMessageV(
+		SDL_LOG_CATEGORY_SYSTEM,
+		SDL_LOG_PRIORITY_ERROR,
+		format,
+		args
+	);
+	va_end(args);
+}
+
+
+void 
 handle_processing_error(
 	const FileLocation* location,
 	const char* format,
