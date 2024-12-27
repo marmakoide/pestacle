@@ -212,6 +212,7 @@ Lexer_parse_hexadecimal_integer(Lexer* self) {
 
 enum LexerParsingState {
 	LexerParsingState__init,
+	LexerParsingState__erroneous,	
 	LexerParsingState__identifier,
 	LexerParsingState__slash,
 	LexerParsingState__dot,
@@ -304,13 +305,33 @@ Lexer_next_token(Lexer* self) {
 						Lexer_accept_and_next_char(self);
 					break;
 					default:
-						Lexer_accept_and_next_char(self);
-
+						state = LexerParsingState__erroneous;
 						self->token.type = TokenType__error;
-						return;
+						Lexer_accept_and_next_char(self);
+						break;
 				}
 				break;
 				// case LexerParsingState__init
+			case LexerParsingState__erroneous:
+				switch(current_char) {
+					case ' ':
+					case '\t':
+					case '\r':
+					case '"':
+					case ',':
+					case '(':
+					case ')':
+					case '.':
+					case '/':
+					case '=':
+						return;
+						break;
+					default:
+						Lexer_accept_and_next_char(self);
+						break;
+				}
+				break;
+				// case LexerParsingState__erroneous
 			case LexerParsingState__string:
 				switch(current_char) {
 					case '"':

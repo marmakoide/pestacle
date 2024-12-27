@@ -1,4 +1,4 @@
-main-window @@@ = window(
+main-window = window(
 	width  = 256,
 	height = 256, 
 	title  = "demo-mouse-motion" 
