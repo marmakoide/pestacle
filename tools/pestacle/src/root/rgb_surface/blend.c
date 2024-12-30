@@ -37,17 +37,14 @@ node_output(
 static const NodeInputDefinition
 node_inputs[] = {
 	{
-		NodeType__rgb_surface,
 		"source-a",
 		true
 	},
 	{
-		NodeType__rgb_surface,
 		"source-b",
 		true
 	},
 	{
-		NodeType__matrix,
 		"mask",
 		true
 	},

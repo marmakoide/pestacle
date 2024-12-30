@@ -17,21 +17,24 @@ extern "C" {
 enum NodeType {
 	NodeType__invalid = 0, // Used as a debugging help
 	NodeType__matrix,
-	NodeType__rgb_surface,
-	NodeType__last         // Used to mark the end of an array of NodeInputType
+	NodeType__rgb_surface
 }; // enum NodeType
 
 
 typedef struct {
-	enum NodeType type;
 	const char* name;
 	bool is_mandatory;
 } NodeInputDefinition;
 
 
+extern bool
+NodeInputDefinition_is_last(
+	const NodeInputDefinition* self
+);
+
+
 #define NODE_INPUT_DEFINITION_END \
 { \
-	NodeType__last, \
 	0, \
 	false \
 }

@@ -35,12 +35,10 @@ node_output(
 static const NodeInputDefinition
 node_inputs[] = {
 	{
-		NodeType__matrix,
 		"source-a",
 		true
 	},
 	{
-		NodeType__matrix,
 		"source-b",
 		true
 	},	

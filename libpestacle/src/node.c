@@ -4,6 +4,16 @@
 #include <pestacle/strings.h>
 
 
+// --- NodeInputDefinition ----------------------------------------------------
+
+bool
+NodeInputDefinition_is_last(
+	const NodeInputDefinition* self
+) {
+	return self->name == 0;
+}
+
+
 // --- NodeDelegate -----------------------------------------------------------
 
 static bool
@@ -12,7 +22,7 @@ NodeDelegate_has_inputs(
 ) {
 	assert(self);
 
-	return self->input_defs->type != NodeType__last;
+	return !NodeInputDefinition_is_last(self->input_defs);
 }
 
 
@@ -24,7 +34,7 @@ NodeDelegate_input_count(
 
 	size_t count = 0;
 	const NodeInputDefinition* input_def = self->input_defs;
-	for( ; input_def->type != NodeType__last; ++input_def, ++count);
+	for( ; !NodeInputDefinition_is_last(input_def); ++input_def, ++count);
 
 	return count;
 }
@@ -58,7 +68,7 @@ Node_new(
 
 		Node** input_ptr = ret->inputs;
 		const NodeInputDefinition* input_def = ret->delegate->input_defs;
-		for( ; input_def->type != NodeType__last; ++input_ptr, ++input_def)
+		for( ; !NodeInputDefinition_is_last(input_def); ++input_ptr, ++input_def)
 			*input_ptr = 0;
 	}
 	else
@@ -90,7 +100,7 @@ Node_destroy(
 		#ifdef DEBUG
 		Node** input_ptr = self->inputs;
 		const NodeInputDefinition* input_def = self->delegate->input_defs;
-		for( ; input_def->type != NodeType__last; ++input_ptr, ++input_def)
+		for( ; !NodeInputDefinition_is_last(input_def); ++input_ptr, ++input_def)
 			*input_ptr = 0;
 		#endif
 	
@@ -156,7 +166,7 @@ Node_set_input_by_name(
 	// Scan inputs to find one with matching name
 	Node** input_ptr = self->inputs;
 	const NodeInputDefinition* input_def = self->delegate->input_defs;
-	for( ; input_def->type != NodeType__last; ++input_ptr, ++input_def)
+	for( ; !NodeInputDefinition_is_last(input_def); ++input_ptr, ++input_def)
 		if (strcmp(name, input_def->name) == 0) {
 			*input_ptr = other;
 			return true;
@@ -174,7 +184,7 @@ Node_is_complete(
 
 	Node* const* input_ptr = self->inputs;
 	const NodeInputDefinition* input_def = self->delegate->input_defs;
-	for( ; input_def->type != NodeType__last; ++input_ptr, ++input_def)
+	for( ; !NodeInputDefinition_is_last(input_def); ++input_ptr, ++input_def)
 		if ((*input_ptr == 0) && (input_def->is_mandatory))
 			return false;
 

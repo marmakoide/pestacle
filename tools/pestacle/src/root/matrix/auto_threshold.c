@@ -39,12 +39,10 @@ node_output(
 static const NodeInputDefinition
 node_inputs[] = {
 	{
-		NodeType__matrix,
 		"source",
 		true
 	},
 	{
-		NodeType__matrix,
 		"weight",
 		false
 	},	
