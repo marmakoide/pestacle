@@ -36,7 +36,7 @@ node_parameters[] = {
 const NodeDelegate
 display_node_delegate = {
 	"display",
-	NodeType__void,
+	false,
 	node_inputs,
 	node_parameters,
 	{

@@ -77,7 +77,7 @@ node_parameters[] = {
 const NodeDelegate
 root_rgb_surface_blend_node_delegate = {
 	"blend",
-	NodeType__rgb_surface,
+	true,
 	node_inputs,
 	node_parameters,
 	{
@@ -118,9 +118,10 @@ node_setup(
 		return false;
 	}
 
-	// Setup node type metadata
-	self->metadata.rgb_surface.width = width;
-	self->metadata.rgb_surface.height = height;
+	// Setup node type
+	self->type = NodeType__rgb_surface;
+	self->type_metadata.rgb_surface.width = width;
+	self->type_metadata.rgb_surface.height = height;
 
 	// Job done
 	self->data = rgb_surface;

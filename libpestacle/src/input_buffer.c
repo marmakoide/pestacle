@@ -38,7 +38,7 @@ InputBuffer_next(
 			for(size_t i = read_char_count; i != 0; --i, --src, --dst)
 				*dst = *src;
 		}
-		
+
 		// Check if we reached the end of the file
 		if (read_char_count != INPUT_BUFFER_SIZE) {
 			if (ferror(self->file))

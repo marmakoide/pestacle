@@ -16,7 +16,6 @@ extern "C" {
 
 enum NodeType {
 	NodeType__invalid = 0, // Used as a debugging help
-	NodeType__void,
 	NodeType__matrix,
 	NodeType__rgb_surface,
 	NodeType__last         // Used to mark the end of an array of NodeInputType
@@ -91,7 +90,7 @@ typedef struct {
 
 typedef struct {
 	const char* name;
-	enum NodeType type;
+	bool has_output;
 	const NodeInputDefinition* input_defs;
 	const ParameterDefinition* parameter_defs;
 	NodeDelegateMethods methods;
@@ -105,7 +104,9 @@ struct s_Node {
 	const NodeDelegate* delegate;
 	struct s_Scope* delegate_scope; // Scope owning the delegate
 
-	NodeTypeMetadata metadata;
+	enum NodeType type;
+	NodeTypeMetadata type_metadata;
+
 	Node** inputs;
 	ParameterValue* parameters;
 }; // struct s_Node

@@ -70,7 +70,7 @@ node_parameters[] = {
 const NodeDelegate
 root_matrix_heat_diffusion_node_delegate = {
 	"heat-diffusion",
-	NodeType__matrix,
+	true,
 	node_inputs,
 	node_parameters,
 	{
@@ -107,8 +107,9 @@ node_setup(
 		return false;
 
 	// Setup node type metadata
-	self->metadata.matrix.width = width;
-	self->metadata.matrix.height = height;
+	self->type = NodeType__matrix;
+	self->type_metadata.matrix.width = width;
+	self->type_metadata.matrix.height = height;
 
 	// Setup data
 	Matrix_init(&(data->U), height, width);

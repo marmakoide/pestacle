@@ -75,7 +75,7 @@ node_parameters[] = {
 const NodeDelegate
 root_rgb_surface_resize_node_delegate = {
 	"resize",
-	NodeType__rgb_surface,
+	true,
 	node_inputs,
 	node_parameters,
 	{
@@ -115,8 +115,9 @@ node_setup(
 	}
 
 	// Setup node type metadata
-	self->metadata.rgb_surface.width = output_width;
-	self->metadata.rgb_surface.height = output_height;
+	self->type = NodeType__rgb_surface;
+	self->type_metadata.rgb_surface.width = output_width;
+	self->type_metadata.rgb_surface.height = output_height;
 
 	// Job done
 	self->data = rgb_surface;

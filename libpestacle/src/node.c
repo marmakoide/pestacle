@@ -40,8 +40,6 @@ Node_new(
 ) {
 	assert(name);
 	assert(delegate);
-	assert(delegate->type != NodeType__invalid);
-	assert(delegate->type != NodeType__last);
 
 	// Allocate
 	Node* ret = (Node*)checked_malloc(sizeof(Node));
@@ -51,6 +49,7 @@ Node_new(
 	ret->name = strclone(name);
 	ret->delegate = delegate;
 	ret->delegate_scope = delegate_scope;
+	ret->type = NodeType__invalid;
 
 	// Setup inputs array
 	if (NodeDelegate_has_inputs(delegate)) {
@@ -109,6 +108,7 @@ Node_destroy(
 	self->name = 0;
 	self->delegate = 0;
 	self->delegate_scope = 0;
+	self->type = NodeType__invalid;
 	self->inputs = 0;
 	self->parameters = 0;
 	#endif
@@ -153,12 +153,11 @@ Node_set_input_by_name(
 	assert(other);
 	assert(name);
 
-	// Scan inputs to find one with matching name and types
+	// Scan inputs to find one with matching name
 	Node** input_ptr = self->inputs;
 	const NodeInputDefinition* input_def = self->delegate->input_defs;
 	for( ; input_def->type != NodeType__last; ++input_ptr, ++input_def)
-		if ((strcmp(name, input_def->name) == 0) && 
-		    (other->delegate->type == input_def->type)) {
+		if (strcmp(name, input_def->name) == 0) {
 			*input_ptr = other;
 			return true;
 		}

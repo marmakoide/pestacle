@@ -77,7 +77,7 @@ node_parameters[] = {
 const NodeDelegate
 root_matrix_blend_node_delegate = {
 	"blend",
-	NodeType__matrix,
+	true,
 	node_inputs,
 	node_parameters,
 	{
@@ -109,6 +109,11 @@ node_setup(
 	// Setup data
 	Matrix_init(data, height, width);
 	Matrix_fill(data, (real_t)0);
+
+	// Setup node type metadata
+	self->type = NodeType__matrix;
+	self->type_metadata.matrix.width = width;
+	self->type_metadata.matrix.height = height;
 
 	// Job done
 	self->data = data;

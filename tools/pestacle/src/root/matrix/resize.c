@@ -82,7 +82,7 @@ node_parameters[] = {
 const NodeDelegate
 root_matrix_resize_node_delegate = {
 	"resize",
-	NodeType__matrix,
+	true,
 	node_inputs,
 	node_parameters,
 	{
@@ -219,8 +219,9 @@ node_setup(
 	);
 
 	// Setup node type metadata
-	self->metadata.matrix.width = output_width;
-	self->metadata.matrix.height = output_height;
+	self->type = NodeType__matrix;
+	self->type_metadata.matrix.width = output_width;
+	self->type_metadata.matrix.height = output_height;
 
 	// Job done
 	self->data = data;

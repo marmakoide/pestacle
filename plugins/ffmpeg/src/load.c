@@ -59,7 +59,7 @@ node_parameters[] = {
 const NodeDelegate
 ffmpeg_load_node_delegate = {
 	"load",
-	NodeType__rgb_surface,
+	true,
 	node_inputs,
 	node_parameters,
 	{
@@ -345,6 +345,11 @@ node_setup(
 		free(data);
 		return false;
 	}
+
+	// Setup node type metadata
+	self->type = NodeType__rgb_surface;
+	self->type_metadata.matrix.width = data->params->width;
+	self->type_metadata.matrix.height = data->params->height;
 
 	// Job done
 	self->data = data;

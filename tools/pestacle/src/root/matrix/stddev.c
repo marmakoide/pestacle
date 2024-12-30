@@ -71,7 +71,7 @@ node_parameters[] = {
 const NodeDelegate
 root_matrix_stddev_node_delegate = {
 	"stddev",
-	NodeType__matrix,
+	true,
 	node_inputs,
 	node_parameters,
 	{
@@ -143,6 +143,11 @@ node_setup(
 
 	// Setup data
 	StdDevData_init(data, width, height, sigma);
+
+	// Setup node type metadata
+	self->type = NodeType__matrix;
+	self->type_metadata.matrix.width = width;
+	self->type_metadata.matrix.height = height;
 
 	// Job done
 	self->data = data;

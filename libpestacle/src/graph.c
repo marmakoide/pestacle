@@ -28,7 +28,7 @@ Graph_check_graph_is_complete(
 
 static void
 push_node_inputs(
-	Stack* stack, 
+	Stack* stack,
 	Node* node
 ) {
 	Node** input_ptr = node->inputs;
@@ -40,10 +40,9 @@ push_node_inputs(
 
 
 static void
-Scope_gather_node_with_type(
+Scope_gather_root_nodes(
 	Scope* self,
-	Stack* out,
-	enum NodeType node_type
+	Stack* out
 ) {
 	DictIterator it;
 
@@ -61,7 +60,7 @@ Scope_gather_node_with_type(
 		ScopeMember* member = (ScopeMember*)Stack_pop(&stack);
 		switch(member->type) {
 			case ScopeMemberType__node:
-				if (member->node->delegate->type == node_type)
+				if (!member->node->delegate->has_output)
 					Stack_push(out, member->node);
 				break;
 
@@ -150,7 +149,15 @@ Graph_init(
 	// Gather root nodes
 	Stack root_nodes;
 	Stack_init(&root_nodes);
-	Scope_gather_node_with_type(scope, &root_nodes, NodeType__void);
+	Scope_gather_root_nodes(scope, &root_nodes);
+
+	if (Stack_empty(&root_nodes)) {
+		SDL_LogError(
+			SDL_LOG_CATEGORY_SYSTEM,
+			"no output node have been defined"
+		);		
+		goto failure;
+	}
 
 	// Sort the nodes
 	if (!Graph_topological_sort(self, &root_nodes))

@@ -47,7 +47,7 @@ node_parameters[] = {
 const NodeDelegate
 arducam_tof_camera_node_delegate = {
 	"tof-camera",
-	NodeType__matrix,
+	true,
 	node_inputs,
 	node_parameters,
 	{
@@ -147,6 +147,11 @@ node_setup(
 		delete data;
 		return false;
 	}
+
+	// Setup node type metadata
+	self->type = NodeType__matrix;
+	self->type_metadata.matrix.width = 240;
+	self->type_metadata.matrix.height = 180;
 
 	// Job done
 	self->data = data;

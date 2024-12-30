@@ -54,7 +54,7 @@ node_parameters[] = {
 const NodeDelegate
 mouse_motion_node_delegate = {
 	"mouse-motion",
-	NodeType__matrix,
+	true,
 	node_inputs,
 	node_parameters,
 	{
@@ -162,10 +162,12 @@ node_setup(
 	MouseMotion* mouse_motion = (MouseMotion*)checked_malloc(sizeof(MouseMotion));
 
 	// Setup node type metadata
+	self->type = NodeType__matrix;
+
 	int w, h;
 	SDL_GetWindowSize(window->window, &w, &h);
-	self->metadata.matrix.width = w;
-	self->metadata.matrix.height = h;
+	self->type_metadata.matrix.width = w;
+	self->type_metadata.matrix.height = h;
 
 	// Initialize
 	MouseMotion_init(mouse_motion, w, h);

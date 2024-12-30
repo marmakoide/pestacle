@@ -46,7 +46,7 @@ node_parameters[] = {
 const NodeDelegate
 png_load_node_delegate = {
 	"load",
-	NodeType__rgb_surface,
+	true,
 	node_inputs,
 	node_parameters,
 	{
@@ -72,8 +72,9 @@ node_setup(
 		return false;
 
 	// Setup node type metadata
-	self->metadata.rgb_surface.width = rgb_surface->w;
-	self->metadata.rgb_surface.height = rgb_surface->h;
+	self->type = NodeType__rgb_surface;
+	self->type_metadata.rgb_surface.width = rgb_surface->w;
+	self->type_metadata.rgb_surface.height = rgb_surface->h;
 
 	// Job done
 	self->data = rgb_surface;

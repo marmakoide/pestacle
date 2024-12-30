@@ -75,7 +75,7 @@ node_parameters[] = {
 const NodeDelegate
 root_matrix_random_normal_node_delegate = {
 	"normal",
-	NodeType__matrix,
+	true,
 	node_inputs,
 	node_parameters,
 	{
@@ -144,6 +144,11 @@ node_setup(
 
 	// Setup data
 	Normal_init(data, width, height, seed);
+
+	// Setup node type metadata
+	self->type = NodeType__matrix;
+	self->type_metadata.matrix.width = width;
+	self->type_metadata.matrix.height = height;
 
 	// Job done
 	self->data = data;

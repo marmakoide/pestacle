@@ -72,7 +72,7 @@ node_parameters[] = {
 const NodeDelegate
 root_rgb_surface_overlay_node_delegate = {
 	"overlay",
-	NodeType__rgb_surface,
+	true,
 	node_inputs,
 	node_parameters,
 	{
@@ -114,8 +114,9 @@ node_setup(
 	}
 
 	// Setup node type metadata
-	self->metadata.rgb_surface.width = width;
-	self->metadata.rgb_surface.height = height;
+	self->type = NodeType__rgb_surface;
+	self->type_metadata.rgb_surface.width = width;
+	self->type_metadata.rgb_surface.height = height;
 
 	// Job done
 	self->data = rgb_surface;

@@ -66,7 +66,7 @@ node_parameters[] = {
 const NodeDelegate
 root_rgb_surface_luminance_node_delegate = {
 	"luminance",
-	NodeType__matrix,
+	true,
 	node_inputs,
 	node_parameters,
 	{
@@ -96,8 +96,9 @@ node_setup(
 		return false;
 
 	// Setup node type metadata
-	self->metadata.matrix.width = width;
-	self->metadata.matrix.height = height;
+	self->type = NodeType__matrix;
+	self->type_metadata.matrix.width = width;
+	self->type_metadata.matrix.height = height;
 
 	// Setup the accumulator matrix
 	Matrix_init(matrix, height, width);
