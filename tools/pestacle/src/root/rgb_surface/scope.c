@@ -47,7 +47,7 @@ bool
 scope_setup(
 	Scope* self
 ) {
-	return 
+	return
 		Scope_populate(
 			self,
 			 node_delegate_list,
