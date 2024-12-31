@@ -9,8 +9,7 @@ input = main-window.mouse-motion(
 )
 
 heat = matrix.heat-diffusion(
-	width  = 256,
-	height = 256
+	decay = 0.01
 )
 
 main = matrix.gradient-map()
