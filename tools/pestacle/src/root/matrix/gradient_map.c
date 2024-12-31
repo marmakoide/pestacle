@@ -44,21 +44,8 @@ node_inputs[] = {
 };
 
 
-#define WIDTH_PARAMETER  0
-#define HEIGHT_PARAMETER 1
-
 static const ParameterDefinition
 node_parameters[] = {
-	{
-		ParameterType__integer,
-		"width",
-		{ .int64_value = 32 }
-	},
-	{
-		ParameterType__integer,
-		"height",
-		{ .int64_value = 32 }
-	},
 	PARAMETER_DEFINITION_END
 };
 
@@ -84,9 +71,12 @@ static bool
 node_setup(
 	Node* self
 ) {
-	// Retrieve the parameters
-	size_t width = (size_t)self->parameters[WIDTH_PARAMETER].int64_value;
-	size_t height = (size_t)self->parameters[HEIGHT_PARAMETER].int64_value;
+	// Retrieve input data descriptor
+	const DataDescriptor* in_descriptor =
+		&(self->inputs[SOURCE_INPUT]->out_descriptor);
+
+	size_t width  = in_descriptor->matrix.width;
+	size_t height = in_descriptor->matrix.height;
 
 	// Allocate
 	SDL_Surface* rgb_surface =

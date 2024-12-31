@@ -21,10 +21,7 @@ gaussian = matrix.gaussian(
 
 gaussian.source = bw-picture
 
-output = matrix.gradient-map(
-	width  = 512,
-	height = 512
-)
+output = matrix.gradient-map()
 
 output.source = gaussian
 

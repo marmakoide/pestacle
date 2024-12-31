@@ -13,10 +13,7 @@ heat = matrix.heat-diffusion(
 	height = 256
 )
 
-main = matrix.gradient-map(
-	width  = 256,
-	height = 256
-)
+main = matrix.gradient-map()
 
 heat.source = input
 main.source = heat
