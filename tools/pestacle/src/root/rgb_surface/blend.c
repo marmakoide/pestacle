@@ -52,21 +52,8 @@ node_inputs[] = {
 };
 
 
-#define WIDTH_PARAMETER  0
-#define HEIGHT_PARAMETER 1
-
 static const ParameterDefinition
 node_parameters[] = {
-	{
-		ParameterType__integer,
-		"width",
-		{ .int64_value = 32 }
-	},
-	{
-		ParameterType__integer,
-		"height",
-		{ .int64_value = 32 }
-	},
 	PARAMETER_DEFINITION_END
 };
 
@@ -92,9 +79,31 @@ static bool
 node_setup(
 	Node* self
 ) {
-	// Retrieve the parameters
-	size_t width = (size_t)self->parameters[WIDTH_PARAMETER].int64_value;
-	size_t height = (size_t)self->parameters[HEIGHT_PARAMETER].int64_value;
+	// Retrieve input data descriptors
+	const DataDescriptor* in_a_descriptor =
+		&(self->inputs[SOURCE_A_INPUT]->out_descriptor);
+
+	const DataDescriptor* in_b_descriptor =
+		&(self->inputs[SOURCE_B_INPUT]->out_descriptor);
+
+	const DataDescriptor* in_mask_descriptor =
+		&(self->inputs[MASK_INPUT]->out_descriptor);
+
+	size_t width  = in_a_descriptor->matrix.width;
+	size_t height = in_a_descriptor->matrix.height;
+
+	// Check input descriptors validity
+	if
+		((in_b_descriptor->matrix.width != width) ||
+		 (in_b_descriptor->matrix.height != height) ||
+		 (in_mask_descriptor->matrix.width != width) ||
+		 (in_mask_descriptor->matrix.height != height)) {
+			SDL_LogError(
+				SDL_LOG_CATEGORY_SYSTEM,
+				"source-a, source-b and mask inputs should have the same dimensions"
+			);
+		return false;
+	}
 
 	// Allocate
 	SDL_Surface* rgb_surface =
