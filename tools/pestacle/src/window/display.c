@@ -7,6 +7,12 @@
 
 // --- Interface --------------------------------------------------------------
 
+static bool
+node_setup(
+	Node* self
+);
+
+
 static void
 node_update(
 	Node* self
@@ -39,7 +45,7 @@ display_node_delegate = {
 	node_inputs,
 	node_parameters,
 	{
-		0,
+		node_setup,
 		0,
 		node_update,
 		0
@@ -48,6 +54,31 @@ display_node_delegate = {
 
 
 // --- Implementation ---------------------------------------------------------
+
+static bool
+node_setup(
+	Node* self
+) {
+	Window* window = (Window*)self->delegate_scope->data;
+
+	// Retrieve input data descriptor
+	const DataDescriptor* in_descriptor =
+		&(self->inputs[SOURCE_INPUT]->out_descriptor);
+
+	// Check input descriptor validity
+	if
+		((in_descriptor->matrix.width != (size_t)window->surface->w) ||
+		 (in_descriptor->matrix.height != (size_t)window->surface->h) ) {
+			SDL_LogError(
+				SDL_LOG_CATEGORY_SYSTEM,
+				"input should have the same dimension as the display"
+			);
+		return false;
+	}
+
+	return true;
+}
+
 
 static void
 node_update(

@@ -50,10 +50,7 @@ noise.source-b = noise-b
 
 
 
-threshold = matrix.auto-threshold(
-	width  = 512,
-	height = 512
-)
+threshold = matrix.auto-threshold()
 
 threshold.weight = weights
 threshold.source = noise

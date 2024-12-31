@@ -1,3 +1,4 @@
+#include <SDL_log.h>
 #include <tgmath.h>
 
 #include <pestacle/memory.h>
@@ -50,21 +51,8 @@ node_inputs[] = {
 };
 
 
-#define WIDTH_PARAMETER  0
-#define HEIGHT_PARAMETER 1
-
 static const ParameterDefinition
 node_parameters[] = {
-	{
-		ParameterType__integer,
-		"width",
-		{ .int64_value = 32 }
-	},
-	{
-		ParameterType__integer,
-		"height",
-		{ .int64_value = 32 }
-	},
 	PARAMETER_DEFINITION_END
 };
 
@@ -435,9 +423,30 @@ static bool
 node_setup(
 	Node* self
 ) {
-	// Retrieve the parameters
-	size_t width = (size_t)self->parameters[WIDTH_PARAMETER].int64_value;
-	size_t height = (size_t)self->parameters[HEIGHT_PARAMETER].int64_value;
+	// Retrieve input data descriptors
+	const DataDescriptor* in_descriptor =
+		&(self->inputs[SOURCE_INPUT]->out_descriptor);
+
+	const DataDescriptor* weight_descriptor =
+		&(self->inputs[WEIGHT_INPUT]->out_descriptor);
+
+	size_t width  = in_descriptor->matrix.width;
+	size_t height = in_descriptor->matrix.height;
+
+	// Check input descriptors validity
+	if (weight_descriptor) {
+		if
+			((in_descriptor->matrix.width != width) ||
+			 (in_descriptor->matrix.height != height) ||
+			 (weight_descriptor->matrix.width != width) ||
+			 (weight_descriptor->matrix.height != height)) {
+				SDL_LogError(
+					SDL_LOG_CATEGORY_SYSTEM,
+					"source and weight inputs should have the same dimensions"
+				);
+			return false;
+		}
+	}
 
 	// Allocate data
 	AutoThreshold* data =
