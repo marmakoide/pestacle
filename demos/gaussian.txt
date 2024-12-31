@@ -8,10 +8,7 @@ rgb-picture = png.load(
 	path = "demos/pictures/lenna.png"
 )
 
-bw-picture = rgb-surface.luminance(
-	width  = 512,
-	height = 512
-)
+bw-picture = rgb-surface.luminance()
 
 bw-picture.source = rgb-picture
 
