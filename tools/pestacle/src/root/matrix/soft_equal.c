@@ -180,10 +180,10 @@ node_setup(
 	// Setup data
 	SoftEqual_init(data, width, height, value, radius, ratio);
 
-	// Setup node type metadata
-	self->type = NodeType__matrix;
-	self->type_metadata.matrix.width = width;
-	self->type_metadata.matrix.height = height;
+	// Setup output descriptor
+	self->out_descriptor.type = DataType__matrix;
+	self->out_descriptor.matrix.width = width;
+	self->out_descriptor.matrix.height = height;
 
 	// Job done
 	self->data = data;

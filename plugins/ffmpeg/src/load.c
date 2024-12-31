@@ -346,10 +346,10 @@ node_setup(
 		return false;
 	}
 
-	// Setup node type metadata
-	self->type = NodeType__rgb_surface;
-	self->type_metadata.matrix.width = data->params->width;
-	self->type_metadata.matrix.height = data->params->height;
+	// Setup output descriptor
+	self->out_descriptor.type = DataType__rgb_surface;
+	self->out_descriptor.matrix.width = data->params->width;
+	self->out_descriptor.matrix.height = data->params->height;
 
 	// Job done
 	self->data = data;

@@ -148,10 +148,10 @@ node_setup(
 		return false;
 	}
 
-	// Setup node type metadata
-	self->type = NodeType__matrix;
-	self->type_metadata.matrix.width = 240;
-	self->type_metadata.matrix.height = 180;
+	// Setup output descriptor
+	self->out_descriptor.type = DataType__matrix;
+	self->out_descriptor.matrix.width = 240;
+	self->out_descriptor.matrix.height = 180;
 
 	// Job done
 	self->data = data;

@@ -71,10 +71,10 @@ node_setup(
 	if (!rgb_surface)
 		return false;
 
-	// Setup node type metadata
-	self->type = NodeType__rgb_surface;
-	self->type_metadata.rgb_surface.width = rgb_surface->w;
-	self->type_metadata.rgb_surface.height = rgb_surface->h;
+	// Setup output descriptor
+	self->out_descriptor.type = DataType__rgb_surface;
+	self->out_descriptor.rgb_surface.width = rgb_surface->w;
+	self->out_descriptor.rgb_surface.height = rgb_surface->h;
 
 	// Job done
 	self->data = rgb_surface;

@@ -8,18 +8,12 @@ extern "C" {
 
 #include <SDL_video.h>
 #include <pestacle/dict.h>
+#include <pestacle/data_type.h>
 #include <pestacle/parameter.h>
 #include <pestacle/math/matrix.h>
 
 
 // --- Node I/O definitions ---------------------------------------------------
-
-enum NodeType {
-	NodeType__invalid = 0, // Used as a debugging help
-	NodeType__matrix,
-	NodeType__rgb_surface
-}; // enum NodeType
-
 
 typedef struct {
 	const char* name;
@@ -38,24 +32,6 @@ NodeInputDefinition_is_last(
 	0, \
 	false \
 }
-
-
-typedef struct {
-	size_t width;
-	size_t height;
-} NodeTypeMatrixMetadata;
-
-
-typedef struct {
-	size_t width;
-	size_t height;
-} NodeTypeRGBSurfaceMetadata;
-
-
-typedef union {
-	NodeTypeMatrixMetadata matrix;
-	NodeTypeRGBSurfaceMetadata rgb_surface;
-} NodeTypeMetadata;
 
 
 typedef union {
@@ -107,8 +83,7 @@ struct s_Node {
 	const NodeDelegate* delegate;
 	struct s_Scope* delegate_scope; // Scope owning the delegate
 
-	enum NodeType type;
-	NodeTypeMetadata type_metadata;
+	DataDescriptor out_descriptor;
 
 	Node** inputs;
 	ParameterValue* parameters;

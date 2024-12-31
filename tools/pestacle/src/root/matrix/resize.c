@@ -217,10 +217,10 @@ node_setup(
 		output_height
 	);
 
-	// Setup node type metadata
-	self->type = NodeType__matrix;
-	self->type_metadata.matrix.width = output_width;
-	self->type_metadata.matrix.height = output_height;
+	// Setup output descriptor
+	self->out_descriptor.type = DataType__matrix;
+	self->out_descriptor.matrix.width = output_width;
+	self->out_descriptor.matrix.height = output_height;
 
 	// Job done
 	self->data = data;

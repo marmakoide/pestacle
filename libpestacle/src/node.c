@@ -59,7 +59,7 @@ Node_new(
 	ret->name = strclone(name);
 	ret->delegate = delegate;
 	ret->delegate_scope = delegate_scope;
-	ret->type = NodeType__invalid;
+	ret->out_descriptor.type = DataType__invalid;
 
 	// Setup inputs array
 	if (NodeDelegate_has_inputs(delegate)) {
@@ -118,7 +118,7 @@ Node_destroy(
 	self->name = 0;
 	self->delegate = 0;
 	self->delegate_scope = 0;
-	self->type = NodeType__invalid;
+	self->out_descriptor.type = DataType__invalid;
 	self->inputs = 0;
 	self->parameters = 0;
 	#endif

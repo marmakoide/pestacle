@@ -161,13 +161,13 @@ node_setup(
 	// Allocate
 	MouseMotion* mouse_motion = (MouseMotion*)checked_malloc(sizeof(MouseMotion));
 
-	// Setup node type metadata
-	self->type = NodeType__matrix;
+	// Setup output descriptor
+	self->out_descriptor.type = DataType__matrix;
 
 	int w, h;
 	SDL_GetWindowSize(window->window, &w, &h);
-	self->type_metadata.matrix.width = w;
-	self->type_metadata.matrix.height = h;
+	self->out_descriptor.matrix.width = w;
+	self->out_descriptor.matrix.height = h;
 
 	// Initialize
 	MouseMotion_init(mouse_motion, w, h);
