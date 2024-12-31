@@ -47,23 +47,11 @@ node_inputs[] = {
 };
 
 
-#define INPUT_WIDTH_PARAMETER   0
-#define INPUT_HEIGHT_PARAMETER  1
-#define OUTPUT_WIDTH_PARAMETER  2
-#define OUTPUT_HEIGHT_PARAMETER 3
+#define OUTPUT_WIDTH_PARAMETER  0
+#define OUTPUT_HEIGHT_PARAMETER 1
 
 static const ParameterDefinition
 node_parameters[] = {
-	{
-		ParameterType__integer,
-		"input-width",
-		{ .int64_value = 32 }
-	},
-	{
-		ParameterType__integer,
-		"input-height",
-		{ .int64_value = 32 }
-	},
 	{
 		ParameterType__integer,
 		"output-width",
@@ -196,9 +184,14 @@ static bool
 node_setup(
 	Node* self
 ) {
+	// Retrieve input data descriptors
+	const DataDescriptor* in_descriptor =
+		&(self->inputs[SOURCE_INPUT]->out_descriptor);
+
+	size_t input_width  = in_descriptor->matrix.width;
+	size_t input_height = in_descriptor->matrix.height;
+
 	// Retrieve the parameters
-	size_t input_width   = (size_t)self->parameters[INPUT_WIDTH_PARAMETER].int64_value;
-	size_t input_height  = (size_t)self->parameters[INPUT_HEIGHT_PARAMETER].int64_value;
 	size_t output_width  = (size_t)self->parameters[OUTPUT_WIDTH_PARAMETER].int64_value;
 	size_t output_height = (size_t)self->parameters[OUTPUT_HEIGHT_PARAMETER].int64_value;
 
