@@ -10,10 +10,7 @@ rgb-weights = png.load(
 	path = "demos/pictures/checkerboard-32x32.png"
 )
 
-weights = rgb-surface.luminance(
-	width  = 512,
-	height = 512
-)
+weights = rgb-surface.luminance()
 
 weights.source = rgb-weights
 
@@ -22,10 +19,7 @@ rgb-mask = png.load(
 	path = "demos/pictures/checkerboard-8x8.png"
 )
 
-mask = rgb-surface.luminance(
-	width  = 512,
-	height = 512
-)
+mask = rgb-surface.luminance()
 
 mask.source = rgb-mask
 
@@ -69,10 +63,7 @@ threshold.source = noise
 
 
 
-output = matrix.gradient-map(
-	width  = 512,
-	height = 512
-)
+output = matrix.gradient-map()
 
 output.source = threshold
 
