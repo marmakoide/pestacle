@@ -42,10 +42,7 @@ noise-b = matrix.random.normal(
 	seed   = 69
 )
 
-noise = matrix.blend(
-	width  = 512,
-	height = 512
-)
+noise = matrix.blend()
 
 noise.mask = mask
 noise.source-a = noise-a
