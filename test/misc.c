@@ -1,7 +1,100 @@
 #include "minunit.h"
 
+#include <stdlib.h>
+
 #include <pestacle/macros.h>
+#include <pestacle/memory.h>
+#include <pestacle/tree_map.h>
 #include <pestacle/string_list.h>
+
+
+// --- TreeMap testing -------------------------------------------------------
+
+#define TREE_MAP_VALUE_COUNT 1024
+
+
+MU_TEST(test_TreeMap_insert) {
+	TreeMap tree;
+
+	// Initialize data to be stored
+	int* values = (int*)checked_malloc(sizeof(int) * TREE_MAP_VALUE_COUNT);
+	for(int i = 0; i < TREE_MAP_VALUE_COUNT; ++i)
+		values[i] = i;
+
+	// Initialization of the tree map
+	TreeMap_init(&tree);
+
+	// Fill the tree map
+	for(int i = 0; i < TREE_MAP_VALUE_COUNT; ++i) {
+		// Check that all non-inserted elements can not be found
+		for(int j = i; j < TREE_MAP_VALUE_COUNT; ++j) {
+			TreeMapNode* node = TreeMap_find(&tree, values + i);
+			if (node)
+				mu_fail("TreeMapNode should not be found");
+		}
+
+		// Add the element
+		TreeMap_insert(&tree, values + i);
+
+		// Check that all inserted elements can be found
+		for(int j = 0; j <= i; ++j) {
+			TreeMapNode* node = TreeMap_find(&tree, values + i);
+			if (!node)
+				mu_fail("TreeMapNode should be found");
+
+			mu_check(node->key == values + i);
+		}
+	}
+
+
+	// Release ressources
+	TreeMap_destroy(&tree);
+	free(values);
+}
+
+
+MU_TEST(test_TreeMap_erase) {
+	TreeMap tree;
+
+	// Initialize data to be stored
+	int* values = (int*)checked_malloc(sizeof(int) * TREE_MAP_VALUE_COUNT);
+	for(int i = 0; i < TREE_MAP_VALUE_COUNT; ++i)
+		values[i] = i;
+
+	// Initialization of the tree map
+	TreeMap_init(&tree);
+
+	// Fill the tree map
+	for(int i = 0; i < TREE_MAP_VALUE_COUNT; ++i)
+		TreeMap_insert(&tree, values + i);
+
+	// Unfill the tree map
+	for(int i = 0; i < TREE_MAP_VALUE_COUNT; ++i) {
+		// Check that all inserted elements can be found
+		for(int j = i; j < TREE_MAP_VALUE_COUNT; ++j) {
+			TreeMapNode* node = TreeMap_find(&tree, values + i);
+			if (!node)
+				mu_fail("TreeMapNode should be found");
+
+			mu_check(node->key == values + i);
+		}
+
+		// Remove the element
+		TreeMapNode* node = TreeMap_find(&tree, values + i);
+		TreeMap_erase(&tree, node);
+
+		// Check that all erase elements can be found
+		for(int j = 0; j <= i; ++j) {
+			TreeMapNode* node = TreeMap_find(&tree, values + i);
+			if (node)
+				mu_fail("TreeMapNode should not be found");
+		}
+	}
+
+	// Release ressources
+	TreeMap_destroy(&tree);
+	free(values);
+}
 
 
 // --- StringList testing ----------------------------------------------------
@@ -77,13 +170,23 @@ MU_TEST(test_StringList_join) {
 
 // --- Main entry point ------------------------------------------------------
 
+MU_TEST_SUITE(test_TreeMap_suite) {
+	MU_RUN_TEST(test_TreeMap_insert);
+	MU_RUN_TEST(test_TreeMap_erase);
+}
+
+
 MU_TEST_SUITE(test_StringList_suite) {
 	MU_RUN_TEST(test_StringList_join);
 }
 
 
 int
-main(ATTRIBUTE_UNUSED int argc, ATTRIBUTE_UNUSED char *argv[]) {
+main(
+	ATTRIBUTE_UNUSED int argc,
+	ATTRIBUTE_UNUSED char *argv[]
+) {
+	MU_RUN_SUITE(test_TreeMap_suite);
 	MU_RUN_SUITE(test_StringList_suite);
 	MU_REPORT();
 	return MU_EXIT_CODE;

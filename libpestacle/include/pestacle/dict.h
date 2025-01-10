@@ -19,15 +19,15 @@ extern "C" {
 #define DICT_ENTRY_TOMBSTONE_VALUE ((void*)-1)
 
 typedef struct {
-    const char* key;
-    void* value;
+	const char* key;
+	void* value;
 } DictEntry;
 
 
 typedef struct {
-    size_t size;
-    size_t key_count;
-    DictEntry* entries;
+	size_t size;
+	size_t key_count;
+	DictEntry* entries;
 } Dict;
 
 

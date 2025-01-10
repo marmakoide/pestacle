@@ -1145,7 +1145,10 @@ MU_TEST_SUITE(test_Matrix_suite) {
 
 
 int
-main(ATTRIBUTE_UNUSED int argc, ATTRIBUTE_UNUSED char *argv[]) {
+main(
+	ATTRIBUTE_UNUSED int argc,
+	ATTRIBUTE_UNUSED char *argv[]
+) {
 	MU_RUN_SUITE(test_special_suite);
 	MU_RUN_SUITE(test_kahan_sum_suite);
 	MU_RUN_SUITE(test_average_suite);
