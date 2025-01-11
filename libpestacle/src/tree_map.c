@@ -117,51 +117,27 @@ TreeMap_find(
 
 
 static void
-TreeMap_rotate_left(
+TreeMap_rotate(
 	TreeMap* self,
-	TreeMapNode* x
+	TreeMapNode* x,
+	bool left
 ) {
 	assert(self);
 	assert(x);
 
-	TreeMapNode* y = x->right;
+	TreeMapNode* y = x->child[left];
 
-	x->right = y->left;
-	if (x->right != TreeMap_nil(self))
-		x->right->parent = x;
-
-	y->parent = x->parent;
-	if (x == x->parent->left)
-		x->parent->left = y;
-	else
-		x->parent->right = y;
-
-	y->left = x;
-	x->parent = y;
-}
-
-
-static void
-TreeMap_rotate_right(
-	TreeMap* self,
-	TreeMapNode* x
-) {
-	assert(self);
-	assert(x);
-
-	TreeMapNode* y = x->left;
-
-	x->left = y->right;
-	if (x->left != TreeMap_nil(self))
-		x->left->parent = x;
+	x->child[left] = y->child[1 - left];
+	if (x->child[left] != TreeMap_nil(self))
+		x->child[left]->parent = x;
 
 	y->parent = x->parent;
-	if (x == x->parent->left)
-		x->parent->left = y;
+	if (x == x->parent->child[0])
+		x->parent->child[0] = y;
 	else
-		x->parent->right = y;
+		x->parent->child[1] = y;
 
-	y->right = x;
+	y->child[1 - left] = x;
 	x->parent = y;
 }
 
@@ -174,61 +150,42 @@ TreeMap_insert_balance(
 	assert(self);
 	assert(current);
 
-	TreeMapNode* uncle;
 	do {
-		/* current node is RED and parent node is RED */
-
 		if (current->parent == current->parent->parent->left) {
-			uncle = current->parent->parent->right;
+			TreeMapNode* uncle = current->parent->parent->right;
 			if (uncle->color == TreeMapNodeColor_RED) {
-				/* insertion into 4-children cluster */
-
-				/* split */
 				current->parent->color = TreeMapNodeColor_BLACK;
 				uncle->color = TreeMapNodeColor_BLACK;
 
-				/* send grandparent node up the tree */
-				current = current->parent->parent; /* goto loop or break */
+				current = current->parent->parent;
 				current->color = TreeMapNodeColor_RED;
 			} else {
-				/* insertion into 3-children cluster */
-
-				/* equivalent BST */
 				if (current == current->parent->right) {
 					current = current->parent;
-					TreeMap_rotate_left(self, current);
+					TreeMap_rotate(self, current, true);
 				}
 
-				/* 3-children cluster has two representations */
-				current->parent->color = TreeMapNodeColor_BLACK; /* thus goto break */
+				current->parent->color = TreeMapNodeColor_BLACK;
 				current->parent->parent->color = TreeMapNodeColor_RED;
-				TreeMap_rotate_right(self, current->parent->parent);
+				TreeMap_rotate(self, current->parent->parent, false);
 			}
 		} else {
-			uncle = current->parent->parent->left;
+			TreeMapNode* uncle = current->parent->parent->left;
 			if (uncle->color == TreeMapNodeColor_RED) {
-				/* insertion into 4-children cluster */
-
-				/* split */
 				current->parent->color = TreeMapNodeColor_BLACK;
 				uncle->color = TreeMapNodeColor_BLACK;
 
-				/* send grandparent node up the tree */
-				current = current->parent->parent; /* goto loop or break */
+				current = current->parent->parent;
 				current->color = TreeMapNodeColor_RED;
 			} else {
-				/* insertion into 3-children cluster */
-
-				/* equivalent BST */
 				if (current == current->parent->left) {
 					current = current->parent;
-					TreeMap_rotate_right(self, current);
+					TreeMap_rotate(self, current, false);
 				}
 
-				/* 3-children cluster has two representations */
-				current->parent->color = TreeMapNodeColor_BLACK; /* thus goto break */
+				current->parent->color = TreeMapNodeColor_BLACK;
 				current->parent->parent->color = TreeMapNodeColor_RED;
-				TreeMap_rotate_left(self, current->parent->parent);
+				TreeMap_rotate(self, current->parent->parent, true);
 			}
 		}
 	} while (current->parent->color == TreeMapNodeColor_RED);
@@ -313,7 +270,7 @@ TreeMap_erase_balance(
 			if (sibling->color == TreeMapNodeColor_RED) {
 				sibling->color = TreeMapNodeColor_BLACK;
 				current->parent->color = TreeMapNodeColor_RED;
-				TreeMap_rotate_left(self, current->parent);
+				TreeMap_rotate(self, current->parent, true);
 				sibling = current->parent->right;
 			}
 
@@ -328,14 +285,14 @@ TreeMap_erase_balance(
 				if (sibling->right->color == TreeMapNodeColor_BLACK) {
 					sibling->left->color = TreeMapNodeColor_BLACK;
 					sibling->color = TreeMapNodeColor_RED;
-					TreeMap_rotate_right(self, sibling);
+					TreeMap_rotate(self, sibling, false);
 					sibling = current->parent->right;
 				}
 
 				sibling->color = current->parent->color;
 				current->parent->color = TreeMapNodeColor_BLACK;
 				sibling->right->color = TreeMapNodeColor_BLACK;
-				TreeMap_rotate_left(self, current->parent);
+				TreeMap_rotate(self, current->parent, true);
 				break;
 			}
 		} else {
@@ -344,7 +301,7 @@ TreeMap_erase_balance(
 			if (sibling->color == TreeMapNodeColor_RED) {
 				sibling->color = TreeMapNodeColor_BLACK;
 				current->parent->color = TreeMapNodeColor_RED;
-				TreeMap_rotate_right(self, current->parent);
+				TreeMap_rotate(self, current->parent, false);
 				sibling = current->parent->left;
 			}
 
@@ -359,14 +316,14 @@ TreeMap_erase_balance(
 				if (sibling->left->color == TreeMapNodeColor_BLACK) {
 					sibling->right->color = TreeMapNodeColor_BLACK;
 					sibling->color = TreeMapNodeColor_RED;
-					TreeMap_rotate_left(self, sibling);
+					TreeMap_rotate(self, sibling, true);
 					sibling = current->parent->left;
 				}
 
 				sibling->color = current->parent->color;
 				current->parent->color = TreeMapNodeColor_BLACK;
 				sibling->left->color = TreeMapNodeColor_BLACK;
-				TreeMap_rotate_right(self, current->parent);
+				TreeMap_rotate(self, current->parent, false);
 				break;
 			}
 		}
