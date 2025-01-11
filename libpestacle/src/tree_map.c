@@ -151,42 +151,24 @@ TreeMap_insert_balance(
 	assert(current);
 
 	do {
-		if (current->parent == current->parent->parent->left) {
-			TreeMapNode* uncle = current->parent->parent->right;
-			if (uncle->color == TreeMapNodeColor_RED) {
-				current->parent->color = TreeMapNodeColor_BLACK;
-				uncle->color = TreeMapNodeColor_BLACK;
+		bool left = current->parent == current->parent->parent->left;
 
-				current = current->parent->parent;
-				current->color = TreeMapNodeColor_RED;
-			} else {
-				if (current == current->parent->right) {
-					current = current->parent;
-					TreeMap_rotate(self, current, true);
-				}
+		TreeMapNode* uncle = current->parent->parent->child[left];
+		if (uncle->color == TreeMapNodeColor_RED) {
+			current->parent->color = TreeMapNodeColor_BLACK;
+			uncle->color = TreeMapNodeColor_BLACK;
 
-				current->parent->color = TreeMapNodeColor_BLACK;
-				current->parent->parent->color = TreeMapNodeColor_RED;
-				TreeMap_rotate(self, current->parent->parent, false);
-			}
+			current = current->parent->parent;
+			current->color = TreeMapNodeColor_RED;
 		} else {
-			TreeMapNode* uncle = current->parent->parent->left;
-			if (uncle->color == TreeMapNodeColor_RED) {
-				current->parent->color = TreeMapNodeColor_BLACK;
-				uncle->color = TreeMapNodeColor_BLACK;
-
-				current = current->parent->parent;
-				current->color = TreeMapNodeColor_RED;
-			} else {
-				if (current == current->parent->left) {
-					current = current->parent;
-					TreeMap_rotate(self, current, false);
-				}
-
-				current->parent->color = TreeMapNodeColor_BLACK;
-				current->parent->parent->color = TreeMapNodeColor_RED;
-				TreeMap_rotate(self, current->parent->parent, true);
+			if (current == current->parent->child[left]) {
+				current = current->parent;
+				TreeMap_rotate(self, current, left);
 			}
+
+			current->parent->color = TreeMapNodeColor_BLACK;
+			current->parent->parent->color = TreeMapNodeColor_RED;
+			TreeMap_rotate(self, current->parent->parent, 1 - left);
 		}
 	} while (current->parent->color == TreeMapNodeColor_RED);
 }
