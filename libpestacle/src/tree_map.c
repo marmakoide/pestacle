@@ -244,72 +244,40 @@ TreeMap_erase_balance(
 	assert(self);
 	assert(current);
 
-	TreeMapNode* sibling;
 	do {
-		if (current == current->parent->left) {
-			sibling = current->parent->right;
+		bool left = current == current->parent->left;
 
-			if (sibling->color == TreeMapNodeColor_RED) {
-				sibling->color = TreeMapNodeColor_BLACK;
-				current->parent->color = TreeMapNodeColor_RED;
-				TreeMap_rotate(self, current->parent, true);
-				sibling = current->parent->right;
-			}
+		TreeMapNode* sibling = current->parent->child[left];
 
-			if (sibling->right->color == TreeMapNodeColor_BLACK && sibling->left->color == TreeMapNodeColor_BLACK) {
-				sibling->color = TreeMapNodeColor_RED;
-				if (current->parent->color == TreeMapNodeColor_RED) {
-					current->parent->color = TreeMapNodeColor_BLACK;
-					break;
-				} else
-					current = current->parent;
-			} else {
-				if (sibling->right->color == TreeMapNodeColor_BLACK) {
-					sibling->left->color = TreeMapNodeColor_BLACK;
-					sibling->color = TreeMapNodeColor_RED;
-					TreeMap_rotate(self, sibling, false);
-					sibling = current->parent->right;
-				}
-
-				sibling->color = current->parent->color;
-				current->parent->color = TreeMapNodeColor_BLACK;
-				sibling->right->color = TreeMapNodeColor_BLACK;
-				TreeMap_rotate(self, current->parent, true);
-				break;
-			}
-		} else {
-			sibling = current->parent->left;
-
-			if (sibling->color == TreeMapNodeColor_RED) {
-				sibling->color = TreeMapNodeColor_BLACK;
-				current->parent->color = TreeMapNodeColor_RED;
-				TreeMap_rotate(self, current->parent, false);
-				sibling = current->parent->left;
-			}
-
-			if (sibling->right->color == TreeMapNodeColor_BLACK && sibling->left->color == TreeMapNodeColor_BLACK) {
-				sibling->color = TreeMapNodeColor_RED;
-				if (current->parent->color == TreeMapNodeColor_RED) {
-					current->parent->color = TreeMapNodeColor_BLACK;
-					break;
-				} else
-					current = current->parent;
-			} else {
-				if (sibling->left->color == TreeMapNodeColor_BLACK) {
-					sibling->right->color = TreeMapNodeColor_BLACK;
-					sibling->color = TreeMapNodeColor_RED;
-					TreeMap_rotate(self, sibling, true);
-					sibling = current->parent->left;
-				}
-
-				sibling->color = current->parent->color;
-				current->parent->color = TreeMapNodeColor_BLACK;
-				sibling->left->color = TreeMapNodeColor_BLACK;
-				TreeMap_rotate(self, current->parent, false);
-				break;
-			}
+		if (sibling->color == TreeMapNodeColor_RED) {
+			sibling->color = TreeMapNodeColor_BLACK;
+			current->parent->color = TreeMapNodeColor_RED;
+			TreeMap_rotate(self, current->parent, left);
+			sibling = current->parent->child[left];
 		}
-	} while (current != TreeMap_first(self));
+
+		if (sibling->right->color == TreeMapNodeColor_BLACK && sibling->left->color == TreeMapNodeColor_BLACK) {
+			sibling->color = TreeMapNodeColor_RED;
+			if (current->parent->color == TreeMapNodeColor_RED) {
+				current->parent->color = TreeMapNodeColor_BLACK;
+				break;
+			} else
+				current = current->parent;
+		} else {
+			if (sibling->child[left]->color == TreeMapNodeColor_BLACK) {
+				sibling->child[1 - left]->color = TreeMapNodeColor_BLACK;
+				sibling->color = TreeMapNodeColor_RED;
+				TreeMap_rotate(self, sibling, 1 - left);
+				sibling = current->parent->child[left];
+			}
+
+			sibling->color = current->parent->color;
+			current->parent->color = TreeMapNodeColor_BLACK;
+			sibling->child[left]->color = TreeMapNodeColor_BLACK;
+			TreeMap_rotate(self, current->parent, left);
+			break;
+		}
+	} while(current != TreeMap_first(self));
 }
 
 
