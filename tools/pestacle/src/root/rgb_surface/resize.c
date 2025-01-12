@@ -62,7 +62,6 @@ node_parameters[] = {
 const NodeDelegate
 root_rgb_surface_resize_node_delegate = {
 	"resize",
-	true,
 	node_inputs,
 	node_parameters,
 	{

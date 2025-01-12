@@ -57,7 +57,6 @@ node_parameters[] = {
 const NodeDelegate
 root_matrix_heat_diffusion_node_delegate = {
 	"heat-diffusion",
-	true,
 	node_inputs,
 	node_parameters,
 	{

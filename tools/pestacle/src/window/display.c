@@ -41,7 +41,6 @@ node_parameters[] = {
 const NodeDelegate
 display_node_delegate = {
 	"display",
-	false,
 	node_inputs,
 	node_parameters,
 	{

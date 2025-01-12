@@ -72,7 +72,6 @@ node_parameters[] = {
 const NodeDelegate
 root_matrix_soft_equal_node_delegate = {
 	"soft-equal",
-	true,
 	node_inputs,
 	node_parameters,
 	{

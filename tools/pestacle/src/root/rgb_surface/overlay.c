@@ -57,7 +57,6 @@ node_parameters[] = {
 const NodeDelegate
 root_rgb_surface_overlay_node_delegate = {
 	"overlay",
-	true,
 	node_inputs,
 	node_parameters,
 	{

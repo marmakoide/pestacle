@@ -56,7 +56,6 @@ node_parameters[] = {
 const NodeDelegate
 root_matrix_product_node_delegate = {
 	"product",
-	true,
 	node_inputs,
 	node_parameters,
 	{

@@ -58,7 +58,6 @@ node_parameters[] = {
 const NodeDelegate
 root_matrix_stddev_node_delegate = {
 	"stddev",
-	true,
 	node_inputs,
 	node_parameters,
 	{

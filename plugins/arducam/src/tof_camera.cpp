@@ -47,7 +47,6 @@ node_parameters[] = {
 const NodeDelegate
 arducam_tof_camera_node_delegate = {
 	"tof-camera",
-	true,
 	node_inputs,
 	node_parameters,
 	{

@@ -65,7 +65,6 @@ node_parameters[] = {
 const NodeDelegate
 root_matrix_gaussian_node_delegate = {
 	"gaussian",
-	true,
 	node_inputs,
 	node_parameters,
 	{

@@ -95,6 +95,32 @@ TreeMap_destroy(
 }
 
 
+bool
+TreeMap_empty(
+	TreeMap* self
+) {
+	assert(self);
+
+	return
+		(self->root.child[0] == &(self->nil)) &&
+		(self->root.child[1] == &(self->nil));
+}
+
+
+TreeMapNode*
+TreeMap_pick(
+	TreeMap* self
+) {
+	assert(self);
+	assert(!TreeMap_empty(self));
+
+	if (self->root.child[0] == &(self->nil))
+		return self->root.child[1];
+	
+	return self->root.child[0];
+}
+
+
 TreeMapNode*
 TreeMap_find(
 	TreeMap* self,

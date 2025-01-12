@@ -53,7 +53,6 @@ node_parameters[] = {
 const NodeDelegate
 root_matrix_gradient_map_node_delegate = {
 	"gradient-map",
-	true,
 	node_inputs,
 	node_parameters,
 	{

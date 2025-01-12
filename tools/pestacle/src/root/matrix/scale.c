@@ -57,7 +57,6 @@ node_parameters[] = {
 const NodeDelegate
 root_matrix_scale_node_delegate = {
 	"scale",
-	true,
 	node_inputs,
 	node_parameters,
 	{

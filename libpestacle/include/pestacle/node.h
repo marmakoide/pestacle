@@ -69,7 +69,6 @@ typedef struct {
 
 typedef struct {
 	const char* name;
-	bool has_output;
 	const NodeInputDefinition* input_defs;
 	const ParameterDefinition* parameter_defs;
 	NodeDelegateMethods methods;

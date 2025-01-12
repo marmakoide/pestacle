@@ -54,7 +54,6 @@ node_parameters[] = {
 const NodeDelegate
 mouse_motion_node_delegate = {
 	"mouse-motion",
-	true,
 	node_inputs,
 	node_parameters,
 	{

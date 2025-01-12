@@ -61,7 +61,6 @@ node_parameters[] = {
 const NodeDelegate
 root_rgb_surface_blend_node_delegate = {
 	"blend",
-	true,
 	node_inputs,
 	node_parameters,
 	{

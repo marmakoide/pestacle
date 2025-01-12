@@ -2,6 +2,7 @@
 #include <pestacle/stack.h>
 #include <pestacle/graph.h>
 #include <pestacle/memory.h>
+#include <pestacle/tree_map.h>
 
 
 static bool
@@ -40,7 +41,7 @@ push_node_inputs(
 
 
 static void
-Scope_gather_root_nodes(
+Scope_gather_all_nodes(
 	Scope* self,
 	Stack* out
 ) {
@@ -60,8 +61,7 @@ Scope_gather_root_nodes(
 		ScopeMember* member = (ScopeMember*)Stack_pop(&stack);
 		switch(member->type) {
 			case ScopeMemberType__node:
-				if (!member->node->delegate->has_output)
-					Stack_push(out, member->node);
+				Stack_push(out, member->node);
 				break;
 
 			case ScopeMemberType__scope:
@@ -76,6 +76,59 @@ Scope_gather_root_nodes(
 	}
 
 	Stack_destroy(&stack);
+}
+
+
+static void
+Scope_gather_root_nodes(
+	Scope* self,
+	Stack* out
+) {
+	// Fill a stack with all the nodes
+	Stack stack;
+	Stack_init(&stack);
+	Scope_gather_all_nodes(self, &stack);
+
+	// Fill a map with all the nodes
+	TreeMap map;
+	TreeMap_init(&map);
+
+	for(size_t i = 0; i < Stack_length(&stack); ++i)
+		TreeMap_insert(&map, stack.data[i]);
+
+	// While we have nodes to process
+	while(!Stack_empty(&stack)) {
+		// Pick one node from the stack
+		Node* node = (Node*)Stack_pop(&stack);
+
+		// All nodes which are inputs are removed from the map
+		Node** input_ptr = node->inputs;
+		const NodeInputDefinition* input_def = node->delegate->input_defs;
+		for( ; !NodeInputDefinition_is_last(input_def); ++input_ptr, ++input_def) {
+			if (*input_ptr != 0) {
+				TreeMapNode* it = TreeMap_find(&map, *input_ptr);
+				if (it)
+					TreeMap_erase(&map, it);
+			}
+		}
+	}
+
+	// Fell the output stack with the nodes which are not inputs
+	for(int i = 0; i < 2; ++i)
+		if (map.root.child[i] != &(map.nil))
+			Stack_push(&stack, map.root.child[i]);
+
+	while(!Stack_empty(&stack)) {
+		TreeMapNode* node = (TreeMapNode*)Stack_pop(&stack);
+		Stack_push(out, node->key);
+		for(int i = 0; i < 2; ++i)
+			if (node->child[i] != &(map.nil))
+				Stack_push(&stack, node->child[i]);
+	}
+
+	// Job done
+	Stack_destroy(&stack);
+	TreeMap_destroy(&map);
 }
 
 

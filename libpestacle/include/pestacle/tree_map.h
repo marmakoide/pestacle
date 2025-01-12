@@ -47,6 +47,18 @@ TreeMap_destroy(
 );
 
 
+extern bool
+TreeMap_empty(
+	TreeMap* self
+);
+
+
+extern TreeMapNode*
+TreeMap_pick(
+	TreeMap* self
+);
+
+
 extern TreeMapNode*
 TreeMap_find(
 	TreeMap* self,

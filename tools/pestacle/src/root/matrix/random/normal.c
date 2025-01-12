@@ -75,7 +75,6 @@ node_parameters[] = {
 const NodeDelegate
 root_matrix_random_normal_node_delegate = {
 	"normal",
-	true,
 	node_inputs,
 	node_parameters,
 	{

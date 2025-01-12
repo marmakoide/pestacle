@@ -66,7 +66,6 @@ node_parameters[] = {
 const NodeDelegate
 matrix_io_output_node_delegate = {
 	"output",
-	false,
 	node_inputs,
 	node_parameters,
 	{

@@ -57,7 +57,6 @@ node_parameters[] = {
 const NodeDelegate
 root_matrix_heaviside_node_delegate = {
 	"heaviside",
-	true,
 	node_inputs,
 	node_parameters,
 	{

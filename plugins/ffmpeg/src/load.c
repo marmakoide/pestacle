@@ -59,7 +59,6 @@ node_parameters[] = {
 const NodeDelegate
 ffmpeg_load_node_delegate = {
 	"load",
-	true,
 	node_inputs,
 	node_parameters,
 	{

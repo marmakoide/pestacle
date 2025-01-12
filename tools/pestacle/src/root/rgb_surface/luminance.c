@@ -52,7 +52,6 @@ node_parameters[] = {
 const NodeDelegate
 root_rgb_surface_luminance_node_delegate = {
 	"luminance",
-	true,
 	node_inputs,
 	node_parameters,
 	{

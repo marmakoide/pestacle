@@ -57,7 +57,6 @@ node_parameters[] = {
 const NodeDelegate
 root_matrix_shift_node_delegate = {
 	"shift",
-	true,
 	node_inputs,
 	node_parameters,
 	{

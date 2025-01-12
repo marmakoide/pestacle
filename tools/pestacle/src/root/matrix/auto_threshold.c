@@ -60,7 +60,6 @@ node_parameters[] = {
 const NodeDelegate
 root_matrix_auto_threshold_node_delegate = {
 	"auto-threshold",
-	true,
 	node_inputs,
 	node_parameters,
 	{

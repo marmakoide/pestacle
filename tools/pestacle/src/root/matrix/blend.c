@@ -62,7 +62,6 @@ node_parameters[] = {
 const NodeDelegate
 root_matrix_blend_node_delegate = {
 	"blend",
-	true,
 	node_inputs,
 	node_parameters,
 	{

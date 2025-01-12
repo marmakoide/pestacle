@@ -63,7 +63,6 @@ node_parameters[] = {
 const NodeDelegate
 root_matrix_random_uniform_node_delegate = {
 	"uniform",
-	true,
 	node_inputs,
 	node_parameters,
 	{
