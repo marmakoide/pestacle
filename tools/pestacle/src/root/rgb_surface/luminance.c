@@ -76,6 +76,10 @@ node_setup(
 	size_t width  = in_descriptor->rgb_surface.width;
 	size_t height = in_descriptor->rgb_surface.height;
 
+	DataDescriptor_set_as_rgb_surface(
+		&(self->in_descriptors[SOURCE_INPUT]), width, height
+	);
+
 	// Allocate
 	Matrix* matrix =
 		(Matrix*)checked_malloc(sizeof(Matrix));
@@ -84,9 +88,7 @@ node_setup(
 		return false;
 
 	// Setup output descriptor
-	self->out_descriptor.type = DataType__matrix;
-	self->out_descriptor.matrix.width  = width;
-	self->out_descriptor.matrix.height = height;
+	DataDescriptor_set_as_matrix(&(self->out_descriptor), width, height);
 
 	// Setup the accumulator matrix
 	Matrix_init(matrix, height, width);

@@ -64,16 +64,24 @@ Node_new(
 	// Setup inputs array
 	if (NodeDelegate_has_inputs(delegate)) {
 		size_t input_count = NodeDelegate_input_count(delegate);
+
+		ret->in_descriptors = (DataDescriptor*)checked_malloc(input_count * sizeof(DataDescriptor));
+
 		ret->inputs = (Node**)checked_malloc(input_count * sizeof(Node*));
 
+		DataDescriptor* in_descriptor_ptr = ret->in_descriptors;
 		Node** input_ptr = ret->inputs;
 		const NodeInputDefinition* input_def = ret->delegate->input_defs;
-		for( ; !NodeInputDefinition_is_last(input_def); ++input_ptr, ++input_def)
+		for( ; !NodeInputDefinition_is_last(input_def); ++in_descriptor_ptr, ++input_ptr, ++input_def) {
+			in_descriptor_ptr->type = DataType__invalid;
 			*input_ptr = 0;
+		}
 	}
-	else
+	else {
+		ret->in_descriptors = 0;
 		ret->inputs = 0;
-	
+	}
+
 	// Setup parameters array
 	ret->parameters = ParameterValue_new(delegate->parameter_defs);
 	
@@ -104,6 +112,7 @@ Node_destroy(
 			*input_ptr = 0;
 		#endif
 	
+		free(self->in_descriptors);
 		free(self->inputs);
 	}
 
@@ -119,6 +128,7 @@ Node_destroy(
 	self->delegate = 0;
 	self->delegate_scope = 0;
 	self->out_descriptor.type = DataType__invalid;
+	self->in_descriptors = 0;
 	self->inputs = 0;
 	self->parameters = 0;
 	#endif

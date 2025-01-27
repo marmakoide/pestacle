@@ -140,6 +140,11 @@ node_setup(
 	size_t width  = in_descriptor->matrix.width;
 	size_t height = in_descriptor->matrix.height;
 
+	// Setup input data descriptor
+	DataDescriptor_set_as_matrix(
+		&(self->in_descriptors[SOURCE_INPUT]), width, height
+	);
+
 	// Retrieve the parameters
 	real_t value  = (real_t)self->parameters[VALUE_PARAMETER].real_value;
 	real_t radius = (real_t)self->parameters[RADIUS_PARAMETER].real_value;
@@ -173,9 +178,7 @@ node_setup(
 	SoftEqual_init(data, width, height, value, radius, ratio);
 
 	// Setup output descriptor
-	self->out_descriptor.type = DataType__matrix;
-	self->out_descriptor.matrix.width = width;
-	self->out_descriptor.matrix.height = height;
+	DataDescriptor_set_as_matrix(&(self->out_descriptor), width, height);
 
 	// Job done
 	self->data = data;

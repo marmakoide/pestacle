@@ -80,30 +80,22 @@ node_setup(
 	Node* self
 ) {
 	// Retrieve input data descriptors
-	const DataDescriptor* in_a_descriptor =
+	const DataDescriptor* in_descriptor =
 		&(self->inputs[SOURCE_A_INPUT]->out_descriptor);
 
-	const DataDescriptor* in_b_descriptor =
-		&(self->inputs[SOURCE_B_INPUT]->out_descriptor);
+	// Setup input data descriptor
+	size_t width  = in_descriptor->matrix.width;
+	size_t height = in_descriptor->matrix.height;
 
-	const DataDescriptor* in_mask_descriptor =
-		&(self->inputs[MASK_INPUT]->out_descriptor);
-
-	size_t width  = in_a_descriptor->matrix.width;
-	size_t height = in_a_descriptor->matrix.height;
-
-	// Check input descriptors validity
-	if
-		((in_b_descriptor->matrix.width != width) ||
-		 (in_b_descriptor->matrix.height != height) ||
-		 (in_mask_descriptor->matrix.width != width) ||
-		 (in_mask_descriptor->matrix.height != height)) {
-			SDL_LogError(
-				SDL_LOG_CATEGORY_SYSTEM,
-				"source-a, source-b and mask inputs should have the same dimensions"
-			);
-		return false;
-	}
+	DataDescriptor_set_as_matrix(
+		&(self->in_descriptors[SOURCE_A_INPUT]), width, height
+	);
+	DataDescriptor_set_as_matrix(
+		&(self->in_descriptors[SOURCE_B_INPUT]), width, height
+	);
+	DataDescriptor_set_as_matrix(
+		&(self->in_descriptors[MASK_INPUT]), width, height
+	);
 
 	// Allocate data
 	Matrix* data =
@@ -117,9 +109,7 @@ node_setup(
 	Matrix_fill(data, (real_t)0);
 
 	// Setup output descriptor
-	self->out_descriptor.type = DataType__matrix;
-	self->out_descriptor.matrix.width = width;
-	self->out_descriptor.matrix.height = height;
+	DataDescriptor_set_as_matrix(&(self->out_descriptor), width, height);
 
 	// Job done
 	self->data = data;

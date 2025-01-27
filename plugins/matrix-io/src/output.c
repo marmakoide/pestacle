@@ -321,6 +321,11 @@ node_setup(
 	size_t width = (size_t)self->parameters[WIDTH_PARAMETER].int64_value;
 	size_t height = (size_t)self->parameters[HEIGHT_PARAMETER].int64_value;
 
+	// Setup input data descriptor
+	DataDescriptor_set_as_matrix(
+		&(self->in_descriptors[SOURCE_INPUT]), width, height
+	);
+
 	// Allocate data
 	OutputData* data = (OutputData*)checked_malloc(sizeof(OutputData));
 	if (!data)

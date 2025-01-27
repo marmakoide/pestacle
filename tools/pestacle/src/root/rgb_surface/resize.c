@@ -79,6 +79,18 @@ static bool
 node_setup(
 	Node* self
 ) {
+	// Retrieve input data descriptors
+	const DataDescriptor* in_descriptor =
+		&(self->inputs[SOURCE_INPUT]->out_descriptor);
+
+	size_t input_width  = in_descriptor->matrix.width;
+	size_t input_height = in_descriptor->matrix.height;
+
+	// Setup input data descriptor
+	DataDescriptor_set_as_matrix(
+		&(self->in_descriptors[SOURCE_INPUT]), input_width, input_height
+	);
+
 	// Retrieve the parameters
 	size_t output_width  = (size_t)self->parameters[OUTPUT_WIDTH_PARAMETER].int64_value;
 	size_t output_height = (size_t)self->parameters[OUTPUT_HEIGHT_PARAMETER].int64_value;
@@ -99,9 +111,11 @@ node_setup(
 	}
 
 	// Setup output descriptor
-	self->out_descriptor.type = DataType__rgb_surface;
-	self->out_descriptor.rgb_surface.width = output_width;
-	self->out_descriptor.rgb_surface.height = output_height;
+	DataDescriptor_set_as_rgb_surface(
+		&(self->out_descriptor),
+		output_width,
+		output_height
+	);
 
 	// Job done
 	self->data = rgb_surface;

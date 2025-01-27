@@ -122,8 +122,13 @@ node_setup(
 	const DataDescriptor* in_descriptor =
 		&(self->inputs[SOURCE_INPUT]->out_descriptor);
 
+	// Setup input data descriptor
 	size_t width  = in_descriptor->matrix.width;
 	size_t height = in_descriptor->matrix.height;
+
+	DataDescriptor_set_as_matrix(
+		&(self->in_descriptors[SOURCE_INPUT]), width, height
+	);
 
 	// Retrieve the parameters
 	real_t sigma = (real_t)self->parameters[SIGMA_PARAMETER].real_value;
@@ -164,9 +169,7 @@ node_setup(
 	GaussianData_init(data, width, height, sigma, mode);
 
 	// Setup output descriptor
-	self->out_descriptor.type = DataType__matrix;
-	self->out_descriptor.matrix.width = width;
-	self->out_descriptor.matrix.height = height;
+	DataDescriptor_set_as_matrix(&(self->out_descriptor), width, height);
 
 	// Job done
 	self->data = data;

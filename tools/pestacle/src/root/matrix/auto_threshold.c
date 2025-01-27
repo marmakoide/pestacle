@@ -426,26 +426,16 @@ node_setup(
 	const DataDescriptor* in_descriptor =
 		&(self->inputs[SOURCE_INPUT]->out_descriptor);
 
-	const DataDescriptor* weight_descriptor =
-		&(self->inputs[WEIGHT_INPUT]->out_descriptor);
-
 	size_t width  = in_descriptor->matrix.width;
 	size_t height = in_descriptor->matrix.height;
 
-	// Check input descriptors validity
-	if (weight_descriptor) {
-		if
-			((in_descriptor->matrix.width != width) ||
-			 (in_descriptor->matrix.height != height) ||
-			 (weight_descriptor->matrix.width != width) ||
-			 (weight_descriptor->matrix.height != height)) {
-				SDL_LogError(
-					SDL_LOG_CATEGORY_SYSTEM,
-					"source and weight inputs should have the same dimensions"
-				);
-			return false;
-		}
-	}
+	// Setup input data descriptor
+	DataDescriptor_set_as_matrix(
+		&(self->in_descriptors[SOURCE_INPUT]), width, height
+	);
+	DataDescriptor_set_as_matrix(
+		&(self->in_descriptors[WEIGHT_INPUT]), width, height
+	);
 
 	// Allocate data
 	AutoThreshold* data =
@@ -458,9 +448,7 @@ node_setup(
 	AutoThreshold_init(data, width, height);
 
 	// Setup output descriptor
-	self->out_descriptor.type = DataType__matrix;
-	self->out_descriptor.matrix.width = width;
-	self->out_descriptor.matrix.height = height;
+	DataDescriptor_set_as_matrix(&(self->out_descriptor), width, height);
 
 	// Job done
 	self->data = data;

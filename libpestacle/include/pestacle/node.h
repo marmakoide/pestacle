@@ -83,6 +83,7 @@ struct s_Node {
 	struct s_Scope* delegate_scope; // Scope owning the delegate
 
 	DataDescriptor out_descriptor;
+	DataDescriptor* in_descriptors;
 
 	Node** inputs;
 	ParameterValue* parameters;

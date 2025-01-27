@@ -5,6 +5,8 @@
 extern "C" {
 #endif
 
+#include <stdbool.h>
+
 
 enum DataType {
 	DataType__invalid = 0, // Used as a debugging help
@@ -32,6 +34,29 @@ typedef struct {
 		DataTypeRGBSurfaceMetadata rgb_surface;
 	};
 } DataDescriptor;
+
+
+extern bool
+DataDescriptor_equals(
+	DataDescriptor* x,
+	DataDescriptor* y
+);
+
+
+extern void
+DataDescriptor_set_as_matrix(
+	DataDescriptor* self,
+	size_t width,
+	size_t height
+);
+
+
+extern void
+DataDescriptor_set_as_rgb_surface(
+	DataDescriptor* self,
+	size_t width,
+	size_t height
+);
 
 
 #ifdef __cplusplus

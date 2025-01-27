@@ -75,25 +75,19 @@ node_setup(
 	Node* self
 ) {
 	// Retrieve input data descriptor
-	const DataDescriptor* in_a_descriptor =
+	const DataDescriptor* in_descriptor =
 		&(self->inputs[SOURCE_A_INPUT]->out_descriptor);
 
-	const DataDescriptor* in_b_descriptor =
-		&(self->inputs[SOURCE_B_INPUT]->out_descriptor);
+	// Setup input data descriptor
+	size_t width  = in_descriptor->matrix.width;
+	size_t height = in_descriptor->matrix.height;
 
-	size_t width  = in_a_descriptor->matrix.width;
-	size_t height = in_a_descriptor->matrix.height;
-
-	// Check input descriptors validity
-	if
-		((in_b_descriptor->matrix.width != width) ||
-		 (in_b_descriptor->matrix.height != height)) {
-			SDL_LogError(
-				SDL_LOG_CATEGORY_SYSTEM,
-				"source-a and source-b should have the same dimensions"
-			);
-		return false;
-	}
+	DataDescriptor_set_as_rgb_surface(
+		&(self->in_descriptors[SOURCE_A_INPUT]), width, height
+	);
+	DataDescriptor_set_as_rgb_surface(
+		&(self->in_descriptors[SOURCE_B_INPUT]), width, height
+	);
 
 	// Allocate
 	SDL_Surface* rgb_surface =
@@ -115,9 +109,7 @@ node_setup(
 	}
 
 	// Setup output descriptor
-	self->out_descriptor.type = DataType__rgb_surface;
-	self->out_descriptor.rgb_surface.width = width;
-	self->out_descriptor.rgb_surface.height = height;
+	DataDescriptor_set_as_rgb_surface(&(self->out_descriptor), width, height);
 
 	// Job done
 	self->data = rgb_surface;

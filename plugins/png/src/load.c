@@ -71,9 +71,9 @@ node_setup(
 		return false;
 
 	// Setup output descriptor
-	self->out_descriptor.type = DataType__rgb_surface;
-	self->out_descriptor.rgb_surface.width = rgb_surface->w;
-	self->out_descriptor.rgb_surface.height = rgb_surface->h;
+	DataDescriptor_set_as_rgb_surface(
+		&(self->out_descriptor), rgb_surface->w, rgb_surface->h
+	);
 
 	// Job done
 	self->data = rgb_surface;

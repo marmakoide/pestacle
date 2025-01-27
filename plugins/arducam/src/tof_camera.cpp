@@ -148,9 +148,7 @@ node_setup(
 	}
 
 	// Setup output descriptor
-	self->out_descriptor.type = DataType__matrix;
-	self->out_descriptor.matrix.width = 240;
-	self->out_descriptor.matrix.height = 180;
+	DataDescriptor_set_as_matrix(&(self->out_descriptor), 240, 180);
 
 	// Job done
 	self->data = data;

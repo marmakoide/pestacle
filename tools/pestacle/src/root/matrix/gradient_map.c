@@ -77,6 +77,11 @@ node_setup(
 	size_t width  = in_descriptor->matrix.width;
 	size_t height = in_descriptor->matrix.height;
 
+	// Setup input data descriptor
+	DataDescriptor_set_as_matrix(
+		&(self->in_descriptors[SOURCE_INPUT]), width, height
+	);
+
 	// Allocate
 	SDL_Surface* rgb_surface =
 		SDL_CreateRGBSurfaceWithFormat(
@@ -85,7 +90,7 @@ node_setup(
 			height,
 			32,
 			SDL_PIXELFORMAT_RGBA32
-		);
+		); 
 
 	if (!rgb_surface) {
 		SDL_LogError(
@@ -97,9 +102,7 @@ node_setup(
 	}
 
 	// Setup output descriptor
-	self->out_descriptor.type = DataType__rgb_surface;
-	self->out_descriptor.rgb_surface.width = width;
-	self->out_descriptor.rgb_surface.height = height;
+	DataDescriptor_set_as_rgb_surface(&(self->out_descriptor), width, height);
 
 	// Job done
 	self->data = rgb_surface;

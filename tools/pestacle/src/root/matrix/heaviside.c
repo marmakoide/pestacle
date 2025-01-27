@@ -81,6 +81,11 @@ node_setup(
 	size_t width  = in_descriptor->matrix.width;
 	size_t height = in_descriptor->matrix.height;
 
+	// Setup input data descriptor
+	DataDescriptor_set_as_matrix(
+		&(self->in_descriptors[SOURCE_INPUT]), width, height
+	);
+
 	// Allocate data
 	Matrix* data =
 		(Matrix*)checked_malloc(sizeof(Matrix));
@@ -93,9 +98,7 @@ node_setup(
 	Matrix_fill(data, (real_t)0);
 
 	// Setup output descriptor
-	self->out_descriptor.type = DataType__matrix;
-	self->out_descriptor.matrix.width = width;
-	self->out_descriptor.matrix.height = height;
+	DataDescriptor_set_as_matrix(&(self->out_descriptor), width, height);
 
 	// Job done
 	self->data = data;

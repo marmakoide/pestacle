@@ -98,25 +98,20 @@ node_setup(
 	Node* self
 ) {
 	// Retrieve input data descriptors
-	const DataDescriptor* in_a_descriptor =
+	const DataDescriptor* in_descriptor =
 		&(self->inputs[SOURCE_A_INPUT]->out_descriptor);
 
-	const DataDescriptor* in_b_descriptor =
-		&(self->inputs[SOURCE_B_INPUT]->out_descriptor);
+	size_t width  = in_descriptor->matrix.width;
+	size_t height = in_descriptor->matrix.height;
 
-	size_t width  = in_a_descriptor->matrix.width;
-	size_t height = in_a_descriptor->matrix.height;
+	// Setup input data descriptor
+	DataDescriptor_set_as_matrix(
+		&(self->in_descriptors[SOURCE_A_INPUT]), width, height
+	);
 
-	// Check input descriptors validity
-	if
-		((in_b_descriptor->matrix.width != width) ||
-		 (in_b_descriptor->matrix.height != height)) {
-			SDL_LogError(
-				SDL_LOG_CATEGORY_SYSTEM,
-				"source-a and source-b should have the same dimensions"
-			);
-		return false;
-	}
+	DataDescriptor_set_as_matrix(
+		&(self->in_descriptors[SOURCE_B_INPUT]), width, height
+	);
 
 	// Allocate data
 	Product* data =
@@ -129,9 +124,7 @@ node_setup(
 	Product_init(data, width, height);
 
 	// Setup output descriptor
-	self->out_descriptor.type = DataType__matrix;
-	self->out_descriptor.matrix.width = width;
-	self->out_descriptor.matrix.height = height;
+	DataDescriptor_set_as_matrix(&(self->out_descriptor), width, height);
 
 	// Job done
 	self->data = data;
