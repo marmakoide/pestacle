@@ -48,7 +48,6 @@ Scope_gather_all_nodes(
 		ScopeMember* member = (ScopeMember*)Stack_pop(&stack);
 		switch(member->type) {
 			case ScopeMemberType__node:
-				printf("gathered %s\n", member->node->name);
 				Stack_push(out, member->node);
 				break;
 
@@ -114,7 +113,6 @@ Graph_topological_sort(
 			// Node have no inputs
 			if (all_inputs_unmarked) {
 				Stack_push(&ret, node);
-				printf("push node %s\n", node->name);
 				TreeMap_erase(&map, it);
 				break;
 			}
