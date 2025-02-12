@@ -16,7 +16,7 @@ NodeInputDefinition_is_last(
 
 // --- NodeDelegate -----------------------------------------------------------
 
-static bool
+bool
 NodeDelegate_has_inputs(
 	const NodeDelegate* self
 ) {

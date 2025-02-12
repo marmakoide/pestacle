@@ -90,6 +90,12 @@ struct s_Node {
 }; // struct s_Node
 
 
+extern bool
+NodeDelegate_has_inputs(
+	const NodeDelegate* self
+);
+
+
 /*
  * Creates a new node instance
  *   name : name of the instance, will make a copy of the string

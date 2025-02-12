@@ -28,19 +28,6 @@ Graph_check_graph_is_complete(
 
 
 static void
-push_node_inputs(
-	Stack* stack,
-	Node* node
-) {
-	Node** input_ptr = node->inputs;
-	const NodeInputDefinition* input_def = node->delegate->input_defs;
-	for(; !NodeInputDefinition_is_last(input_def); ++input_ptr, ++input_def)
-		if (*input_ptr)
-			Stack_push(stack, *input_ptr);
-}
-
-
-static void
 Scope_gather_all_nodes(
 	Scope* self,
 	Stack* out
@@ -61,6 +48,7 @@ Scope_gather_all_nodes(
 		ScopeMember* member = (ScopeMember*)Stack_pop(&stack);
 		switch(member->type) {
 			case ScopeMemberType__node:
+				printf("gathered %s\n", member->node->name);
 				Stack_push(out, member->node);
 				break;
 
@@ -79,112 +67,75 @@ Scope_gather_all_nodes(
 }
 
 
-static void
-Scope_gather_root_nodes(
-	Scope* self,
-	Stack* out
-) {
-	// Fill a stack with all the nodes
-	Stack stack;
-	Stack_init(&stack);
-	Scope_gather_all_nodes(self, &stack);
-
-	// Fill a map with all the nodes
-	TreeMap map;
-	TreeMap_init(&map);
-
-	for(size_t i = 0; i < Stack_length(&stack); ++i)
-		TreeMap_insert(&map, stack.data[i]);
-
-	// While we have nodes to process
-	while(!Stack_empty(&stack)) {
-		// Pick one node from the stack
-		Node* node = (Node*)Stack_pop(&stack);
-
-		// All nodes which are inputs are removed from the map
-		Node** input_ptr = node->inputs;
-		const NodeInputDefinition* input_def = node->delegate->input_defs;
-		for( ; !NodeInputDefinition_is_last(input_def); ++input_ptr, ++input_def) {
-			if (*input_ptr != 0) {
-				TreeMapNode* it = TreeMap_find(&map, *input_ptr);
-				if (it)
-					TreeMap_erase(&map, it);
-			}
-		}
-	}
-
-	// Fell the output stack with the nodes which are not inputs
-	for(int i = 0; i < 2; ++i)
-		if (map.root.child[i] != &(map.nil))
-			Stack_push(&stack, map.root.child[i]);
-
-	while(!Stack_empty(&stack)) {
-		TreeMapNode* node = (TreeMapNode*)Stack_pop(&stack);
-		Stack_push(out, node->key);
-		for(int i = 0; i < 2; ++i)
-			if (node->child[i] != &(map.nil))
-				Stack_push(&stack, node->child[i]);
-	}
-
-	// Job done
-	Stack_destroy(&stack);
-	TreeMap_destroy(&map);
-}
-
-
 static bool
 Graph_topological_sort(
 	Graph* self,
-	Stack* root_nodes
+	Scope* scope
 ) {
-	bool ret = true;
+	// Allocate
+	TreeMap map;
+	TreeMap_init(&map);
 
 	Stack stack;
 	Stack_init(&stack);
 
-	Dict visited;
-	Dict_init(&visited);
+	Stack ret;
+	Stack_init(&ret);
 
-	// Count the size of the component corresponding to the root node
-	size_t component_size = 0;
+	// All nodes are marked as unvisited
+	Scope_gather_all_nodes(scope, &stack);
+	for(size_t i = 0; i < Stack_length(&stack); ++i)
+		TreeMap_insert(&map, stack.data[i]);
 
-	Stack_copy(&stack, root_nodes);
-	while(!Stack_empty(&stack)) {
-		Node* node = (Node*)Stack_pop(&stack);
+	// While we have unvisited nodes
+	while(!TreeMap_empty(&map)) {
+		// Traverse the unvisited nodes
+		Stack_clear(&stack);
+		for(int i = 0; i < 2; ++i)
+			if (map.root.child[i] != &(map.nil))
+				Stack_push(&stack, map.root.child[i]);
 
-		if (!Dict_find(&visited, node->name)) {
-			Dict_insert(&visited, node->name);
+		while(!Stack_empty(&stack)) {
+			TreeMapNode* it = (TreeMapNode*)Stack_pop(&stack);
+			Node* node = (Node*)it->key;
 
-			component_size += 1;
-			push_node_inputs(&stack, node);
+			// Node have all his inputs visited
+			bool all_inputs_unmarked = true;
+			Node** input_ptr = node->inputs;
+			const NodeInputDefinition* input_def = node->delegate->input_defs;
+			for( ; !NodeInputDefinition_is_last(input_def); ++input_ptr, ++input_def) {
+				if (*input_ptr != 0) {
+					TreeMapNode* it = TreeMap_find(&map, *input_ptr);
+					if (it)
+						all_inputs_unmarked = false;
+				}
+			}
+
+			// Node have no inputs
+			if (all_inputs_unmarked) {
+				Stack_push(&ret, node);
+				printf("push node %s\n", node->name);
+				TreeMap_erase(&map, it);
+				break;
+			}
+			
+			for(int i = 0; i < 2; ++i)
+				if (it->child[i] != &(map.nil))
+					Stack_push(&stack, it->child[i]);
 		}
 	}
 
-	self->sorted_node_count = component_size;
-
-	// Store the nodes in topological order
-	Dict_clear(&visited);
-
-	self->sorted_nodes = (Node**)checked_malloc(component_size * sizeof(Node*));
-	Node** sorted_node_ptr = self->sorted_nodes;
-
-	Stack_copy(&stack, root_nodes);
-	while(!Stack_empty(&stack)) {
-		Node* node = (Node*)Stack_pop(&stack);
-
-		if (!Dict_find(&visited, node->name)) {
-			Dict_insert(&visited, node->name);
-
-			*sorted_node_ptr = node;
-			sorted_node_ptr += 1;
-			push_node_inputs(&stack, node);
-		}
-	}
+	//
+	self->sorted_node_count = Stack_length(&ret);
+	self->sorted_nodes = (Node**)checked_malloc(Stack_length(&ret) * sizeof(Node*));
+	for(size_t i = 0; i < Stack_length(&ret); ++i)
+		self->sorted_nodes[i] = ret.data[i];
 
 	// Job done
-	Dict_destroy(&visited);
+	TreeMap_destroy(&map);
 	Stack_destroy(&stack);
-	return ret;
+	Stack_destroy(&ret);
+	return true;
 }
 
 
@@ -199,21 +150,8 @@ Graph_init(
 	self->sorted_node_count = 0;
 	self->sorted_nodes = 0;
 
-	// Gather root nodes
-	Stack root_nodes;
-	Stack_init(&root_nodes);
-	Scope_gather_root_nodes(scope, &root_nodes);
-
-	if (Stack_empty(&root_nodes)) {
-		SDL_LogError(
-			SDL_LOG_CATEGORY_SYSTEM,
-			"no output node have been defined"
-		);		
-		goto failure;
-	}
-
 	// Sort the nodes
-	if (!Graph_topological_sort(self, &root_nodes))
+	if (!Graph_topological_sort(self, scope))
 		goto failure;
 
 	// Check validity
@@ -221,11 +159,9 @@ Graph_init(
 		goto failure;
 
 	// Job done
-	Stack_destroy(&root_nodes);
 	return true;
 
 failure:
-	Stack_destroy(&root_nodes);
 	Graph_destroy(self);
 	return false;
 }
@@ -254,9 +190,9 @@ Graph_setup(
 ) {
 	assert(self);
 
-	// Setup the nodes in reverse topological order
-	Node** node_ptr = self->sorted_nodes + self->sorted_node_count - 1;
-	for(size_t i = self->sorted_node_count; i != 0; --i, --node_ptr) {
+	// Setup the nodes in topological order
+	Node** node_ptr = self->sorted_nodes;
+	for(size_t i = self->sorted_node_count; i != 0; --i, ++node_ptr) {
 		Node* node = *node_ptr;
 
 		SDL_Log(
@@ -287,9 +223,9 @@ Graph_update(
 ) {
 	assert(self);
 
-	// Update the nodes in reverse topological order
-	Node** node_ptr = self->sorted_nodes + self->sorted_node_count - 1;
-	for(size_t i = self->sorted_node_count; i != 0; --i, --node_ptr)
+	// Update the nodes in topological order
+	Node** node_ptr = self->sorted_nodes;
+	for(size_t i = self->sorted_node_count; i != 0; --i, ++node_ptr)
 		Node_update(*node_ptr);
 }
 
@@ -302,13 +238,13 @@ Graph_update_with_profile(
 	assert(self);
 	assert(profile);
 
-	// Update the nodes in reverse topological order
-	Node** node_ptr = self->sorted_nodes + self->sorted_node_count - 1;
-	NodeProfile* profile_ptr = profile->node_profiles + self->sorted_node_count - 1;
+	// Update the nodes in topological order
+	Node** node_ptr = self->sorted_nodes;
+	NodeProfile* profile_ptr = profile->node_profiles;
 
 	Uint64 start_time = SDL_GetPerformanceCounter();
 
-	for(size_t i = self->sorted_node_count; i != 0; --i, --node_ptr, --profile_ptr) {
+	for(size_t i = self->sorted_node_count; i != 0; --i, ++node_ptr, ++profile_ptr) {
 		// Update the node
 		Uint64 node_start_time = SDL_GetPerformanceCounter();
 		Node_update(*node_ptr);
