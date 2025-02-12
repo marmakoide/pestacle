@@ -1,6 +1,8 @@
 #include <pestacle/memory.h>
 #include <pestacle/math/matrix.h>
 
+#include <SDL_log.h>
+
 #include <ArducamTOFCamera.hpp>
 
 #include "tof_camera.h"
