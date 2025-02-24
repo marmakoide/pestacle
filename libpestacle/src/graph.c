@@ -188,15 +188,23 @@ Graph_setup(
 ) {
 	assert(self);
 
+	StringList str_list;
+	StringList_init(&str_list);
+
 	// Setup the nodes in topological order
 	Node** node_ptr = self->sorted_nodes;
-	for(size_t i = self->sorted_node_count; i != 0; --i, ++node_ptr) {
+	for(size_t i = self->sorted_node_count; i != 0; --i, ++node_ptr) {		
 		Node* node = *node_ptr;
+
+		StringList_clear(&str_list);
+		Node_get_delegate_path(node, &str_list);
+		StringList_reverse(&str_list);
+		char* full_delegate_path_str = StringList_join(&str_list, '.');
 
 		SDL_Log(
 			"setup node %s : %s",
 			node->name,
-			node->delegate->name
+			full_delegate_path_str
 		);
 
 		if (!Node_setup(node)) {
@@ -204,13 +212,17 @@ Graph_setup(
 				SDL_LOG_CATEGORY_SYSTEM,
 				"node %s : %s setup failure",
 				node->name,
-				node->delegate->name
+				full_delegate_path_str
 			);
+			free(full_delegate_path_str);
 			return false;
 		}
+		
+		free(full_delegate_path_str);
 	}
 
 	// Job done
+	StringList_destroy(&str_list);
 	return true;
 }
 
