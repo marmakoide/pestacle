@@ -160,6 +160,47 @@ StringListView_length(
 }
 
 
+static size_t
+char_array_content_length(
+	const char** char_array,
+	size_t len
+)
+{
+	size_t ret = 0;
+	for(size_t i = len; i != 0; --i, ++char_array)
+		ret += strlen(*char_array);
+	return ret;
+}
+
+
+extern size_t
+StringList_content_length(
+	const StringList* self
+) {
+	assert(self);
+
+	return
+		char_array_content_length(
+			(const char**)self->items,
+			self->logical_len
+		);
+}
+
+
+extern size_t
+StringListView_content_length(
+	const StringListView* self
+) {
+	assert(self);
+
+	return char_array_content_length(
+		(const char**)self->items,
+		self->logical_len
+	);
+}
+
+
+
 extern const char**
 StringList_items(
 	const StringList* self

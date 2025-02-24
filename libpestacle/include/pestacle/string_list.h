@@ -93,6 +93,18 @@ StringListView_length(
 );
 
 
+extern size_t
+StringList_content_length(
+	const StringList* self
+);
+
+
+extern size_t
+StringListView_content_length(
+	const StringListView* self
+);
+
+
 extern const char**
 StringList_items(
 	const StringList* self
