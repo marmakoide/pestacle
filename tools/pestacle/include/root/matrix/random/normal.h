@@ -17,4 +17,4 @@ root_matrix_random_normal_node_delegate;
 }
 #endif
 
-#endif /* PESTACLE_ROOT_MATRIX_RANDOM_NORNAL_H */
+#endif /* PESTACLE_ROOT_MATRIX_RANDOM_NORMAL_H */
