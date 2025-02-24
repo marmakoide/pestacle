@@ -73,15 +73,22 @@ GraphProfile_print_report(
 	Node** node_ptr;
 	NodeProfile* profile_ptr;
 
+	StringList str_list;
+	StringList_init(&str_list);
+
 	// Compute the max length for the node identification field
 	size_t node_id_max_len = 0;
 
 	node_ptr = graph->sorted_nodes;
 	profile_ptr = self->node_profiles;
 	for(size_t i = graph->sorted_node_count; i != 0; --i, ++node_ptr, ++profile_ptr) {
+		StringList_clear(&str_list);
+		Node_get_delegate_path(*node_ptr, &str_list);
+
 		size_t node_id_len =
 			strlen((*node_ptr)->name) +
-			strlen((*node_ptr)->delegate->name);
+			StringList_content_length(&str_list) +
+			StringList_length(&str_list);
 
 		if (node_id_max_len < node_id_len)
 			node_id_max_len = node_id_len;
@@ -93,16 +100,22 @@ GraphProfile_print_report(
 	node_ptr = graph->sorted_nodes;
 	profile_ptr = self->node_profiles;
 	for(size_t i = graph->sorted_node_count; i != 0; --i, ++node_ptr, ++profile_ptr) {
+		StringList_clear(&str_list);
+		Node_get_delegate_path(*node_ptr, &str_list);
+		StringList_reverse(&str_list);
+		
 		fprintf(
 			fp,
-			"  %s : %s",
-			(*node_ptr)->name,
-			(*node_ptr)->delegate->name
+			"  %s : ",
+			(*node_ptr)->name
 		);
+
+		StringList_print(&str_list, fp);
 
 		size_t node_id_len =
 			strlen((*node_ptr)->name) +
-			strlen((*node_ptr)->delegate->name);
+			StringList_content_length(&str_list) +
+			StringList_length(&str_list);
 
 		for(size_t j = 0; j < node_id_max_len - node_id_len; ++j)
 			fputc(' ', fp);
@@ -122,4 +135,6 @@ GraphProfile_print_report(
 		3 * 1e3f * AverageResult_stddev(&(self->time))
 	);
 
+	// Release ressources
+	StringList_destroy(&str_list);
 }
