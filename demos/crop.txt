@@ -11,14 +11,14 @@ rgb-picture = png.load(
 bw-picture = rgb-surface.luminance()
 bw-picture.source = rgb-picture
 
-crop-bw-picture = matrix.crop(
-    y = 63,
+bw-crop-picture = matrix.crop(
+	y = 255,
 	width  = 512,
 	height = 256
 )
-crop-bw-picture.source = bw-picture
+bw-crop-picture.source = bw-picture
 
 output = matrix.gradient-map()
-output.source = crop-bw-picture
+output.source = bw-crop-picture
 
 main-window.display.source = output
