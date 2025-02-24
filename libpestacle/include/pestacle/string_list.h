@@ -132,6 +132,12 @@ StringList_append(
 );
 
 
+extern void
+StringList_reverse(
+	StringList* self
+);
+
+
 extern char*
 StringList_join(
 	const StringList* self,

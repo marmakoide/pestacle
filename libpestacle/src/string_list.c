@@ -300,6 +300,23 @@ StringListView_print(
 }
 
 
+void
+StringList_reverse(
+	StringList* self
+) {
+	assert(self);
+
+	char** first = self->items;
+	char** last = self->items + self->logical_len - 1;
+
+	for( ; first < last; ++first, --last) {
+		char* tmp = *first;
+		*first = *last;
+		*last = tmp;
+	}
+}
+
+
 static char*
 char_array_join(
 	const char** char_array,
