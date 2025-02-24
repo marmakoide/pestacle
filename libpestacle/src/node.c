@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <pestacle/node.h>
+#include <pestacle/scope.h>
 #include <pestacle/memory.h>
 #include <pestacle/strings.h>
 
@@ -183,6 +184,20 @@ Node_set_input_by_name(
 		}
 
 	return false;
+}
+
+
+void
+Node_get_delegate_path(
+	const Node* self,
+	StringList* path
+) {
+	assert(self);
+	assert(path);
+
+	StringList_append(path, self->delegate->name);
+	for(Scope* scope = self->delegate_scope; scope; scope = scope->delegate_scope)
+		StringList_append(path, scope->delegate->name);
 }
 
 

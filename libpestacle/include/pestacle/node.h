@@ -8,6 +8,7 @@ extern "C" {
 
 #include <SDL_video.h>
 #include <pestacle/dict.h>
+#include <pestacle/string_list.h>
 #include <pestacle/data_type.h>
 #include <pestacle/parameter.h>
 #include <pestacle/math/matrix.h>
@@ -147,6 +148,19 @@ Node_get_parameter_by_name(
 	const char* name,
 	const ParameterDefinition** param_def_ptr,
 	ParameterValue** param_value_ptr
+);
+
+
+/*
+ * Returns the full scope path to this node's delegate
+ *   self : the node
+ *   path : the path
+ */
+
+extern void
+Node_get_delegate_path(
+	const Node* self,
+	StringList* path
 );
 
 
