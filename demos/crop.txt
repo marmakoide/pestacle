@@ -1,7 +1,7 @@
 main-window = window(
 	width  = 512,
 	height = 256,
-	title  = "demo-gaussian"
+	title  = "demo-crop"
 )
 
 rgb-picture = png.load(
