@@ -1,0 +1,31 @@
+main-window = window(
+	width  = 512,
+	height = 512,
+	title  = "demo-sample-up-nearest"
+)
+
+rgb-picture = png.load(
+	path = "demos/pictures/boat.png"
+)
+
+bw-picture = rgb-surface.luminance()
+bw-picture.source = rgb-picture
+
+bw-crop-picture = matrix.crop(
+	x = 127,
+	y = 255,
+	width  = 256,
+	height = 256
+)
+bw-crop-picture.source = bw-picture
+
+bw-resample-picture = matrix.resample.nearest(
+	width  = 512,
+	height = 512
+)
+bw-resample-picture.source = bw-crop-picture
+
+output = matrix.gradient-map()
+output.source = bw-resample-picture
+
+main-window.display.source = output
