@@ -103,7 +103,7 @@ AST_AtomicValue_print(
 			break;
 		
 		case AST_AtomicValueType__integer:
-			fprintf(out, "%ld", self->int64_value);
+			fprintf(out, "%lld", self->int64_value);
 			break;
 		
 		case AST_AtomicValueType__real:

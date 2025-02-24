@@ -5,7 +5,7 @@ main-window = window(
 )
 
 rgb-picture = png.load(
-	path = "demos/pictures/lenna.png"
+	path = "demos/pictures/boat.png"
 )
 
 bw-picture = rgb-surface.luminance()
